@@ -62,12 +62,18 @@ class HtmlReportGenerator {
      */
     private function generateStyles() {
         $css = "<style>" . "\n";
-        $css .= "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 1200px; margin: 0 auto; padding: 20px; }" . "\n";
+        $css .= "@page { margin: 0; }" . "\n";
+        $css .= "html, body { height: 100%; }" . "\n";
+        $css .= "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }" . "\n";
+        $css .= "#article-body { margin: 0; padding: 0; }" . "\n";
+        $css .= ".report-content { max-width: 1200px; margin: 0 auto; padding: 20px; }" . "\n";
         $css .= "h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }" . "\n";
         $css .= "h2 { color: #34495e; margin-top: 30px; }" . "\n";
         $css .= ".stock-container { margin: 30px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; }" . "\n";
         $css .= ".stock-container h2 { margin-top: 0; }" . "\n";
         $css .= ".tradingview-widget-container { margin: 20px 0; }" . "\n";
+        $css .= ".cover-page { page-break-after: always; margin: 0; padding: 0; width: 100%; height: 100%; min-height: 100vh; }" . "\n";
+        $css .= ".cover-image { display: block; width: 100%; height: 100%; object-fit: cover; }" . "\n";
         $css .= ".pagebreak { page-break-before: always; }" . "\n";
         $css .= ".termsblk { margin-top: 50px; padding: 20px; background: #f5f5f5; border-radius: 5px; font-size: 0.9em; }" . "\n";
         $css .= ".termsblk p { margin: 10px 0; }" . "\n";
@@ -83,6 +89,10 @@ class HtmlReportGenerator {
      */
     private function generateBody() {
         $body = '<div id="article-body">' . "\n";
+
+        $body .= $this->generateCoverPage();
+
+        $body .= '<div class="report-content">' . "\n";
 
         // Add report title
         $body .= "<h1>" . $this->escapeHtml($this->settings["report_title"]) . "</h1>" . "\n";
@@ -105,8 +115,64 @@ class HtmlReportGenerator {
         }
 
         $body .= "</div>" . "\n";
+        $body .= "</div>" . "\n";
 
         return $body;
+    }
+
+    /**
+     * Generate PDF cover page HTML
+     * @return string Cover page HTML or empty string
+     */
+    private function generateCoverPage() {
+        $coverImagePath = !empty($this->settings["pdf_cover_image"]) ? $this->settings["pdf_cover_image"] : "";
+
+        if (empty($coverImagePath) || !file_exists($coverImagePath)) {
+            return "";
+        }
+
+        $dataUri = $this->convertImageToDataUri($coverImagePath);
+        $html = '<div class="cover-page">' . "\n";
+        $html .= '    <img class="cover-image" src="' . $dataUri . '" alt="">' . "\n";
+        $html .= "</div>" . "\n";
+
+        return $html;
+    }
+
+    /**
+     * Convert image file to base64 data URI
+     * @param string $imagePath Path to image file
+     * @return string Base64 data URI
+     */
+    private function convertImageToDataUri($imagePath) {
+        $imageData = file_get_contents($imagePath);
+        $mimeType = $this->getImageMimeType($imagePath);
+        $base64Data = base64_encode($imageData);
+
+        return "data:" . $mimeType . ";base64," . $base64Data;
+    }
+
+    /**
+     * Get image MIME type from file
+     * @param string $filePath Path to image file
+     * @return string MIME type
+     */
+    private function getImageMimeType($filePath) {
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        $mimeTypes = [
+            "jpg" => "image/jpeg",
+            "jpeg" => "image/jpeg",
+            "png" => "image/png",
+            "gif" => "image/gif",
+            "webp" => "image/webp",
+        ];
+
+        if (isset($mimeTypes[$extension])) {
+            return $mimeTypes[$extension];
+        }
+
+        return "image/jpeg";
     }
 
     /**
