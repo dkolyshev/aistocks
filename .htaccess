@@ -1,0 +1,32 @@
+# Stock Report Generation System - Apache Configuration
+# PHP 5.5 Compatible
+
+# Enable directory index with index.php
+DirectoryIndex index.php reportManager.php
+
+# Protect sensitive files
+<FilesMatch "^(reportSettings\.json|\.env)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protect app directory from direct access (optional, for added security)
+# Uncomment if you want to prevent direct file access
+# <Directory ~ "^/app/">
+#     Order deny,allow
+#     Deny from all
+# </Directory>
+
+# Enable error reporting (disable in production)
+# php_flag display_errors off
+# php_flag log_errors on
+
+# File upload settings
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+
+# Enable mod_rewrite for clean URLs (optional)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+</IfModule>

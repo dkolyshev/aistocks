@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  php-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aistocks-php55
+    ports:
+      - "${APP_PORT:-8080}:80"
+    volumes:
+      # Mount the entire project root (contains index.php, reportManager.php, generateReports.php, /app, etc.)
+      - ..:/var/www/html
+      # Persist generated reports
+      - ../reports:/var/www/html/reports
+      # Persist uploaded images
+      - ../images:/var/www/html/images
+      # Persist data files
+      - ../data:/var/www/html/data
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+      - PHP_UPLOAD_MAX_FILESIZE=10M
+      - PHP_POST_MAX_SIZE=10M
+    restart: unless-stopped
+    networks:
+      - php-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/index.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  php-network:
+    driver: bridge

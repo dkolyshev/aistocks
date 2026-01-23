@@ -1,0 +1,58 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Composer
+/vendor/
+composer.phar
+composer.lock
+
+# Data directories
+/data/*
+!/data/.gitkeep
+/reports/*
+!/reports/.gitkeep
+/images/*
+!/images/.gitkeep
+
+# Logs
+*.log
+/logs/
+/log/
+
+# Cache
+/cache/
+/tmp/
+*.cache
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# PHP specific
+*.php~
+.phpunit.result.cache
+phpunit.xml
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# AI tools
+.claude
+
+# Config files (uncomment if needed)
+# reportSettings.json
