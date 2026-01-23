@@ -54,7 +54,7 @@ if [ $? -eq 0 ]; then
     echo "   http://localhost:8080"
     echo ""
     echo "📊 Report Manager:"
-    echo "   http://localhost:8080/reportManager.php"
+    echo "   http://localhost:8080/reportManager.html"
     echo ""
     echo "🛠️  Useful commands:"
     echo "   View logs:        docker-compose logs -f"

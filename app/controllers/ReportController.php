@@ -167,4 +167,127 @@ class ReportController {
     public function getSettingByFileName($fileName) {
         return $this->settingsManager->getSettingByFileName($fileName);
     }
+
+    /**
+     * Handle report generation request
+     * @return array Response with success status and message
+     */
+    public function handleGenerate() {
+        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+            return ["success" => false, "message" => "Invalid request method"];
+        }
+
+        $generationResult = $this->generateAllReports();
+
+        // Calculate success statistics
+        $successCount = 0;
+        $totalCount = 0;
+
+        if (isset($generationResult["results"]) && is_array($generationResult["results"])) {
+            $totalCount = count($generationResult["results"]);
+
+            foreach ($generationResult["results"] as $result) {
+                if ($result["html"] || $result["pdf"] || $result["flipbook"]) {
+                    $successCount++;
+                }
+            }
+        }
+
+        $message = "Generated reports for {$successCount} of {$totalCount} configurations";
+        return ["success" => $successCount > 0, "message" => $message];
+    }
+
+    /**
+     * Generate reports for all settings
+     * @return array Result with all generation results
+     */
+    private function generateAllReports() {
+        $results = [];
+        $allSettings = $this->settingsManager->getAllSettings();
+
+        if (empty($allSettings)) {
+            return [
+                "success" => false,
+                "message" => "No report settings found",
+            ];
+        }
+
+        foreach ($allSettings as $settings) {
+            $result = $this->generateReportForSetting($settings);
+            $results[] = $result;
+        }
+
+        return [
+            "success" => true,
+            "message" => "Report generation completed",
+            "results" => $results,
+        ];
+    }
+
+    /**
+     * Generate reports for a single setting
+     * @param array $settings Report settings
+     * @return array Result with status and messages
+     */
+    private function generateReportForSetting($settings) {
+        $fileName = $settings["file_name"];
+        $result = [
+            "file_name" => $fileName,
+            "html" => false,
+            "pdf" => false,
+            "flipbook" => false,
+            "errors" => [],
+        ];
+
+        try {
+            // Load CSV data
+            $csvReader = new CsvDataReader(DATA_CSV_FILE);
+            if (!$csvReader->load()) {
+                $result["errors"][] = "Failed to load CSV data";
+                return $result;
+            }
+
+            $stockCount = isset($settings["stock_count"]) ? intval($settings["stock_count"]) : 6;
+            $stocks = $csvReader->getLimitedData($stockCount);
+
+            if (empty($stocks)) {
+                $result["errors"][] = "No stock data available";
+                return $result;
+            }
+
+            // Initialize shortcode processor
+            $shortcodeProcessor = new ShortcodeProcessor();
+
+            // Generate HTML report
+            $htmlGenerator = new HtmlReportGenerator($settings, $stocks, $shortcodeProcessor);
+            $htmlPath = REPORTS_DIR . "/" . $fileName . ".html";
+            $result["html"] = $htmlGenerator->saveToFile($htmlPath);
+
+            if (!$result["html"]) {
+                $result["errors"][] = "Failed to generate HTML report";
+            }
+
+            // Generate PDF report
+            $pdfGenerator = new PdfReportGenerator($settings, $htmlGenerator);
+            $pdfPath = REPORTS_DIR . "/" . $fileName . ".pdf";
+            $result["pdf"] = $pdfGenerator->generate($pdfPath);
+
+            if (!$result["pdf"]) {
+                $result["errors"][] = "Failed to generate PDF report (install wkhtmltopdf or upload manual PDF)";
+            }
+
+            // Generate Flipbook report
+            $flipbookGenerator = new FlipbookGenerator($settings, $stocks, $shortcodeProcessor);
+            $flipbookPath = REPORTS_DIR . "/" . $fileName . " flipbook.html";
+            $result["flipbook"] = $flipbookGenerator->saveToFile($flipbookPath);
+
+            if (!$result["flipbook"]) {
+                $result["errors"][] = "Failed to generate Flipbook report";
+            }
+        } catch (Exception $e) {
+            $result["errors"][] = "Exception: " . $e->getMessage();
+        }
+
+        return $result;
+    }
 }

@@ -9,7 +9,7 @@ services:
     ports:
       - "${APP_PORT:-8080}:80"
     volumes:
-      # Mount the entire project root (contains index.php, reportManager.php, generateReports.php, /app, etc.)
+      # Mount the entire project root (contains /public, /app, /reports, /images, /data, etc.)
       - ..:/var/www/html
       # Persist generated reports
       - ../reports:/var/www/html/reports
@@ -25,7 +25,7 @@ services:
     networks:
       - php-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/index.php"]
+      test: ["CMD", "curl", "-f", "http://localhost/reportManager.html"]
       interval: 30s
       timeout: 10s
       retries: 3

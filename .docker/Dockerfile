@@ -28,6 +28,9 @@ RUN docker-php-ext-install \
 # Enable Apache modules
 RUN a2enmod rewrite
 
+# Configure Apache to allow .htaccess overrides
+RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+
 # Configure PHP settings for file uploads
 RUN { \
     echo 'upload_max_filesize = 10M'; \
