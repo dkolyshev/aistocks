@@ -72,9 +72,9 @@ class PdfReportGenerator
             return false;
         }
 
-        // Generate PDF using wkhtmltopdf
+        // Generate PDF using wkhtmltopdf with xvfb (virtual display)
         $command = sprintf(
-            'wkhtmltopdf --quiet --enable-javascript --javascript-delay 2000 --no-stop-slow-scripts --page-size Letter %s %s 2>&1',
+            'xvfb-run -a --server-args="-screen 0 1024x768x24" wkhtmltopdf --quiet --enable-javascript --javascript-delay 2000 --no-stop-slow-scripts --page-size Letter %s %s 2>&1',
             escapeshellarg($tempHtml),
             escapeshellarg($outputPath)
         );
