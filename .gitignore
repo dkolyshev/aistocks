@@ -54,5 +54,11 @@ phpunit.xml
 # AI tools
 .claude
 
-# Config files (uncomment if needed)
-# reportSettings.json
+# Config files
+reportSettings.json
+
+# Service files for local tools
+node_modules
+package.json
+package-lock.json
+.prettierrc
