@@ -117,11 +117,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Redirect back to report manager with status
     $successCount = 0;
-    $totalCount = count($generationResult['results']);
+    $totalCount = 0;
 
-    foreach ($generationResult['results'] as $result) {
-        if ($result['html'] || $result['pdf'] || $result['flipbook']) {
-            $successCount++;
+    if (isset($generationResult['results']) && is_array($generationResult['results'])) {
+        $totalCount = count($generationResult['results']);
+
+        foreach ($generationResult['results'] as $result) {
+            if ($result['html'] || $result['pdf'] || $result['flipbook']) {
+                $successCount++;
+            }
         }
     }
 
