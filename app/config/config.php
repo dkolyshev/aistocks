@@ -4,6 +4,8 @@
  * PHP 5.5 compatible configuration file
  */
 
+date_default_timezone_set('UTC');
+
 if (!defined('APP_ROOT')) {
     define('APP_ROOT', dirname(dirname(dirname(__FILE__))));
 }
