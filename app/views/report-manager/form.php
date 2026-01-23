@@ -66,7 +66,13 @@
             </div>
 
             <h6 class="section-header mt-4">Report Content (HTML Templates)</h6>
-            <p class="small text-muted">Use [Company], [Ticker], [Price], [Chart], and [Current Date] as shortcodes.</p>
+            <p class="small text-muted">
+                <strong>Available shortcodes:</strong><br>
+                <em>Special:</em> <?php echo implode(", ", $availableShortcodes["special"]); ?><br>
+                <?php if (!empty($availableShortcodes["data"])): ?>
+                    <em>Data columns:</em> <?php echo implode(", ", $availableShortcodes["data"]); ?>
+                <?php endif; ?>
+            </p>
 
             <div class="form-group">
                 <label>Report Intro HTML</label>

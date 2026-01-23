@@ -169,6 +169,32 @@ class ReportController {
     }
 
     /**
+     * Get available shortcodes from CSV columns
+     * @return array Array of available shortcodes
+     */
+    public function getAvailableShortcodes() {
+        $shortcodes = [
+            "special" => ["[Chart]", "[ArticleImage]", "[Current Date]"],
+            "data" => [],
+        ];
+
+        if (file_exists(DATA_CSV_FILE)) {
+            $csvHandle = fopen(DATA_CSV_FILE, "r");
+            if ($csvHandle) {
+                $headers = fgetcsv($csvHandle);
+                fclose($csvHandle);
+                if ($headers) {
+                    foreach ($headers as $header) {
+                        $shortcodes["data"][] = "[" . trim($header) . "]";
+                    }
+                }
+            }
+        }
+
+        return $shortcodes;
+    }
+
+    /**
      * Handle report generation request
      * @return array Response with success status and message
      */

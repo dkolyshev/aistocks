@@ -19,6 +19,11 @@ class FlipbookGenerator {
         $this->settings = $settings;
         $this->stocks = $stocks;
         $this->shortcodeProcessor = $shortcodeProcessor;
+
+        // Set article image path if available
+        if (!empty($settings["article_image"])) {
+            $this->shortcodeProcessor->setArticleImagePath($settings["article_image"]);
+        }
     }
 
     /**

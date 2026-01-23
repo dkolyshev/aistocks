@@ -1,13 +1,14 @@
 <?php
 /**
  * ShortcodeProcessor - Processes shortcodes in templates
- * Supports: [Current Date], [Chart], and all CSV column names
+ * Supports: [Current Date], [Chart], [ArticleImage], and all CSV column names
  * PHP 5.5 compatible
  */
 
 class ShortcodeProcessor {
     private $stockData;
     private $currentDate;
+    private $articleImagePath;
 
     /**
      * Constructor
@@ -15,6 +16,7 @@ class ShortcodeProcessor {
     public function __construct() {
         $this->currentDate = date(DATE_FORMAT);
         $this->stockData = [];
+        $this->articleImagePath = "";
     }
 
     /**
@@ -23,6 +25,14 @@ class ShortcodeProcessor {
      */
     public function setStockData($stockData) {
         $this->stockData = $stockData;
+    }
+
+    /**
+     * Set article image path
+     * @param string $imagePath Path to article image
+     */
+    public function setArticleImagePath($imagePath) {
+        $this->articleImagePath = $imagePath;
     }
 
     /**
@@ -38,6 +48,12 @@ class ShortcodeProcessor {
 
         // Replace [Current Date]
         $content = str_replace("[Current Date]", $this->currentDate, $content);
+
+        // Replace [ArticleImage]
+        if (!empty($this->articleImagePath)) {
+            $imageHtml = $this->generateArticleImage($this->articleImagePath, $format);
+            $content = str_replace("[ArticleImage]", $imageHtml, $content);
+        }
 
         // Replace [Chart] with TradingView widget
         if (isset($this->stockData["Ticker"])) {
@@ -177,5 +193,53 @@ class ShortcodeProcessor {
      */
     public function setDateFormat($format) {
         $this->currentDate = date($format);
+    }
+
+    /**
+     * Generate article image HTML
+     * @param string $imagePath Path to article image
+     * @param string $format Output format ('html' or 'flipbook')
+     * @return string Article image HTML
+     */
+    private function generateArticleImage($imagePath, $format) {
+        if (!file_exists($imagePath)) {
+            return "";
+        }
+
+        if ($format === "flipbook") {
+            // Embed as base64 for flipbook
+            $imageData = file_get_contents($imagePath);
+            $mimeType = $this->getImageMimeType($imagePath);
+            $base64Data = base64_encode($imageData);
+            $dataUri = "data:" . $mimeType . ";base64," . $base64Data;
+            return '<img alt="" src="' . $dataUri . '" style="float: left; width: 200px; height: 200px; margin: 14px;">';
+        } else {
+            // Use URL for HTML
+            $imageUrl = str_replace("/var/www/html/", "/", $imagePath);
+            return '<img alt="" src="' . htmlspecialchars($imageUrl, ENT_QUOTES, "UTF-8") . '" style="float: left; width: 200px; height: 200px; margin: 14px;">';
+        }
+    }
+
+    /**
+     * Get image MIME type from file
+     * @param string $filePath Path to image file
+     * @return string MIME type
+     */
+    private function getImageMimeType($filePath) {
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        $mimeTypes = [
+            "jpg" => "image/jpeg",
+            "jpeg" => "image/jpeg",
+            "png" => "image/png",
+            "gif" => "image/gif",
+            "webp" => "image/webp",
+        ];
+
+        if (isset($mimeTypes[$extension])) {
+            return $mimeTypes[$extension];
+        }
+
+        return "image/jpeg";
     }
 }
