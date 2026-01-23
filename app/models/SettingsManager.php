@@ -4,16 +4,14 @@
  * PHP 5.5 compatible
  */
 
-class SettingsManager
-{
+class SettingsManager {
     private $settingsFile;
 
     /**
      * Constructor
      * @param string $settingsFile Path to settings JSON file
      */
-    public function __construct($settingsFile)
-    {
+    public function __construct($settingsFile) {
         $this->settingsFile = $settingsFile;
 
         if (!file_exists($this->settingsFile)) {
@@ -24,9 +22,8 @@ class SettingsManager
     /**
      * Initialize settings file with empty array
      */
-    private function initializeSettingsFile()
-    {
-        $emptySettings = array();
+    private function initializeSettingsFile() {
+        $emptySettings = [];
         file_put_contents($this->settingsFile, json_encode($emptySettings, JSON_PRETTY_PRINT));
     }
 
@@ -34,16 +31,15 @@ class SettingsManager
      * Get all settings
      * @return array Array of all settings
      */
-    public function getAllSettings()
-    {
+    public function getAllSettings() {
         if (!file_exists($this->settingsFile)) {
-            return array();
+            return [];
         }
 
         $content = file_get_contents($this->settingsFile);
         $settings = json_decode($content, true);
 
-        return is_array($settings) ? $settings : array();
+        return is_array($settings) ? $settings : [];
     }
 
     /**
@@ -51,12 +47,11 @@ class SettingsManager
      * @param string $fileName The report file name
      * @return array|null Setting data or null if not found
      */
-    public function getSettingByFileName($fileName)
-    {
+    public function getSettingByFileName($fileName) {
         $allSettings = $this->getAllSettings();
 
         foreach ($allSettings as $setting) {
-            if (isset($setting['file_name']) && $setting['file_name'] === $fileName) {
+            if (isset($setting["file_name"]) && $setting["file_name"] === $fileName) {
                 return $setting;
             }
         }
@@ -69,12 +64,11 @@ class SettingsManager
      * @param array $settingData Setting data
      * @return bool Success status
      */
-    public function addSetting($settingData)
-    {
+    public function addSetting($settingData) {
         $allSettings = $this->getAllSettings();
 
         // Check if file name already exists
-        if ($this->getSettingByFileName($settingData['file_name']) !== null) {
+        if ($this->getSettingByFileName($settingData["file_name"]) !== null) {
             return false;
         }
 
@@ -89,13 +83,12 @@ class SettingsManager
      * @param array $settingData New setting data
      * @return bool Success status
      */
-    public function updateSetting($fileName, $settingData)
-    {
+    public function updateSetting($fileName, $settingData) {
         $allSettings = $this->getAllSettings();
         $updated = false;
 
         foreach ($allSettings as $index => $setting) {
-            if (isset($setting['file_name']) && $setting['file_name'] === $fileName) {
+            if (isset($setting["file_name"]) && $setting["file_name"] === $fileName) {
                 $allSettings[$index] = $settingData;
                 $updated = true;
                 break;
@@ -114,14 +107,13 @@ class SettingsManager
      * @param string $fileName The report file name to delete
      * @return bool Success status
      */
-    public function deleteSetting($fileName)
-    {
+    public function deleteSetting($fileName) {
         $allSettings = $this->getAllSettings();
-        $newSettings = array();
+        $newSettings = [];
         $found = false;
 
         foreach ($allSettings as $setting) {
-            if (!isset($setting['file_name']) || $setting['file_name'] !== $fileName) {
+            if (!isset($setting["file_name"]) || $setting["file_name"] !== $fileName) {
                 $newSettings[] = $setting;
             } else {
                 $found = true;
@@ -140,8 +132,7 @@ class SettingsManager
      * @param array $settings Settings array
      * @return bool Success status
      */
-    private function saveSettings($settings)
-    {
+    private function saveSettings($settings) {
         $json = json_encode($settings, JSON_PRETTY_PRINT);
 
         if ($json === false) {
@@ -156,20 +147,19 @@ class SettingsManager
      * @param array $settingData Setting data to validate
      * @return array Array of validation errors (empty if valid)
      */
-    public function validateSetting($settingData)
-    {
-        $errors = array();
+    public function validateSetting($settingData) {
+        $errors = [];
 
-        if (empty($settingData['file_name'])) {
-            $errors[] = 'File name is required';
+        if (empty($settingData["file_name"])) {
+            $errors[] = "File name is required";
         }
 
-        if (empty($settingData['report_title'])) {
-            $errors[] = 'Report title is required';
+        if (empty($settingData["report_title"])) {
+            $errors[] = "Report title is required";
         }
 
-        if (!isset($settingData['stock_count']) || $settingData['stock_count'] < 1) {
-            $errors[] = 'Stock count must be at least 1';
+        if (!isset($settingData["stock_count"]) || $settingData["stock_count"] < 1) {
+            $errors[] = "Stock count must be at least 1";
         }
 
         return $errors;

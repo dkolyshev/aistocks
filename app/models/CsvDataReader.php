@@ -4,8 +4,7 @@
  * PHP 5.5 compatible
  */
 
-class CsvDataReader
-{
+class CsvDataReader {
     private $csvFile;
     private $headers;
     private $data;
@@ -14,34 +13,32 @@ class CsvDataReader
      * Constructor
      * @param string $csvFile Path to CSV file
      */
-    public function __construct($csvFile)
-    {
+    public function __construct($csvFile) {
         $this->csvFile = $csvFile;
-        $this->headers = array();
-        $this->data = array();
+        $this->headers = [];
+        $this->data = [];
     }
 
     /**
      * Load and parse CSV file
      * @return bool Success status
      */
-    public function load()
-    {
+    public function load() {
         if (!file_exists($this->csvFile)) {
             return false;
         }
 
-        $handle = fopen($this->csvFile, 'r');
+        $handle = fopen($this->csvFile, "r");
         if ($handle === false) {
             return false;
         }
 
         $lineNumber = 0;
-        while (($row = fgetcsv($handle, 0, ',')) !== false) {
+        while (($row = fgetcsv($handle, 0, ",")) !== false) {
             if ($lineNumber === 0) {
-                $this->headers = array_map('trim', $row);
+                $this->headers = array_map("trim", $row);
             } else {
-                if (!empty($row) && trim(implode('', $row)) !== '') {
+                if (!empty($row) && trim(implode("", $row)) !== "") {
                     $this->data[] = $this->mapRowToHeaders($row);
                 }
             }
@@ -58,12 +55,11 @@ class CsvDataReader
      * @param array $row CSV row data
      * @return array Associative array
      */
-    private function mapRowToHeaders($row)
-    {
-        $mapped = array();
+    private function mapRowToHeaders($row) {
+        $mapped = [];
 
         foreach ($this->headers as $index => $header) {
-            $mapped[$header] = isset($row[$index]) ? trim($row[$index]) : '';
+            $mapped[$header] = isset($row[$index]) ? trim($row[$index]) : "";
         }
 
         return $mapped;
@@ -73,8 +69,7 @@ class CsvDataReader
      * Get all stock data
      * @return array Array of stock data
      */
-    public function getAllData()
-    {
+    public function getAllData() {
         return $this->data;
     }
 
@@ -83,10 +78,9 @@ class CsvDataReader
      * @param int $limit Number of stocks to return
      * @return array Limited array of stock data
      */
-    public function getLimitedData($limit)
-    {
+    public function getLimitedData($limit) {
         if ($limit <= 0) {
-            return array();
+            return [];
         }
 
         return array_slice($this->data, 0, $limit);
@@ -97,10 +91,9 @@ class CsvDataReader
      * @param string $ticker Stock ticker symbol
      * @return array|null Stock data or null if not found
      */
-    public function getStockByTicker($ticker)
-    {
+    public function getStockByTicker($ticker) {
         foreach ($this->data as $stock) {
-            if (isset($stock['Ticker']) && strcasecmp($stock['Ticker'], $ticker) === 0) {
+            if (isset($stock["Ticker"]) && strcasecmp($stock["Ticker"], $ticker) === 0) {
                 return $stock;
             }
         }
@@ -112,8 +105,7 @@ class CsvDataReader
      * Get available headers/columns
      * @return array Array of column names
      */
-    public function getHeaders()
-    {
+    public function getHeaders() {
         return $this->headers;
     }
 
@@ -121,8 +113,7 @@ class CsvDataReader
      * Get total number of stocks
      * @return int Total count
      */
-    public function getTotalCount()
-    {
+    public function getTotalCount() {
         return count($this->data);
     }
 
@@ -130,8 +121,7 @@ class CsvDataReader
      * Check if CSV has been loaded
      * @return bool True if data exists
      */
-    public function isLoaded()
-    {
+    public function isLoaded() {
         return !empty($this->data);
     }
 
@@ -140,16 +130,15 @@ class CsvDataReader
      * @param string $marketCap Market cap value
      * @return string Formatted market cap
      */
-    public static function formatMarketCap($marketCap)
-    {
+    public static function formatMarketCap($marketCap) {
         $value = floatval($marketCap);
 
         if ($value >= 1000) {
-            return '$' . number_format($value / 1000, 2) . 'T';
+            return '$' . number_format($value / 1000, 2) . "T";
         } elseif ($value >= 1) {
-            return '$' . number_format($value, 2) . 'B';
+            return '$' . number_format($value, 2) . "B";
         } else {
-            return '$' . number_format($value * 1000, 2) . 'M';
+            return '$' . number_format($value * 1000, 2) . "M";
         }
     }
 }
