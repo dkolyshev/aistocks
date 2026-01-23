@@ -86,9 +86,9 @@ This will:
 
 Open your browser and navigate to:
 
-**http://localhost:8080**
+**http://localhost:8080** or **http://localhost:8080/reportManager.html**
 
-You'll be automatically redirected to the Report Manager.
+You'll be redirected to the Report Manager.
 
 ### 5. Stop the container
 
