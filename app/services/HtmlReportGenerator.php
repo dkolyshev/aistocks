@@ -82,21 +82,23 @@ class HtmlReportGenerator {
         // Add report title
         $body .= "<h1>" . $this->escapeHtml($this->settings["report_title"]) . "</h1>" . "\n";
 
-        // Add report intro
-        if (!empty($this->settings["report_intro_html"])) {
-            $body .= $this->shortcodeProcessor->process($this->settings["report_intro_html"], "html") . "\n";
-        }
-
-        // Add stock blocks
+        // Process each stock with intro, block, and disclaimer
         foreach ($this->stocks as $index => $stock) {
             $this->shortcodeProcessor->setStockData($stock);
+
+            // Add report intro for this stock
+            if (!empty($this->settings["report_intro_html"])) {
+                $body .= $this->shortcodeProcessor->process($this->settings["report_intro_html"], "html") . "\n";
+            }
+
+            // Add stock block for this stock
             $stockBlock = $this->generateStockBlock($stock, $index);
             $body .= $stockBlock . "\n";
-        }
 
-        // Add disclaimer
-        if (!empty($this->settings["disclaimer_html"])) {
-            $body .= $this->shortcodeProcessor->process($this->settings["disclaimer_html"], "html") . "\n";
+            // Add disclaimer for this stock
+            if (!empty($this->settings["disclaimer_html"])) {
+                $body .= $this->shortcodeProcessor->process($this->settings["disclaimer_html"], "html") . "\n";
+            }
         }
 
         $body .= "</div>" . "\n";

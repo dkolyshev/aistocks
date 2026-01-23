@@ -84,15 +84,7 @@ class FlipbookGenerator {
         // Add cover page
         $body .= $this->generateCoverPage();
 
-        // Add disclaimer page
-        $body .= $this->generateDisclaimerPage();
-
-        // Add intro page
-        if (!empty($this->settings["report_intro_html"])) {
-            $body .= $this->generateIntroPage();
-        }
-
-        // Add stock pages
+        // Add stock pages (each page includes intro + stock + disclaimer)
         foreach ($this->stocks as $index => $stock) {
             $this->shortcodeProcessor->setStockData($stock);
             $body .= $this->generateStockPage($stock, $index);
@@ -165,42 +157,9 @@ class FlipbookGenerator {
         return "data:" . $mimeType . ";base64," . $base64Data;
     }
 
-    /**
-     * Generate disclaimer page
-     * @return string Disclaimer page HTML
-     */
-    private function generateDisclaimerPage() {
-        $html = '<div class="page">' . "\n";
-        $html .= '<div id="disclaimer" style="padding: 25px; height: 100%; overflow-y: auto;">' . "\n";
-
-        if (!empty($this->settings["disclaimer_html"])) {
-            $html .= $this->shortcodeProcessor->process($this->settings["disclaimer_html"], "flipbook") . "\n";
-        } else {
-            $html .= "<center><h2>Terms and Conditions</h2><br/>LEGAL NOTICE</center>" . "\n";
-        }
-
-        $html .= "</div>" . "\n";
-        $html .= "</div>" . "\n";
-
-        return $html;
-    }
 
     /**
-     * Generate intro page
-     * @return string Intro page HTML
-     */
-    private function generateIntroPage() {
-        $html = '<div class="page">' . "\n";
-        $html .= '<div id="top-stocks-intro-text" style="height: 100%; background-color: white; padding: 25px; overflow-y: auto;">' . "\n";
-        $html .= $this->shortcodeProcessor->process($this->settings["report_intro_html"], "flipbook") . "\n";
-        $html .= "</div>" . "\n";
-        $html .= "</div>" . "\n";
-
-        return $html;
-    }
-
-    /**
-     * Generate stock page
+     * Generate stock page (includes intro + stock content + disclaimer)
      * @param array $stock Stock data
      * @param int $index Stock index
      * @return string Stock page HTML
@@ -209,7 +168,44 @@ class FlipbookGenerator {
         $html = '<div class="page pagebreak">' . "\n";
         $html .= '<div class="stock-container">' . "\n";
         $html .= '<div class="stock-container-2">' . "\n";
-        $html .= '<div class="order-md-1">' . "\n";
+
+        // Add intro HTML if provided
+        if (!empty($this->settings["report_intro_html"])) {
+            $html .= '<div class="stock-intro">' . "\n";
+            $html .= $this->shortcodeProcessor->process($this->settings["report_intro_html"], "flipbook") . "\n";
+            $html .= "</div>" . "\n";
+        }
+
+        // Add custom stock block if provided
+        if (!empty($this->settings["stock_block_html"])) {
+            $html .= $this->shortcodeProcessor->process($this->settings["stock_block_html"], "flipbook") . "\n";
+        } else {
+            // Generate default stock content
+            $html .= $this->generateDefaultStockContent($stock, $index);
+        }
+
+        // Add disclaimer HTML if provided
+        if (!empty($this->settings["disclaimer_html"])) {
+            $html .= '<div class="stock-disclaimer">' . "\n";
+            $html .= $this->shortcodeProcessor->process($this->settings["disclaimer_html"], "flipbook") . "\n";
+            $html .= "</div>" . "\n";
+        }
+
+        $html .= "</div>" . "\n";
+        $html .= "</div>" . "\n";
+        $html .= "</div>" . "\n";
+
+        return $html;
+    }
+
+    /**
+     * Generate default stock content when no custom template provided
+     * @param array $stock Stock data
+     * @param int $index Stock index
+     * @return string Default stock HTML
+     */
+    private function generateDefaultStockContent($stock, $index) {
+        $html = '<div class="order-md-1">' . "\n";
 
         $company = isset($stock["Company"]) ? $stock["Company"] : "";
         $exchange = isset($stock["Exchange"]) ? $stock["Exchange"] : "NASDAQ";
@@ -250,10 +246,6 @@ class FlipbookGenerator {
         if (isset($stock["Description"])) {
             $html .= '<div class="w-100 mt-2 order-md-3 stock-description-2">' . $this->escapeHtml($stock["Description"]) . "</div>" . "\n";
         }
-
-        $html .= "</div>" . "\n";
-        $html .= "</div>" . "\n";
-        $html .= "</div>" . "\n";
 
         return $html;
     }
