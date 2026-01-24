@@ -39,18 +39,14 @@ class HtmlReportGenerator extends BaseReportGenerator {
 
         // Prepare disclaimer HTML
         $disclaimer = $this->loadDisclaimer();
-        $disclaimerHtml = !empty($disclaimer)
-            ? $this->shortcodeProcessor->process($disclaimer, "html")
-            : "";
+        $disclaimerHtml = !empty($disclaimer) ? $this->shortcodeProcessor->process($disclaimer, "html") : "";
 
         // Prepare article image HTML
         $articleImageHtml = $this->shortcodeProcessor->process("[ArticleImage]", "html");
 
         // Prepare intro HTML
         $reportIntro = $this->loadIntro();
-        $introHtml = !empty($reportIntro)
-            ? $this->shortcodeProcessor->process($reportIntro, "html")
-            : "";
+        $introHtml = !empty($reportIntro) ? $this->shortcodeProcessor->process($reportIntro, "html") : "";
 
         // Generate stock blocks
         $stockBlocks = [];
@@ -63,7 +59,8 @@ class HtmlReportGenerator extends BaseReportGenerator {
         $styles = $this->loadStyles();
 
         // Render the complete layout
-        return View::render("reports/html/layout", [
+        $layoutDir = $this->isPdfMode ? "pdf" : "html";
+        return View::render("reports/$layoutDir/layout", [
             "title" => $this->getSetting("report_title"),
             "styles" => $styles,
             "isPdfMode" => $this->isPdfMode,

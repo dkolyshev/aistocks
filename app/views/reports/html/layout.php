@@ -15,12 +15,15 @@
         <?php endif; ?>
 
         <div class="report-content">
-            <?php if (!empty($disclaimerHtml)): ?>
-                <?php echo $disclaimerHtml; ?>
-            <?php endif; ?>
-
             <div class="pagebreak">
                 <h1><?php echo View::escape($title); ?></h1>
+                <?php if (!empty($disclaimerHtml)): ?>
+                    <?php echo $disclaimerHtml; ?>
+                <?php endif; ?>
+            </div>
+
+            <div class="pagebreak">
+                
                 <?php echo $articleImageHtml; ?>
                 <?php if (!empty($introHtml)): ?>
                     <?php echo $introHtml; ?>
