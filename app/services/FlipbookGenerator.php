@@ -31,9 +31,9 @@ class FlipbookGenerator extends BaseReportGenerator {
 
         // Generate stock pages
         $stockPages = [];
-        foreach ($this->stocks as $index => $stock) {
+        foreach ($this->stocks as $stock) {
             $this->shortcodeProcessor->setStockData($stock);
-            $stockPages[] = $this->generateStockPage($stock, $index);
+            $stockPages[] = $this->generateStockPage();
         }
 
         // Generate controls
@@ -130,53 +130,12 @@ class FlipbookGenerator extends BaseReportGenerator {
      * @param int $index Stock index
      * @return string Stock page HTML
      */
-    private function generateStockPage($stock, $index) {
-        // Use custom stock block if provided, otherwise use default template
-        $stockBlockHtml = $this->getSetting("stock_block_html");
-        if (!empty($stockBlockHtml)) {
-            $stockContent = $this->shortcodeProcessor->process($stockBlockHtml, "flipbook");
-        } else {
-            $stockContent = $this->generateDefaultStockContent($stock, $index);
-        }
+    private function generateStockPage() {
+        $stockBlockHtml = $this->loadStockBlockTemplate();
+        $stockContent = $this->shortcodeProcessor->process($stockBlockHtml, "flipbook");
 
         return View::render("reports/flipbook/stock-page", [
             "stockContent" => $stockContent,
-        ]);
-    }
-
-    /**
-     * Generate default stock content when no custom template provided
-     * @param array $stock Stock data
-     * @param int $index Stock index
-     * @return string Default stock HTML
-     */
-    private function generateDefaultStockContent($stock, $index) {
-        $company = isset($stock["Company"]) ? $stock["Company"] : "";
-        $exchange = isset($stock["Exchange"]) ? $stock["Exchange"] : "";
-        $ticker = isset($stock["Ticker"]) ? $stock["Ticker"] : "";
-        $price = isset($stock["Price"]) ? $stock["Price"] : null;
-        $description = isset($stock["Description"]) ? $stock["Description"] : "";
-
-        $marketCap = "";
-        if (isset($stock["Market Cap"])) {
-            $marketCap = CsvDataReader::formatMarketCap($stock["Market Cap"]);
-        }
-
-        $chartHtml = "";
-        if (!empty($ticker)) {
-            $chartHtml = $this->shortcodeProcessor->process("[Chart]", "flipbook");
-        }
-
-        return View::render("reports/flipbook/stock-default", [
-            "stockNumber" => $index + 1,
-            "company" => $company,
-            "exchange" => $exchange,
-            "showExchangeDelimiter" => !empty($exchange),
-            "ticker" => $ticker,
-            "price" => $price,
-            "marketCap" => $marketCap,
-            "chartHtml" => $chartHtml,
-            "description" => $description,
         ]);
     }
 }
