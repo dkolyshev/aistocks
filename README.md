@@ -14,7 +14,7 @@ The small app with a service that generates stock reports based on settings we c
 > For improved testing results and better user experience, the original `data.csv` was replaced with its extended version `extended-data.csv`. Basically, it's the same file but with two additional columns, "Exchange" and "Target Price," which are missing in `data.csv` but used in the example reports.
 
 - [x] The app generates report in 3 formats: HTML, PDF and flipbook.
-- [ ] Add/update/delete settings for report generation. Settings are stored in the `reportSettings.json`.
+- [x] Add/update/delete settings for report generation. Settings are stored in the `reportSettings.json`.
 - [x] The `Generate reports` button to run reports service.
 - [x] The app allows upload of images to `/images` folder and upload of pdf to the `/reports` folder.
 - [x] The `Report File Name` field is configurable.
@@ -30,11 +30,18 @@ The small app with a service that generates stock reports based on settings we c
 - [x] The `Upload PDF` field should upload PDF to /reports/ and uses it instead the PDF report generation.
 - [x] The app generates report for each entry in `reportSettings.json`
 - [x] Generated files are overwritten on every generation.
-- [ ] Filenames are specified in settings.
-- [ ] Number of stocks is used to limit the number of companies so if we set it to 3, the output would use top 3 companies from `extended-data.csv`.
+- [x] Filenames are specified in settings.
+- [x] Number of stocks is used to limit the number of companies so if we set it to 3, the output would use top 3 companies from `extended-data.csv`.
 - [x] Reports is generated in the `/reports/` folder.
 - [x] Use `Trading View` service for embedding charts.
 - [x] Following short codes is supported: `[Current Date]`, `[Chart]`, each `extended-data.csv` column as shortcode (`[Company]`, `[Exchange]`, `[Ticker]`, `[Price]`, etc).
+
+> [!IMPORTANT]
+> The important note about report filenames. I intentionally apply a filter on filenames that removes special characters and replaces spaces with hyphens. Such filtering helps to keep stability, compatibility, and safety, and guarantees that the generated reports' file names will show/work the same way on different systems. For example, if you put this string "Top 6 AI Stocks report" in the `Report File Name` field and generate reports, the output will be:
+>
+> - `Top-6-AI-Stocks-report.html`
+> - `Top-6-AI-Stocks-report-flipbook.html`
+> - `Top-6-AI-Stocks-report.pdf`
 
 # Project Structure
 
