@@ -28,3 +28,8 @@ define("DATE_FORMAT", "Y-m-d H:i:s");
 define("TRADINGVIEW_WIDGET_URL", "https://www.tradingview-widget.com/embed-widget/mini-symbol-overview/");
 define("TRADINGVIEW_WIDGET_WIDTH", 600);
 define("TRADINGVIEW_WIDGET_HEIGHT", 220);
+
+// Default fields
+define("DEFAULT_REPORT_INTRO_HTML", "reportIntro.html");
+define("DEFAULT_REPORT_DISCLAIMER_HTML", "disclaimer.html");
+define("DEFAULT_REPORT_STOCK_BLOCK_HTML", "stockBlock.html");

@@ -109,8 +109,9 @@ class HtmlReportGenerator {
         $body .= "<h1>" . $this->escapeHtml($this->settings["report_title"]) . "</h1>" . "\n";
 
         // Add report intro once at the top
-        if (!empty($this->settings["report_intro_html"])) {
-            $body .= $this->shortcodeProcessor->process($this->settings["report_intro_html"], "html") . "\n";
+        $reportIntro = !empty($this->settings["report_intro_html"]) ? $this->settings["report_intro_html"] : $this->loadDataFile(DEFAULT_REPORT_INTRO_HTML);
+        if (!empty($reportIntro)) {
+            $body .= $this->shortcodeProcessor->process($reportIntro, "html") . "\n";
         }
 
         // Add stock blocks
@@ -121,8 +122,9 @@ class HtmlReportGenerator {
         }
 
         // Add disclaimer once at the bottom
-        if (!empty($this->settings["disclaimer_html"])) {
-            $body .= $this->shortcodeProcessor->process($this->settings["disclaimer_html"], "html") . "\n";
+        $disclaimer = !empty($this->settings["disclaimer_html"]) ? $this->settings["disclaimer_html"] : $this->loadDataFile(DEFAULT_REPORT_DISCLAIMER_HTML);
+        if (!empty($disclaimer)) {
+            $body .= $this->shortcodeProcessor->process($disclaimer, "html") . "\n";
         }
 
         $body .= "</div>" . "\n";
@@ -195,9 +197,13 @@ class HtmlReportGenerator {
     private function generateStockBlock($stock, $index) {
         $pageBreakClass = $index > 0 ? " pagebreak" : "";
 
-        if (!empty($this->settings["stock_block_html"])) {
+        $stockBlockHtml = !empty($this->settings["stock_block_html"])
+            ? $this->settings["stock_block_html"]
+            : $this->loadDataFile(DEFAULT_REPORT_STOCK_BLOCK_HTML);
+
+        if (!empty($stockBlockHtml)) {
             $blockHtml = '<div class="stock-container' . $pageBreakClass . '">' . "\n";
-            $blockHtml .= $this->shortcodeProcessor->process($this->settings["stock_block_html"], "html") . "\n";
+            $blockHtml .= $this->shortcodeProcessor->process($stockBlockHtml, "html") . "\n";
             $blockHtml .= "</div>" . "\n";
         } else {
             $blockHtml = $this->generateDefaultStockBlock($stock, $pageBreakClass);
@@ -268,5 +274,18 @@ class HtmlReportGenerator {
      */
     private function escapeHtml($text) {
         return htmlspecialchars($text, ENT_QUOTES, "UTF-8");
+    }
+
+    /**
+     * Load content from data file as fallback
+     * @param string $filename File name in data directory
+     * @return string File content or empty string
+     */
+    private function loadDataFile($filename) {
+        $filePath = __DIR__ . "/../../data/" . $filename;
+        if (file_exists($filePath)) {
+            return file_get_contents($filePath);
+        }
+        return "";
     }
 }
