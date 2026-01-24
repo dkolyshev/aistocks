@@ -31,88 +31,72 @@ class FlipbookGenerator {
      * @return string Generated HTML content
      */
     public function generate() {
-        $html = $this->generateFlipbookStructure();
-        return $html;
+        return $this->generateFlipbookStructure();
     }
 
     /**
-     * Generate complete flipbook HTML structure
+     * Generate complete flipbook HTML structure using view templates
      * @return string HTML content
      */
     private function generateFlipbookStructure() {
-        $html = "<!DOCTYPE html>" . "\n";
-        $html .= "<html>" . "\n";
-        $html .= "<head>" . "\n";
-        $html .= "<title>" . $this->escapeHtml($this->settings["file_name"]) . "</title>" . "\n";
-        $html .= '<meta charset="UTF-8">' . "\n";
-        $html .= '<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>' . "\n";
-        $html .= '<script src="https://go.trendadvisor.net/tools/flipbook/js/turn.min.js" type="text/javascript"></script>' . "\n";
-        $html .= '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">' . "\n";
-        $html .= '<link rel="stylesheet" href="https://go.trendadvisor.net/tools/flipbook/css/flipbook.css">' . "\n";
-        $html .= $this->generateFlipbookStyles();
-        $html .= "</head>" . "\n";
-        $html .= "<body>" . "\n";
-        $html .= $this->generateFlipbookBody();
-        $html .= $this->generateFlipbookScript();
-        $html .= "</body>" . "\n";
-        $html .= "</html>";
+        // Generate cover page
+        $coverHtml = $this->generateCoverPage();
 
-        return $html;
-    }
+        // Generate disclaimer page
+        $disclaimerHtml = $this->generateDisclaimerPage();
 
-    /**
-     * Generate flipbook-specific styles
-     * @return string Style tag
-     */
-    private function generateFlipbookStyles() {
-        $css = "<style>" . "\n";
-        $css .= ".stock-container { padding: 25px; background: white; height: 100%; box-sizing: border-box; }" . "\n";
-        $css .= ".stock-container-2 { height: 100%; overflow-y: auto; }" . "\n";
-        $css .= ".stock-description-2 { font-size: 0.9em; margin-top: 10px; }" . "\n";
-        $css .= ".page { background: white; }" . "\n";
-        $css .= "h2 { margin-top: 0; color: #2c3e50; }" . "\n";
-        $css .= ".stock-intro, .stock-disclaimer { height: 100%; overflow-y: auto; }" . "\n";
-        $css .= ".page-nav { display: flex; justify-content: center; gap: 5px; margin-top: 10px; flex-wrap: wrap; }" . "\n";
-        $css .= ".page-nav-btn { width: 30px; height: 30px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 4px; font-size: 12px; }" . "\n";
-        $css .= ".page-nav-btn:hover { background: #f0f0f0; }" . "\n";
-        $css .= ".page-nav-btn.active { background: #667eea; color: #fff; border-color: #667eea; }" . "\n";
-        $css .= "</style>" . "\n";
+        // Generate intro page
+        $introHtml = $this->generateIntroPage();
 
-        return $css;
-    }
-
-    /**
-     * Generate flipbook body content
-     * @return string Body HTML
-     */
-    private function generateFlipbookBody() {
-        $body = '<div class="wrapper">' . "\n";
-        $body .= '<div class="flipbook-viewport">' . "\n";
-        $body .= '<div class="container">' . "\n";
-        $body .= '<div class="flipbook" id="flipbook">' . "\n";
-
-        // Add cover page
-        $body .= $this->generateCoverPage();
-
-        // Add disclaimer page
-        $body .= $this->generateDisclaimerPage();
-
-        // Add intro page
-        $body .= $this->generateIntroPage();
-
-        // Add stock pages (each stock on its own page)
+        // Generate stock pages
+        $stockPages = [];
         foreach ($this->stocks as $index => $stock) {
             $this->shortcodeProcessor->setStockData($stock);
-            $body .= $this->generateStockPage($stock, $index);
+            $stockPages[] = $this->generateStockPage($stock, $index);
         }
 
-        $body .= "</div>" . "\n";
-        $body .= $this->generateFlipControls();
-        $body .= "</div>" . "\n";
-        $body .= "</div>" . "\n";
-        $body .= "</div>" . "\n";
+        // Generate controls
+        $controlsHtml = View::render("reports/flipbook/controls", []);
 
-        return $body;
+        // Load CSS and JS
+        $styles = $this->loadStyles();
+        $script = $this->loadScript();
+
+        // Render the complete layout
+        return View::render("reports/flipbook/layout", [
+            "title" => $this->settings["file_name"],
+            "styles" => $styles,
+            "coverHtml" => $coverHtml,
+            "disclaimerHtml" => $disclaimerHtml,
+            "introHtml" => $introHtml,
+            "stockPages" => $stockPages,
+            "controlsHtml" => $controlsHtml,
+            "script" => $script,
+        ]);
+    }
+
+    /**
+     * Load CSS styles from file
+     * @return string CSS content
+     */
+    private function loadStyles() {
+        $cssFile = PUBLIC_DIR . "/assets/css/flipbook-report.css";
+        if (file_exists($cssFile)) {
+            return file_get_contents($cssFile);
+        }
+        return "";
+    }
+
+    /**
+     * Load JavaScript from file
+     * @return string JS content
+     */
+    private function loadScript() {
+        $jsFile = APP_DIR . "/services/flipbook-script.js";
+        if (file_exists($jsFile)) {
+            return file_get_contents($jsFile);
+        }
+        return "";
     }
 
     /**
@@ -120,44 +104,18 @@ class FlipbookGenerator {
      * @return string Cover page HTML
      */
     private function generateCoverPage() {
-        $coverImagePath = !empty($this->settings["pdf_cover_image"]) ? $this->settings["pdf_cover_image"] : "";
+        $coverImagePath = !empty($this->settings["pdf_cover_image"])
+            ? $this->settings["pdf_cover_image"]
+            : "";
 
-        $html = '<div class="page">' . "\n";
+        $hasCoverImage = !empty($coverImagePath) && file_exists($coverImagePath);
+        $coverImageDataUri = $hasCoverImage ? $this->convertImageToDataUri($coverImagePath) : "";
 
-        if (!empty($coverImagePath) && file_exists($coverImagePath)) {
-            $html .= $this->generateCoverImageHtml($coverImagePath);
-        } else {
-            $html .= $this->generateDefaultCoverHtml();
-        }
-
-        $html .= "</div>" . "\n";
-
-        return $html;
-    }
-
-    /**
-     * Generate cover image HTML with embedded base64 data
-     * @param string $imagePath Path to cover image file
-     * @return string Image HTML tag
-     */
-    private function generateCoverImageHtml($imagePath) {
-        $dataUri = $this->convertImageToDataUri($imagePath);
-
-        return '<img src="' . $dataUri . '" draggable="false" alt="" height="100%" width="100%" />' . "\n";
-    }
-
-    /**
-     * Generate default cover HTML (gradient background with title)
-     * @return string Cover HTML
-     */
-    private function generateDefaultCoverHtml() {
-        $html =
-            '<div style="display: flex; align-items: center; justify-content: center; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">' .
-            "\n";
-        $html .= '<h1 style="color: white; text-align: center; padding: 20px;">' . $this->escapeHtml($this->settings["report_title"]) . "</h1>" . "\n";
-        $html .= "</div>" . "\n";
-
-        return $html;
+        return View::render("reports/flipbook/cover", [
+            "hasCoverImage" => $hasCoverImage,
+            "coverImageDataUri" => $coverImageDataUri,
+            "title" => $this->settings["report_title"],
+        ]);
     }
 
     /**
@@ -173,7 +131,6 @@ class FlipbookGenerator {
         return "data:" . $mimeType . ";base64," . $base64Data;
     }
 
-
     /**
      * Generate disclaimer page
      * @return string Disclaimer page HTML
@@ -187,17 +144,11 @@ class FlipbookGenerator {
             return "";
         }
 
-        $html = '<div class="page pagebreak">' . "\n";
-        $html .= '<div class="stock-container">' . "\n";
-        $html .= '<div class="stock-container-2">' . "\n";
-        $html .= '<div class="stock-disclaimer">' . "\n";
-        $html .= $this->shortcodeProcessor->process($disclaimer, "flipbook") . "\n";
-        $html .= "</div>" . "\n";
-        $html .= "</div>" . "\n";
-        $html .= "</div>" . "\n";
-        $html .= "</div>" . "\n";
+        $disclaimerContent = $this->shortcodeProcessor->process($disclaimer, "flipbook");
 
-        return $html;
+        return View::render("reports/flipbook/disclaimer", [
+            "disclaimerContent" => $disclaimerContent,
+        ]);
     }
 
     /**
@@ -213,43 +164,30 @@ class FlipbookGenerator {
             return "";
         }
 
-        $html = '<div class="page pagebreak">' . "\n";
-        $html .= '<div class="stock-container">' . "\n";
-        $html .= '<div class="stock-container-2">' . "\n";
-        $html .= '<div class="stock-intro">' . "\n";
-        $html .= $this->shortcodeProcessor->process($intro, "flipbook") . "\n";
-        $html .= "</div>" . "\n";
-        $html .= "</div>" . "\n";
-        $html .= "</div>" . "\n";
-        $html .= "</div>" . "\n";
+        $introContent = $this->shortcodeProcessor->process($intro, "flipbook");
 
-        return $html;
+        return View::render("reports/flipbook/intro", [
+            "introContent" => $introContent,
+        ]);
     }
 
     /**
-     * Generate stock page (stock content only)
+     * Generate stock page
      * @param array $stock Stock data
      * @param int $index Stock index
      * @return string Stock page HTML
      */
     private function generateStockPage($stock, $index) {
-        $html = '<div class="page pagebreak">' . "\n";
-        $html .= '<div class="stock-container">' . "\n";
-        $html .= '<div class="stock-container-2">' . "\n";
-
-        // Add custom stock block if provided
+        // Use custom stock block if provided, otherwise use default template
         if (!empty($this->settings["stock_block_html"])) {
-            $html .= $this->shortcodeProcessor->process($this->settings["stock_block_html"], "flipbook") . "\n";
+            $stockContent = $this->shortcodeProcessor->process($this->settings["stock_block_html"], "flipbook");
         } else {
-            // Generate default stock content
-            $html .= $this->generateDefaultStockContent($stock, $index);
+            $stockContent = $this->generateDefaultStockContent($stock, $index);
         }
 
-        $html .= "</div>" . "\n";
-        $html .= "</div>" . "\n";
-        $html .= "</div>" . "\n";
-
-        return $html;
+        return View::render("reports/flipbook/stock-page", [
+            "stockContent" => $stockContent,
+        ]);
     }
 
     /**
@@ -259,72 +197,32 @@ class FlipbookGenerator {
      * @return string Default stock HTML
      */
     private function generateDefaultStockContent($stock, $index) {
-        $html = '<div class="order-md-1">' . "\n";
-
         $company = isset($stock["Company"]) ? $stock["Company"] : "";
         $exchange = isset($stock["Exchange"]) ? $stock["Exchange"] : "NASDAQ";
         $ticker = isset($stock["Ticker"]) ? $stock["Ticker"] : "";
-        $stockNumber = $index + 1;
+        $price = isset($stock["Price"]) ? $stock["Price"] : null;
+        $description = isset($stock["Description"]) ? $stock["Description"] : "";
 
-        $html .=
-            '<h2 class="mt-1">' .
-            $stockNumber .
-            ") " .
-            $this->escapeHtml($company) .
-            " (" .
-            $this->escapeHtml($exchange) .
-            ":" .
-            $this->escapeHtml($ticker) .
-            ")</h2>" .
-            "\n";
+        $marketCap = "";
+        if (isset($stock["Market Cap"])) {
+            $marketCap = CsvDataReader::formatMarketCap($stock["Market Cap"]);
+        }
 
-        // Add chart
+        $chartHtml = "";
         if (!empty($ticker)) {
             $chartHtml = $this->shortcodeProcessor->process("[Chart]", "flipbook");
-            $html .= $chartHtml . "\n";
         }
 
-        $html .= "<br>" . "\n";
-
-        if (isset($stock["Price"])) {
-            $html .= '<strong>Closing Price: </strong>$' . $this->escapeHtml($stock["Price"]) . "<br>" . "\n";
-        }
-
-        if (isset($stock["Market Cap"])) {
-            $formattedMarketCap = CsvDataReader::formatMarketCap($stock["Market Cap"]);
-            $html .= "<strong>Market Cap</strong>: " . $formattedMarketCap . "<br>" . "\n";
-        }
-
-        $html .= "</div>" . "\n";
-
-        if (isset($stock["Description"])) {
-            $html .= '<div class="w-100 mt-2 order-md-3 stock-description-2">' . $this->escapeHtml($stock["Description"]) . "</div>" . "\n";
-        }
-
-        return $html;
-    }
-
-    /**
-     * Generate flip controls
-     * @return string Flip controls HTML
-     */
-    private function generateFlipControls() {
-        $html = '<div class="flip-control">' . "\n";
-        $html .= '<a href="#" id="prev"><i class="fa fa-angle-left" style="font-size:3rem;color:black;font-weight: 600;"></i></a>' . "\n";
-        $html .= '<a href="#" id="next"><i class="fa fa-angle-right" style="font-size:3rem;color:black;font-weight: 600;"></i></a>' . "\n";
-        $html .= "</div>" . "\n";
-        $html .= '<div class="page-nav" id="page-nav"></div>' . "\n";
-
-        return $html;
-    }
-
-    /**
-     * Generate flipbook JavaScript
-     * @return string Script tag with JS
-     */
-    private function generateFlipbookScript() {
-        $js = file_get_contents(APP_DIR . "/services/flipbook-script.js");
-        return '<script type="text/javascript">' . "\n" . $js . "\n" . "</script>" . "\n";
+        return View::render("reports/flipbook/stock-default", [
+            "stockNumber" => $index + 1,
+            "company" => $company,
+            "exchange" => $exchange,
+            "ticker" => $ticker,
+            "price" => $price,
+            "marketCap" => $marketCap,
+            "chartHtml" => $chartHtml,
+            "description" => $description,
+        ]);
     }
 
     /**
@@ -381,14 +279,5 @@ class FlipbookGenerator {
             return file_get_contents($filePath);
         }
         return "";
-    }
-
-    /**
-     * Escape HTML special characters
-     * @param string $text Text to escape
-     * @return string Escaped text
-     */
-    private function escapeHtml($text) {
-        return htmlspecialchars($text, ENT_QUOTES, "UTF-8");
     }
 }

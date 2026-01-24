@@ -40,102 +40,72 @@ class HtmlReportGenerator {
      * @return string Generated HTML content
      */
     public function generate() {
-        $html = $this->generateHtmlStructure();
-        return $html;
+        return $this->generateHtmlStructure();
     }
 
     /**
-     * Generate complete HTML structure
+     * Generate complete HTML structure using view templates
      * @return string HTML content
      */
     private function generateHtmlStructure() {
-        $html = "<!DOCTYPE html>" . "\n";
-        $html .= '<html lang="en">' . "\n";
-        $html .= "<head>" . "\n";
-        $html .= '    <meta charset="UTF-8">' . "\n";
-        $html .= '    <meta name="viewport" content="width=device-width, initial-scale=1.0">' . "\n";
-        $html .= "    <title>" . $this->escapeHtml($this->settings["report_title"]) . "</title>" . "\n";
-        $html .= $this->generateStyles();
-        $html .= "</head>" . "\n";
-        $html .= "<body>" . "\n";
-        $html .= $this->generateBody();
-        $html .= "</body>" . "\n";
-        $html .= "</html>";
-
-        return $html;
-    }
-
-    /**
-     * Generate CSS styles
-     * @return string Style tag with CSS
-     */
-    private function generateStyles() {
-        $css = "<style>" . "\n";
-        $css .= "@page { margin: 0; }" . "\n";
-        $css .= "html, body { height: 100%; }" . "\n";
-        $css .= "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }" . "\n";
-        $css .= "#article-body { margin: 0; padding: 0; }" . "\n";
-        $css .= ".report-content { max-width: 1200px; margin: 0 auto; padding: 20px; }" . "\n";
-        $css .= "h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }" . "\n";
-        $css .= "h2 { color: #34495e; margin-top: 30px; }" . "\n";
-        $css .= ".stock-container { margin: 30px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; }" . "\n";
-        $css .= ".stock-container h2 { margin-top: 0; }" . "\n";
-        $css .= ".tradingview-widget-container { margin: 20px 0; }" . "\n";
-        $css .= ".cover-page { page-break-after: always; margin: 0; padding: 0; width: 100%; height: 100%; min-height: 100vh; }" . "\n";
-        $css .= ".cover-image { display: block; width: 100%; height: 100%; object-fit: cover; }" . "\n";
-        $css .= ".pagebreak { page-break-before: always; }" . "\n";
-        $css .= ".termsblk { margin-top: 50px; padding: 20px; background: #f5f5f5; border-radius: 5px; font-size: 0.9em; }" . "\n";
-        $css .= ".termsblk p { margin: 10px 0; }" . "\n";
-        $css .= "strong { color: #2c3e50; }" . "\n";
-        $css .= "</style>" . "\n";
-
-        return $css;
-    }
-
-    /**
-     * Generate body content
-     * @return string Body HTML
-     */
-    private function generateBody() {
-        $body = '<div id="article-body">' . "\n";
-
+        // Prepare cover page HTML
+        $coverHtml = "";
         if ($this->isPdfMode) {
-            $body .= $this->generateCoverPage();
+            $coverHtml = $this->generateCoverPage();
         }
 
-        $body .= '<div class="report-content">' . "\n";
+        // Prepare disclaimer HTML
+        $disclaimer = !empty($this->settings["disclaimer_html"])
+            ? $this->settings["disclaimer_html"]
+            : $this->loadDataFile(DEFAULT_REPORT_DISCLAIMER_HTML);
+        $disclaimerHtml = !empty($disclaimer)
+            ? $this->shortcodeProcessor->process($disclaimer, "html")
+            : "";
 
-        // Add disclaimer after cover page (with page break for PDF)
-        $disclaimer = !empty($this->settings["disclaimer_html"]) ? $this->settings["disclaimer_html"] : $this->loadDataFile(DEFAULT_REPORT_DISCLAIMER_HTML);
-        if (!empty($disclaimer)) {
-            $body .= $this->shortcodeProcessor->process($disclaimer, "html") . "\n";
-        }
+        // Prepare article image HTML
+        $articleImageHtml = $this->shortcodeProcessor->process("[ArticleImage]", "html");
 
-        // Add report title (with page break to separate from disclaimer)
-        $body .= '<div class="pagebreak">' . "\n";
-        $body .= "<h1>" . $this->escapeHtml($this->settings["report_title"]) . "</h1>" . "\n";
+        // Prepare intro HTML
+        $reportIntro = !empty($this->settings["report_intro_html"])
+            ? $this->settings["report_intro_html"]
+            : $this->loadDataFile(DEFAULT_REPORT_INTRO_HTML);
+        $introHtml = !empty($reportIntro)
+            ? $this->shortcodeProcessor->process($reportIntro, "html")
+            : "";
 
-        // Add article image (floats left with text wrap)
-        $body .= $this->shortcodeProcessor->process("[ArticleImage]", "html");
-
-        // Add report intro
-        $reportIntro = !empty($this->settings["report_intro_html"]) ? $this->settings["report_intro_html"] : $this->loadDataFile(DEFAULT_REPORT_INTRO_HTML);
-        if (!empty($reportIntro)) {
-            $body .= $this->shortcodeProcessor->process($reportIntro, "html") . "\n";
-        }
-        $body .= "</div>" . "\n";
-
-        // Add stock blocks
+        // Generate stock blocks
+        $stockBlocks = [];
         foreach ($this->stocks as $stock) {
             $this->shortcodeProcessor->setStockData($stock);
-            $stockBlock = $this->generateStockBlock($stock);
-            $body .= $stockBlock . "\n";
+            $stockBlocks[] = $this->generateStockBlock($stock);
         }
 
-        $body .= "</div>" . "\n";
-        $body .= "</div>" . "\n";
+        // Load CSS from file
+        $styles = $this->loadStyles();
 
-        return $body;
+        // Render the complete layout
+        return View::render("reports/html/layout", [
+            "title" => $this->settings["report_title"],
+            "styles" => $styles,
+            "isPdfMode" => $this->isPdfMode,
+            "coverHtml" => $coverHtml,
+            "disclaimerHtml" => $disclaimerHtml,
+            "articleImageHtml" => $articleImageHtml,
+            "introHtml" => $introHtml,
+            "stockBlocks" => $stockBlocks,
+        ]);
+    }
+
+    /**
+     * Load CSS styles from file
+     * @return string CSS content
+     */
+    private function loadStyles() {
+        $cssFile = PUBLIC_DIR . "/assets/css/html-report.css";
+        if (file_exists($cssFile)) {
+            return file_get_contents($cssFile);
+        }
+        return "";
     }
 
     /**
@@ -143,18 +113,19 @@ class HtmlReportGenerator {
      * @return string Cover page HTML or empty string
      */
     private function generateCoverPage() {
-        $coverImagePath = !empty($this->settings["pdf_cover_image"]) ? $this->settings["pdf_cover_image"] : "";
+        $coverImagePath = !empty($this->settings["pdf_cover_image"])
+            ? $this->settings["pdf_cover_image"]
+            : "";
 
         if (empty($coverImagePath) || !file_exists($coverImagePath)) {
             return "";
         }
 
         $dataUri = $this->convertImageToDataUri($coverImagePath);
-        $html = '<div class="cover-page">' . "\n";
-        $html .= '    <img class="cover-image" src="' . $dataUri . '" alt="">' . "\n";
-        $html .= "</div>" . "\n";
 
-        return $html;
+        return View::render("reports/html/cover", [
+            "coverImageDataUri" => $dataUri,
+        ]);
     }
 
     /**
@@ -199,8 +170,6 @@ class HtmlReportGenerator {
      * @return string Stock block HTML
      */
     private function generateStockBlock($stock) {
-        $pageBreakClass = " pagebreak";
-
         $stockBlockHtml = !empty($this->settings["stock_block_html"])
             ? $this->settings["stock_block_html"]
             : $this->loadDataFile(DEFAULT_REPORT_STOCK_BLOCK_HTML);
@@ -209,11 +178,11 @@ class HtmlReportGenerator {
             $stockBlockHtml = str_replace("[Chart]", "", $stockBlockHtml);
         }
 
-        $blockHtml = '<div class="stock-container' . $pageBreakClass . '">' . "\n";
-        $blockHtml .= $this->shortcodeProcessor->process($stockBlockHtml, "html") . "\n";
-        $blockHtml .= "</div>" . "\n";
+        $stockContent = $this->shortcodeProcessor->process($stockBlockHtml, "html");
 
-        return $blockHtml;
+        return View::render("reports/html/stock-block", [
+            "stockContent" => $stockContent,
+        ]);
     }
 
     /**
@@ -224,15 +193,6 @@ class HtmlReportGenerator {
     public function saveToFile($outputPath) {
         $html = $this->generate();
         return file_put_contents($outputPath, $html) !== false;
-    }
-
-    /**
-     * Escape HTML special characters
-     * @param string $text Text to escape
-     * @return string Escaped text
-     */
-    private function escapeHtml($text) {
-        return htmlspecialchars($text, ENT_QUOTES, "UTF-8");
     }
 
     /**

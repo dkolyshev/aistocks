@@ -6,45 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report Manager | Stock Report Service</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            padding-top: 30px;
-            padding-bottom: 50px;
-        }
-
-        .card {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: none;
-        }
-
-        .form-group label {
-            font-weight: bold;
-            color: #495057;
-        }
-
-        .html-code-area {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.85rem;
-            background-color: #f1f3f5;
-        }
-
-        .action-btns {
-            width: 160px;
-            text-align: right;
-        }
-
-        .container {
-            max-width: 1100px;
-        }
-
-        .section-header {
-            border-bottom: 2px solid #007bff;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            color: #007bff;
-        }
-    </style>
+    <link rel="stylesheet" href="/assets/css/report-manager.css">
 </head>
 
 <body>

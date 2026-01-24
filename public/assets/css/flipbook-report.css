@@ -1,0 +1,78 @@
+/**
+ * Flipbook Report Styles
+ * Used for interactive flipbook stock reports
+ */
+
+.stock-container {
+    padding: 25px;
+    background: white;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.stock-container-2 {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.stock-description-2 {
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+.page {
+    background: white;
+}
+
+h2 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.stock-intro,
+.stock-disclaimer {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.page-nav {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.page-nav-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.page-nav-btn:hover {
+    background: #f0f0f0;
+}
+
+.page-nav-btn.active {
+    background: #667eea;
+    color: #fff;
+    border-color: #667eea;
+}
+
+.default-cover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.default-cover h1 {
+    color: white;
+    text-align: center;
+    padding: 20px;
+}

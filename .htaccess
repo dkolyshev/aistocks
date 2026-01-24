@@ -22,6 +22,9 @@ php_value post_max_size 10M
     # Allow direct access to asset directories
     RewriteRule ^(reports|images|data)/ - [L]
 
+    # Serve static assets from public/assets/
+    RewriteRule ^assets/(.*)$ public/assets/$1 [L]
+
     # Rewrite reportManager.html to public/index.php
     RewriteRule ^reportManager\.html$ public/index.php [L,QSA]
 

@@ -11,6 +11,7 @@ if (!defined("APP_ROOT")) {
 }
 
 define("APP_DIR", APP_ROOT . "/app");
+define("PUBLIC_DIR", APP_ROOT . "/public");
 define("REPORTS_DIR", APP_ROOT . "/reports");
 define("IMAGES_DIR", APP_ROOT . "/images");
 define("DATA_DIR", APP_ROOT . "/data");
