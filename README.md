@@ -37,7 +37,7 @@ The small app with a service that generates stock reports based on settings we c
 - [x] Following short codes is supported: `[Current Date]`, `[Chart]`, each `extended-data.csv` column as shortcode (`[Company]`, `[Exchange]`, `[Ticker]`, `[Price]`, etc).
 
 > [!IMPORTANT]
-> The important note about report filenames. I intentionally apply a filter on filenames that removes special characters and replaces spaces with hyphens. Such filtering helps to keep stability, compatibility, and safety, and guarantees that the generated reports' file names will show/work the same way on different systems. For example, if you put this string "Top 6 AI Stocks report" in the `Report File Name` field and generate reports, the output will be:
+> I intentionally apply a filter on filenames that removes special characters and replaces spaces with hyphens. Such filtering helps to keep stability, compatibility, and safety, and guarantees that the generated reports' file names will show/work the same way on different systems. For example, if you put this string "Top 6 AI Stocks report" in the `Report File Name` field and generate reports, the output will be:
 >
 > - `Top-6-AI-Stocks-report.html`
 > - `Top-6-AI-Stocks-report-flipbook.html`
