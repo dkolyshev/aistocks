@@ -115,16 +115,18 @@ class HtmlReportGenerator {
         }
 
         // Add stock blocks
-        foreach ($this->stocks as $index => $stock) {
+        foreach ($this->stocks as $stock) {
             $this->shortcodeProcessor->setStockData($stock);
-            $stockBlock = $this->generateStockBlock($stock, $index);
+            $stockBlock = $this->generateStockBlock($stock);
             $body .= $stockBlock . "\n";
         }
 
-        // Add disclaimer once at the bottom
+        // Add disclaimer once at the bottom (with page break for PDF)
         $disclaimer = !empty($this->settings["disclaimer_html"]) ? $this->settings["disclaimer_html"] : $this->loadDataFile(DEFAULT_REPORT_DISCLAIMER_HTML);
         if (!empty($disclaimer)) {
+            $body .= '<div class="pagebreak">' . "\n";
             $body .= $this->shortcodeProcessor->process($disclaimer, "html") . "\n";
+            $body .= "</div>" . "\n";
         }
 
         $body .= "</div>" . "\n";
@@ -191,70 +193,24 @@ class HtmlReportGenerator {
     /**
      * Generate individual stock block
      * @param array $stock Stock data
-     * @param int $index Stock index
      * @return string Stock block HTML
      */
-    private function generateStockBlock($stock, $index) {
-        $pageBreakClass = $index > 0 ? " pagebreak" : "";
+    private function generateStockBlock($stock) {
+        $pageBreakClass = " pagebreak";
 
         $stockBlockHtml = !empty($this->settings["stock_block_html"])
             ? $this->settings["stock_block_html"]
             : $this->loadDataFile(DEFAULT_REPORT_STOCK_BLOCK_HTML);
 
-        if (!empty($stockBlockHtml)) {
-            $blockHtml = '<div class="stock-container' . $pageBreakClass . '">' . "\n";
-            $blockHtml .= $this->shortcodeProcessor->process($stockBlockHtml, "html") . "\n";
-            $blockHtml .= "</div>" . "\n";
-        } else {
-            $blockHtml = $this->generateDefaultStockBlock($stock, $pageBreakClass);
+        if ($this->isPdfMode) {
+            $stockBlockHtml = str_replace("[Chart]", "", $stockBlockHtml);
         }
+
+        $blockHtml = '<div class="stock-container' . $pageBreakClass . '">' . "\n";
+        $blockHtml .= $this->shortcodeProcessor->process($stockBlockHtml, "html") . "\n";
+        $blockHtml .= "</div>" . "\n";
 
         return $blockHtml;
-    }
-
-    /**
-     * Generate default stock block if template not provided
-     * @param array $stock Stock data
-     * @param string $pageBreakClass Page break CSS class
-     * @return string Default stock block HTML
-     */
-    private function generateDefaultStockBlock($stock, $pageBreakClass) {
-        $html = '<div class="stock-container' . $pageBreakClass . '">' . "\n";
-        $html .= "    <div>" . "\n";
-
-        $company = isset($stock["Company"]) ? $stock["Company"] : "";
-        $exchange = isset($stock["Exchange"]) ? $stock["Exchange"] : "";
-        $ticker = isset($stock["Ticker"]) ? $stock["Ticker"] : "";
-
-        $html .= "        <h2>" . $this->escapeHtml($company) . " (" . $this->escapeHtml($exchange) . ":" . $this->escapeHtml($ticker) . ")</h2>" . "\n";
-
-        // Add chart
-        if (!empty($ticker) && !$this->isPdfMode) {
-            $this->shortcodeProcessor->setStockData($stock);
-            $chartHtml = $this->shortcodeProcessor->process("[Chart]", "html");
-            $html .= $chartHtml . "<br>" . "\n";
-        }
-
-        // Add stock details
-        if (isset($stock["Price"])) {
-            $html .= '        <strong>Stock Price: </strong>$' . $this->escapeHtml($stock["Price"]) . "<br>" . "\n";
-        }
-
-        if (isset($stock["Market Cap"])) {
-            $formattedMarketCap = CsvDataReader::formatMarketCap($stock["Market Cap"]);
-            $html .= "        <strong>Market Cap</strong>: " . $formattedMarketCap . "<br>" . "\n";
-        }
-
-        $html .= "    </div>" . "\n";
-
-        // Add description
-        if (isset($stock["Description"])) {
-            $html .= '    <div class="w-100 mt-2">' . $this->escapeHtml($stock["Description"]) . "</div>" . "\n";
-        }
-
-        $html .= "</div>" . "\n";
-
-        return $html;
     }
 
     /**
