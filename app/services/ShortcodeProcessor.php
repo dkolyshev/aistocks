@@ -214,9 +214,12 @@ class ShortcodeProcessor {
             $dataUri = "data:" . $mimeType . ";base64," . $base64Data;
             return '<img alt="" src="' . $dataUri . '" style="float: left; width: 200px; height: 200px; margin: 14px;">';
         } else {
-            // Use URL for HTML
-            $imageUrl = str_replace("/var/www/html/", "/", $imagePath);
-            return '<img alt="" src="' . htmlspecialchars($imageUrl, ENT_QUOTES, "UTF-8") . '" style="float: left; width: 200px; height: 200px; margin: 14px;">';
+            // Use base64 for HTML (works with PDF generation and local files)
+            $imageData = file_get_contents($imagePath);
+            $mimeType = $this->getImageMimeType($imagePath);
+            $base64Data = base64_encode($imageData);
+            $dataUri = "data:" . $mimeType . ";base64," . $base64Data;
+            return '<img alt="" src="' . $dataUri . '" style="float: left; width: 200px; height: 200px; margin: 14px;">';
         }
     }
 

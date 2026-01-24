@@ -105,28 +105,31 @@ class HtmlReportGenerator {
 
         $body .= '<div class="report-content">' . "\n";
 
-        // Add report title
+        // Add disclaimer after cover page (with page break for PDF)
+        $disclaimer = !empty($this->settings["disclaimer_html"]) ? $this->settings["disclaimer_html"] : $this->loadDataFile(DEFAULT_REPORT_DISCLAIMER_HTML);
+        if (!empty($disclaimer)) {
+            $body .= $this->shortcodeProcessor->process($disclaimer, "html") . "\n";
+        }
+
+        // Add report title (with page break to separate from disclaimer)
+        $body .= '<div class="pagebreak">' . "\n";
         $body .= "<h1>" . $this->escapeHtml($this->settings["report_title"]) . "</h1>" . "\n";
 
-        // Add report intro once at the top
+        // Add article image (floats left with text wrap)
+        $body .= $this->shortcodeProcessor->process("[ArticleImage]", "html");
+
+        // Add report intro
         $reportIntro = !empty($this->settings["report_intro_html"]) ? $this->settings["report_intro_html"] : $this->loadDataFile(DEFAULT_REPORT_INTRO_HTML);
         if (!empty($reportIntro)) {
             $body .= $this->shortcodeProcessor->process($reportIntro, "html") . "\n";
         }
+        $body .= "</div>" . "\n";
 
         // Add stock blocks
         foreach ($this->stocks as $stock) {
             $this->shortcodeProcessor->setStockData($stock);
             $stockBlock = $this->generateStockBlock($stock);
             $body .= $stockBlock . "\n";
-        }
-
-        // Add disclaimer once at the bottom (with page break for PDF)
-        $disclaimer = !empty($this->settings["disclaimer_html"]) ? $this->settings["disclaimer_html"] : $this->loadDataFile(DEFAULT_REPORT_DISCLAIMER_HTML);
-        if (!empty($disclaimer)) {
-            $body .= '<div class="pagebreak">' . "\n";
-            $body .= $this->shortcodeProcessor->process($disclaimer, "html") . "\n";
-            $body .= "</div>" . "\n";
         }
 
         $body .= "</div>" . "\n";
