@@ -17,7 +17,7 @@ define("IMAGES_DIR", APP_ROOT . "/images");
 define("DATA_DIR", APP_ROOT . "/data");
 
 define("SETTINGS_FILE", APP_ROOT . "/reportSettings.json");
-define("DATA_CSV_FILE", DATA_DIR . "/data.csv");
+define("DATA_CSV_FILE", DATA_DIR . "/extended-data.csv");
 
 define("ALLOWED_IMAGE_TYPES", "image/jpeg,image/jpg,image/png");
 define("ALLOWED_PDF_TYPES", "application/pdf");
