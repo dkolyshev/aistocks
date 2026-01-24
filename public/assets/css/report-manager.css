@@ -40,3 +40,33 @@ body {
   padding-bottom: 10px;
   color: #007bff;
 }
+
+/* Shortcode copy functionality */
+.shortcode-list {
+  line-height: 2;
+}
+
+.shortcode-badge {
+  padding: 0.1em 0.2em;
+  margin: 0 0.1em;
+}
+
+.shortcode-copy {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.shortcode-copy:hover {
+  transform: scale(1.05);
+  opacity: 0.85;
+}
+
+.shortcode-copy.copied {
+  background-color: #28a745 !important;
+  color: #fff !important;
+}
+
+.shortcode-hint {
+  font-size: 0.85em;
+}

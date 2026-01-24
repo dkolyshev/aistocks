@@ -179,3 +179,13 @@ docker-compose down
 ```
 
 ---
+
+# UI improvements
+
+## Pagination in flipbook
+
+## "Generated Reports" panel
+
+## Messages about success/fail
+
+## Click-to-copy feature for shortcodes
