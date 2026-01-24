@@ -47,47 +47,82 @@ The small app with a service that generates stock reports based on settings we c
 
 ```
 aiStocks/
-├── app/                        # Application core (MVC architecture)
-│   ├── config/                 # Configuration files
-│   │   └── config.php          # App configuration
-│   ├── controllers/            # Request handlers
-│   │   ├── ReportController.php
-│   │   ├── ReportFileController.php
-│   │   └── SettingsController.php
-│   ├── helpers/                # Utility classes
-│   │   ├── StockFormatter.php  # Stock data formatting
-│   │   └── View.php            # View rendering helper
-│   ├── models/                 # Data layer
-│   │   ├── CsvDataReader.php   # CSV data parser
-│   │   └── SettingsManager.php # Settings management
-│   ├── services/               # Business logic
-│   │   ├── BaseReportGenerator.php
-│   │   ├── HtmlReportGenerator.php
-│   │   ├── PdfReportGenerator.php
-│   │   ├── FlipbookGenerator.php
-│   │   ├── ShortcodeProcessor.php
-│   │   └── FileUploadHandler.php
-│   └── views/                  # View templates
-│       ├── report-manager/     # Report manager UI
-│       └── reports/            # Report templates
-├── data/                       # Data files and templates
-│   ├── data.csv                # Stock data source
-│   ├── extended-data.csv       # Stock data source with added columns "Exchange" and "Target Price"
-│   ├── disclaimer.html         # Disclaimer template
-│   ├── reportIntro.html        # Report intro template
-│   └── stockBlock.html         # Stock block template
-├── .docker/                    # Docker configuration
-│   ├── docker-compose.yml
-│   ├── Dockerfile
-│   └── .env.example
-├── example/                    # Example output files
-├── images/                     # Uploaded images storage
-├── public/                     # Web root
-│   ├── index.php               # Application entry point
-│   └── assets/css/             # Stylesheets
-├── reports/                    # Generated reports output
-├── reportSettings.json         # Report generation settings
-├── .htaccess                   # Apache URL rewriting
+├── app/                                    # Application core (MVC architecture)
+│   ├── config/
+│   │   └── config.php                      # App configuration and paths
+│   ├── controllers/
+│   │   ├── Contracts/
+│   │   │   └── ControllerInterface.php     # Controller contract
+│   │   ├── Support/
+│   │   │   ├── ReportGenerationOrchestrator.php  # Coordinates report generation
+│   │   │   └── ShortcodeProvider.php       # Provides shortcode replacements
+│   │   ├── ReportController.php            # Routes requests to handlers
+│   │   ├── ReportFileController.php        # Handles report file requests
+│   │   └── SettingsController.php          # Handles settings requests
+│   ├── helpers/
+│   │   ├── StockFormatter.php              # Formats stock data values
+│   │   └── View.php                        # Renders view templates
+│   ├── models/
+│   │   ├── Contracts/
+│   │   │   ├── CsvDataReaderInterface.php  # CSV reader contract
+│   │   │   ├── FileSystemInterface.php     # File system contract
+│   │   │   └── SettingsManagerInterface.php  # Settings manager contract
+│   │   ├── Support/
+│   │   │   └── FileSystem.php              # File system operations
+│   │   ├── CsvDataReader.php               # Parses CSV stock data
+│   │   └── SettingsManager.php             # Manages report settings
+│   ├── services/
+│   │   ├── Contracts/
+│   │   │   └── ReportGeneratorInterface.php  # Report generator contract
+│   │   ├── Support/
+│   │   │   ├── FileLoaderService.php       # Loads template files
+│   │   │   └── ImageService.php            # Handles image processing
+│   │   ├── BaseReportGenerator.php         # Abstract base for generators
+│   │   ├── HtmlReportGenerator.php         # Generates HTML reports
+│   │   ├── PdfReportGenerator.php          # Generates PDF reports
+│   │   ├── FlipbookGenerator.php           # Generates flipbook reports
+│   │   ├── ShortcodeProcessor.php          # Processes template shortcodes
+│   │   └── FileUploadHandler.php           # Handles file uploads
+│   └── views/
+│       ├── report-manager/                 # Report manager UI templates
+│       │   ├── layout.php                  # Main layout wrapper
+│       │   ├── index.php                   # Dashboard page
+│       │   ├── form.php                    # Settings form
+│       │   ├── active-config-table.php     # Active config display
+│       │   ├── reports-table.php           # Reports listing table
+│       │   └── alert.php                   # Alert messages
+│       └── reports/                        # Report output templates
+│           ├── flipbook/                   # Flipbook format templates
+│           │   ├── layout.php              # Flipbook layout
+│           │   ├── controls.php            # Navigation controls
+│           │   ├── cover.php               # Cover page
+│           │   ├── intro.php               # Introduction page
+│           │   ├── disclaimer.php          # Disclaimer page
+│           │   └── stock-page.php          # Stock detail page
+│           ├── html/                       # HTML format templates
+│           │   ├── layout.php              # HTML report layout
+│           │   ├── cover.php               # Cover section
+│           │   └── stock-block.php         # Stock block section
+│           └── pdf/                        # PDF format templates
+│               └── layout.php              # PDF report layout
+├── data/                                   # Data files and templates
+│   ├── data.csv                            # Original stock data
+│   ├── extended-data.csv                   # Extended data with extra columns
+│   ├── disclaimer.html                     # Default disclaimer template
+│   ├── reportIntro.html                    # Default intro template
+│   └── stockBlock.html                     # Default stock block template
+├── .docker/                                # Docker configuration
+│   ├── docker-compose.yml                  # Docker Compose config
+│   ├── Dockerfile                          # Docker image definition
+│   └── .env.example                        # Environment variables example
+├── example/                                # Example output files
+├── images/                                 # Uploaded images storage
+├── public/                                 # Web root
+│   ├── index.php                           # Application entry point
+│   └── assets/css/                         # Stylesheets
+├── reports/                                # Generated reports output
+├── reportSettings.json                     # Report generation settings
+├── .htaccess                               # Apache URL rewriting
 └── README.md
 ```
 
