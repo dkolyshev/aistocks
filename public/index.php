@@ -28,6 +28,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $result = $controller->handleDelete();
     } elseif (isset($_POST["action"]) && $_POST["action"] === "generate") {
         $result = $controller->handleGenerate();
+    } elseif (isset($_POST["action"]) && $_POST["action"] === "delete_report") {
+        $result = $controller->handleDeleteReport();
+    } elseif (isset($_POST["action"]) && $_POST["action"] === "delete_all_reports") {
+        $result = $controller->handleDeleteAllReports();
     } else {
         $result = $controller->handleSettingsSubmission();
     }
@@ -48,6 +52,9 @@ $allSettings = $controller->getAllSettings();
 // Get available shortcodes
 $availableShortcodes = $controller->getAvailableShortcodes();
 
+// Get report files for display
+$reportFiles = $controller->getReportFiles();
+
 // Get setting for editing if edit parameter is present
 $editMode = false;
 $editData = null;
@@ -64,6 +71,7 @@ $content = View::render("report-manager/index", [
     "editData" => $editData,
     "allSettings" => $allSettings,
     "availableShortcodes" => $availableShortcodes,
+    "reportFiles" => $reportFiles,
 ]);
 
 // Render the full page with layout

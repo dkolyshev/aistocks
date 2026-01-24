@@ -4,4 +4,6 @@
     "availableShortcodes" => $availableShortcodes,
 ]); ?>
 
-<?php echo View::render("report-manager/table", ["allSettings" => $allSettings]); ?>
+<?php echo View::render("report-manager/active-config-table", ["allSettings" => $allSettings]); ?>
+
+<?php echo View::render("report-manager/reports-table", ["reportFiles" => $reportFiles]); ?>

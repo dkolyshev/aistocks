@@ -219,7 +219,7 @@ class ReportController {
             }
         }
 
-        $message = "Generated reports for {$successCount} of {$totalCount} configurations. <a href='/reports' target='_blank'>Check reports here.</a>";
+        $message = "Generated reports for {$successCount} of {$totalCount} configurations. Check reports <a href='#reports-table'>here</a> or <a href='/reports' target='_blank'>here.</a>";
         return ["success" => $successCount > 0, "message" => $message];
     }
 
@@ -315,5 +315,122 @@ class ReportController {
         }
 
         return $result;
+    }
+
+    /**
+     * Get list of report files from reports directory
+     * @return array Array of report file info (filename, created date)
+     */
+    public function getReportFiles() {
+        $files = [];
+
+        if (!is_dir(REPORTS_DIR)) {
+            return $files;
+        }
+
+        $dirHandle = opendir(REPORTS_DIR);
+        if ($dirHandle === false) {
+            return $files;
+        }
+
+        while (($filename = readdir($dirHandle)) !== false) {
+            $filePath = REPORTS_DIR . "/" . $filename;
+
+            // Skip directories, hidden files, and .htaccess
+            if (is_dir($filePath) || $filename[0] === "." || $filename === ".htaccess") {
+                continue;
+            }
+
+            $files[] = [
+                "filename" => $filename,
+                "created" => date(DATE_FORMAT, filemtime($filePath)),
+                "path" => $filePath,
+            ];
+        }
+
+        closedir($dirHandle);
+
+        // Sort by created date descending
+        usort($files, function ($a, $b) {
+            return strcmp($b["created"], $a["created"]);
+        });
+
+        return $files;
+    }
+
+    /**
+     * Handle delete single report file request
+     * @return array Response with success status and message
+     */
+    public function handleDeleteReport() {
+        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+            return ["success" => false, "message" => "Invalid request method"];
+        }
+
+        $filename = isset($_POST["report_filename"]) ? $_POST["report_filename"] : "";
+
+        if (empty($filename)) {
+            return ["success" => false, "message" => "Filename is required"];
+        }
+
+        // Sanitize filename to prevent directory traversal
+        $filename = basename($filename);
+        $filePath = REPORTS_DIR . "/" . $filename;
+
+        if (!file_exists($filePath)) {
+            return ["success" => false, "message" => "File not found"];
+        }
+
+        $result = unlink($filePath);
+        $message = $result ? "Report file deleted successfully" : "Failed to delete report file";
+
+        return ["success" => $result, "message" => $message];
+    }
+
+    /**
+     * Handle delete all report files request
+     * @return array Response with success status and message
+     */
+    public function handleDeleteAllReports() {
+        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+            return ["success" => false, "message" => "Invalid request method"];
+        }
+
+        if (!is_dir(REPORTS_DIR)) {
+            return ["success" => false, "message" => "Reports directory not found"];
+        }
+
+        $deletedCount = 0;
+        $errorCount = 0;
+
+        $dirHandle = opendir(REPORTS_DIR);
+        if ($dirHandle === false) {
+            return ["success" => false, "message" => "Cannot open reports directory"];
+        }
+
+        while (($filename = readdir($dirHandle)) !== false) {
+            $filePath = REPORTS_DIR . "/" . $filename;
+
+            // Skip directories, hidden files, and .htaccess
+            if (is_dir($filePath) || $filename[0] === "." || $filename === ".htaccess") {
+                continue;
+            }
+
+            if (unlink($filePath)) {
+                $deletedCount++;
+            } else {
+                $errorCount++;
+            }
+        }
+
+        closedir($dirHandle);
+
+        if ($errorCount > 0) {
+            $message = "Deleted {$deletedCount} files, failed to delete {$errorCount} files";
+            return ["success" => $deletedCount > 0, "message" => $message];
+        }
+
+        $message = "Deleted {$deletedCount} report files successfully";
+        return ["success" => true, "message" => $message];
     }
 }
