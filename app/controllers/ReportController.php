@@ -219,7 +219,7 @@ class ReportController {
             }
         }
 
-        $message = "Generated reports for {$successCount} of {$totalCount} configurations";
+        $message = "Generated reports for {$successCount} of {$totalCount} configurations. <a href='/reports' target='_blank'>Check reports here.</a>";
         return ["success" => $successCount > 0, "message" => $message];
     }
 
@@ -304,7 +304,7 @@ class ReportController {
 
             // Generate Flipbook report
             $flipbookGenerator = new FlipbookGenerator($settings, $stocks, $shortcodeProcessor);
-            $flipbookPath = REPORTS_DIR . "/" . $fileName . " flipbook.html";
+            $flipbookPath = REPORTS_DIR . "/" . $fileName . "-flipbook.html";
             $result["flipbook"] = $flipbookGenerator->saveToFile($flipbookPath);
 
             if (!$result["flipbook"]) {

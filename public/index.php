@@ -59,16 +59,16 @@ if (isset($_GET["edit"])) {
 }
 
 // Render the main content (form + table)
-$content = View::render("report-manager/index", array(
+$content = View::render("report-manager/index", [
     "editMode" => $editMode,
     "editData" => $editData,
     "allSettings" => $allSettings,
-    "availableShortcodes" => $availableShortcodes
-));
+    "availableShortcodes" => $availableShortcodes,
+]);
 
 // Render the full page with layout
-View::show("report-manager/layout", array(
+View::show("report-manager/layout", [
     "message" => $message,
     "messageType" => $messageType,
-    "content" => $content
-));
+    "content" => $content,
+]);
