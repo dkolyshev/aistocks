@@ -1,12 +1,4 @@
-# Project overview:
-
-The small app with a service that generates stock reports based on settings we configure.
-
-- App example: reportManager.html
-- Service output example: 6AIStocks.pdf, 6AIStocks.html. 6AIStocks flipbook.html
-
-Basically the settings congigured via app will dictate the companies included and format of output of the reports.
-Reports will be generated in 3 formats: HTML, PDF and flipbook.
+The small app with a service that generates stock reports based on settings we configure. Basically the settings congigured via app will dictate the companies included and format of output of the reports. Reports will be generated in 3 formats: HTML, PDF and flipbook.
 
 # The app features
 
