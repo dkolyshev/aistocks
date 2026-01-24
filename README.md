@@ -69,6 +69,8 @@ Open your browser and navigate to:
 
 You'll be redirected to the Report Manager.
 
+Optionally, you can check the deployed app here https://aistocks.fly.dev
+
 ### 5. Stop the container
 
 ```bash

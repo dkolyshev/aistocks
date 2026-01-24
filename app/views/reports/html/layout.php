@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo View::escape($title); ?></title>
     <style>
-<?php echo $styles; ?>
+        <?php echo $styles; ?>
     </style>
 </head>
 <body>
@@ -15,12 +15,14 @@
         <?php endif; ?>
 
         <div class="report-content">
-            <div class="pagebreak">
+            <div class="pagebreak margin-bottom">
                 <h1><?php echo View::escape($title); ?></h1>
                 <?php if (!empty($disclaimerHtml)): ?>
                     <?php echo $disclaimerHtml; ?>
                 <?php endif; ?>
             </div>
+
+            <hr/>
 
             <div class="pagebreak">
                 
