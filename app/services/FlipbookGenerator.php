@@ -66,11 +66,16 @@ class FlipbookGenerator {
      */
     private function generateFlipbookStyles() {
         $css = "<style>" . "\n";
-        $css .= ".stock-container { padding: 25px; background: white; height: 100%; }" . "\n";
-        $css .= ".stock-container-2 { height: 100%; }" . "\n";
+        $css .= ".stock-container { padding: 25px; background: white; height: 100%; box-sizing: border-box; }" . "\n";
+        $css .= ".stock-container-2 { height: 100%; overflow-y: auto; }" . "\n";
         $css .= ".stock-description-2 { font-size: 0.9em; margin-top: 10px; }" . "\n";
         $css .= ".page { background: white; }" . "\n";
         $css .= "h2 { margin-top: 0; color: #2c3e50; }" . "\n";
+        $css .= ".stock-intro, .stock-disclaimer { height: 100%; overflow-y: auto; }" . "\n";
+        $css .= ".page-nav { display: flex; justify-content: center; gap: 5px; margin-top: 10px; flex-wrap: wrap; }" . "\n";
+        $css .= ".page-nav-btn { width: 30px; height: 30px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 4px; font-size: 12px; }" . "\n";
+        $css .= ".page-nav-btn:hover { background: #f0f0f0; }" . "\n";
+        $css .= ".page-nav-btn.active { background: #667eea; color: #fff; border-color: #667eea; }" . "\n";
         $css .= "</style>" . "\n";
 
         return $css;
@@ -89,7 +94,13 @@ class FlipbookGenerator {
         // Add cover page
         $body .= $this->generateCoverPage();
 
-        // Add stock pages (each page includes intro + stock + disclaimer)
+        // Add disclaimer page
+        $body .= $this->generateDisclaimerPage();
+
+        // Add intro page
+        $body .= $this->generateIntroPage();
+
+        // Add stock pages (each stock on its own page)
         foreach ($this->stocks as $index => $stock) {
             $this->shortcodeProcessor->setStockData($stock);
             $body .= $this->generateStockPage($stock, $index);
@@ -164,7 +175,59 @@ class FlipbookGenerator {
 
 
     /**
-     * Generate stock page (includes intro + stock content + disclaimer)
+     * Generate disclaimer page
+     * @return string Disclaimer page HTML
+     */
+    private function generateDisclaimerPage() {
+        $disclaimer = !empty($this->settings["disclaimer_html"])
+            ? $this->settings["disclaimer_html"]
+            : $this->loadDataFile(DEFAULT_REPORT_DISCLAIMER_HTML);
+
+        if (empty($disclaimer)) {
+            return "";
+        }
+
+        $html = '<div class="page pagebreak">' . "\n";
+        $html .= '<div class="stock-container">' . "\n";
+        $html .= '<div class="stock-container-2">' . "\n";
+        $html .= '<div class="stock-disclaimer">' . "\n";
+        $html .= $this->shortcodeProcessor->process($disclaimer, "flipbook") . "\n";
+        $html .= "</div>" . "\n";
+        $html .= "</div>" . "\n";
+        $html .= "</div>" . "\n";
+        $html .= "</div>" . "\n";
+
+        return $html;
+    }
+
+    /**
+     * Generate intro page
+     * @return string Intro page HTML
+     */
+    private function generateIntroPage() {
+        $intro = !empty($this->settings["report_intro_html"])
+            ? $this->settings["report_intro_html"]
+            : $this->loadDataFile(DEFAULT_REPORT_INTRO_HTML);
+
+        if (empty($intro)) {
+            return "";
+        }
+
+        $html = '<div class="page pagebreak">' . "\n";
+        $html .= '<div class="stock-container">' . "\n";
+        $html .= '<div class="stock-container-2">' . "\n";
+        $html .= '<div class="stock-intro">' . "\n";
+        $html .= $this->shortcodeProcessor->process($intro, "flipbook") . "\n";
+        $html .= "</div>" . "\n";
+        $html .= "</div>" . "\n";
+        $html .= "</div>" . "\n";
+        $html .= "</div>" . "\n";
+
+        return $html;
+    }
+
+    /**
+     * Generate stock page (stock content only)
      * @param array $stock Stock data
      * @param int $index Stock index
      * @return string Stock page HTML
@@ -174,26 +237,12 @@ class FlipbookGenerator {
         $html .= '<div class="stock-container">' . "\n";
         $html .= '<div class="stock-container-2">' . "\n";
 
-        // Add intro HTML if provided
-        if (!empty($this->settings["report_intro_html"])) {
-            $html .= '<div class="stock-intro">' . "\n";
-            $html .= $this->shortcodeProcessor->process($this->settings["report_intro_html"], "flipbook") . "\n";
-            $html .= "</div>" . "\n";
-        }
-
         // Add custom stock block if provided
         if (!empty($this->settings["stock_block_html"])) {
             $html .= $this->shortcodeProcessor->process($this->settings["stock_block_html"], "flipbook") . "\n";
         } else {
             // Generate default stock content
             $html .= $this->generateDefaultStockContent($stock, $index);
-        }
-
-        // Add disclaimer HTML if provided
-        if (!empty($this->settings["disclaimer_html"])) {
-            $html .= '<div class="stock-disclaimer">' . "\n";
-            $html .= $this->shortcodeProcessor->process($this->settings["disclaimer_html"], "flipbook") . "\n";
-            $html .= "</div>" . "\n";
         }
 
         $html .= "</div>" . "\n";
@@ -264,6 +313,7 @@ class FlipbookGenerator {
         $html .= '<a href="#" id="prev"><i class="fa fa-angle-left" style="font-size:3rem;color:black;font-weight: 600;"></i></a>' . "\n";
         $html .= '<a href="#" id="next"><i class="fa fa-angle-right" style="font-size:3rem;color:black;font-weight: 600;"></i></a>' . "\n";
         $html .= "</div>" . "\n";
+        $html .= '<div class="page-nav" id="page-nav"></div>' . "\n";
 
         return $html;
     }
@@ -318,6 +368,19 @@ class FlipbookGenerator {
 
         // Default fallback
         return "image/jpeg";
+    }
+
+    /**
+     * Load content from data file as fallback
+     * @param string $filename File name in data directory
+     * @return string File content or empty string
+     */
+    private function loadDataFile($filename) {
+        $filePath = __DIR__ . "/../../data/" . $filename;
+        if (file_exists($filePath)) {
+            return file_get_contents($filePath);
+        }
+        return "";
     }
 
     /**

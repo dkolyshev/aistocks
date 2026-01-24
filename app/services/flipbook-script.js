@@ -27,6 +27,40 @@ function loadApp() {
       autoCenter: true,
   });
  $('.flipbook').turn('display', 'single');
+
+  // Initialize page navigation
+  initPageNav();
+}
+
+function initPageNav() {
+  var totalPages = $('.flipbook').turn('pages');
+  var navContainer = $('#page-nav');
+
+  // Create page buttons
+  for (var i = 1; i <= totalPages; i++) {
+    var btn = $('<button class="page-nav-btn" data-page="' + i + '">' + i + '</button>');
+    navContainer.append(btn);
+  }
+
+  // Set initial active state
+  updatePageNav(1);
+
+  // Handle page button clicks
+  navContainer.on('click', '.page-nav-btn', function(e) {
+    e.preventDefault();
+    var page = $(this).data('page');
+    $('.flipbook').turn('page', page);
+  });
+
+  // Update active button when page changes
+  $('.flipbook').bind('turned', function(event, page) {
+    updatePageNav(page);
+  });
+}
+
+function updatePageNav(currentPage) {
+  $('.page-nav-btn').removeClass('active');
+  $('.page-nav-btn[data-page="' + currentPage + '"]').addClass('active');
 }
 
 function getSize() {
