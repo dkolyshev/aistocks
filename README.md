@@ -1,5 +1,13 @@
 The small app with a service that generates stock reports based on settings we configure. Basically the settings congigured via app will dictate the companies included and format of output of the reports. Reports will be generated in 3 formats: HTML, PDF and flipbook.
 
+## Table of Contents
+
+- [The app features](#the-app-features)
+- [Project Structure](#project-structure)
+- [How to use](#how-to-use)
+  - [Prerequisites](#prerequisites)
+  - [Quick Start](#quick-start)
+
 # The app features
 
 - [x] The app generates report in 3 formats: HTML, PDF and flipbook.
@@ -25,6 +33,53 @@ The small app with a service that generates stock reports based on settings we c
 - [ ] Use `Trading View` service for embedding charts.
 - [ ] Following short codes should be supported: `[Current Date]`, `[Chart]`, each `data.csv` column as shortcode (`[Company]`, `[Exchange]`, `[Ticker]`, `[Price]`, etc).
 
+# Project Structure
+
+```
+aiStocks/
+├── app/                        # Application core (MVC architecture)
+│   ├── config/                 # Configuration files
+│   │   └── config.php          # App configuration
+│   ├── controllers/            # Request handlers
+│   │   ├── ReportController.php
+│   │   ├── ReportFileController.php
+│   │   └── SettingsController.php
+│   ├── helpers/                # Utility classes
+│   │   ├── StockFormatter.php  # Stock data formatting
+│   │   └── View.php            # View rendering helper
+│   ├── models/                 # Data layer
+│   │   ├── CsvDataReader.php   # CSV data parser
+│   │   └── SettingsManager.php # Settings management
+│   ├── services/               # Business logic
+│   │   ├── BaseReportGenerator.php
+│   │   ├── HtmlReportGenerator.php
+│   │   ├── PdfReportGenerator.php
+│   │   ├── FlipbookGenerator.php
+│   │   ├── ShortcodeProcessor.php
+│   │   └── FileUploadHandler.php
+│   └── views/                  # View templates
+│       ├── report-manager/     # Report manager UI
+│       └── reports/            # Report templates
+├── data/                       # Data files and templates
+│   ├── data.csv                # Stock data source
+│   ├── disclaimer.html         # Disclaimer template
+│   ├── reportIntro.html        # Report intro template
+│   └── stockBlock.html         # Stock block template
+├── .docker/                    # Docker configuration
+│   ├── docker-compose.yml
+│   ├── Dockerfile
+│   └── .env.example
+├── example/                    # Example output files
+├── images/                     # Uploaded images storage
+├── public/                     # Web root
+│   ├── index.php               # Application entry point
+│   └── assets/css/             # Stylesheets
+├── reports/                    # Generated reports output
+├── reportSettings.json         # Report generation settings
+├── .htaccess                   # Apache URL rewriting
+└── README.md
+```
+
 # How to use
 
 ## Prerequisites
@@ -35,6 +90,8 @@ The small app with a service that generates stock reports based on settings we c
 ---
 
 ## Quick Start
+
+You can check the deployed app here https://aistocks.fly.dev or deploy it on your local machine/remote server:
 
 ### 1. Navigate to the Docker directory inside the app root
 
@@ -68,8 +125,6 @@ Open your browser and navigate to:
 **http://localhost:8080** or **http://localhost:8080/reportManager.html**
 
 You'll be redirected to the Report Manager.
-
-Optionally, you can check the deployed app here https://aistocks.fly.dev
 
 ### 5. Stop the container
 
