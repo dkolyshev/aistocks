@@ -81,7 +81,7 @@ class ReportGenerationOrchestrator {
      * @return array Result with status and messages
      */
     public function generateReportForSetting($settings) {
-        $fileName = $settings["file_name"];
+        $fileName = str_replace(" ", "-", $settings["file_name"]);
         $result = [
             "file_name" => $fileName,
             "html" => false,

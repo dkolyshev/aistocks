@@ -10,28 +10,31 @@ The small app with a service that generates stock reports based on settings we c
 
 # The app features
 
+> [!IMPORTANT]
+> For improved testing results and better user experience, the original `data.csv` was replaced with its extended version `extended-data.csv`. Basically, it's the same file but with two additional columns, "Exchange" and "Target Price," which are missing in `data.csv` but used in the example reports.
+
 - [x] The app generates report in 3 formats: HTML, PDF and flipbook.
 - [ ] Add/update/delete settings for report generation. Settings are stored in the `reportSettings.json`.
-- [ ] Generate reports button to run reports service.
-- [ ] The app allows upload of images to `/images` folder and upload of pdf to `/reports` folder.
-- [ ] The `Report File Name` field should be configurable.
-- [ ] The `Report Title` field should be configurable.
-- [ ] The `Author Name` field should be configurable.
-- [ ] The app uses the `data.csv` instead of an API.
-- [ ] The `Number of Stocks` field should be configurable.
-- [ ] The `PDF Cover Image` should be configurable.
-- [ ] The `Article Image` field should be configurable. Image size should be limited by 180x180.
-- [ ] The `Disclaimer HTML` field should be configurable. By default - uses predefined template: `data/disclaimer.html`.
-- [ ] The `Report intro HTML` should be configurable. By default - uses predefined template: `data/reportIntro.html`.
-- [ ] The `Stock Block HTML` should be configurable. By default - uses predefined template: `data/stockBlock.html`.
-- [ ] The `Upload PDF` field should upload PDF to /reports/ and uses it instead the PDF report generation.
-- [ ] The app generates report for each entry in `reportSettings.json`
-- [ ] Generated files are overwritten on every generation.
+- [x] The `Generate reports` button to run reports service.
+- [x] The app allows upload of images to `/images` folder and upload of pdf to the `/reports` folder.
+- [x] The `Report File Name` field is configurable.
+- [x] The `Report Title` field is configurable.
+- [x] The `Author Name` field is configurable.
+- [x] Instead of an API, the app uses the `extended-data.csv` - it's an extended version of the `data.csv` with added columns "Exchange" and "Target Price" that are missing in the original `data.csv`.
+- [x] The `Number of Stocks` field is configurable.
+- [x] The `PDF Cover Image` is configurable.
+- [x] The `Article Image` field is configurable. Image size is limited by 180x180.
+- [x] The `Disclaimer HTML` field is configurable. By default - uses predefined template: `data/disclaimer.html`.
+- [x] The `Report intro HTML` is configurable. By default - uses predefined template: `data/reportIntro.html`.
+- [x] The `Stock Block HTML` is configurable. By default - uses predefined template: `data/stockBlock.html`.
+- [x] The `Upload PDF` field should upload PDF to /reports/ and uses it instead the PDF report generation.
+- [x] The app generates report for each entry in `reportSettings.json`
+- [x] Generated files are overwritten on every generation.
 - [ ] Filenames are specified in settings.
-- [ ] Number of stocks is used to limit the number of companies so if we set it to 3, the output would use top 3 companies from `data.csv`.
-- [ ] Reports should be generated in the `/reports/` folder.
-- [ ] Use `Trading View` service for embedding charts.
-- [ ] Following short codes should be supported: `[Current Date]`, `[Chart]`, each `data.csv` column as shortcode (`[Company]`, `[Exchange]`, `[Ticker]`, `[Price]`, etc).
+- [ ] Number of stocks is used to limit the number of companies so if we set it to 3, the output would use top 3 companies from `extended-data.csv`.
+- [x] Reports is generated in the `/reports/` folder.
+- [x] Use `Trading View` service for embedding charts.
+- [x] Following short codes is supported: `[Current Date]`, `[Chart]`, each `extended-data.csv` column as shortcode (`[Company]`, `[Exchange]`, `[Ticker]`, `[Price]`, etc).
 
 # Project Structure
 
@@ -62,6 +65,7 @@ aiStocks/
 │       └── reports/            # Report templates
 ├── data/                       # Data files and templates
 │   ├── data.csv                # Stock data source
+│   ├── extended-data.csv       # Stock data source with added columns "Exchange" and "Target Price"
 │   ├── disclaimer.html         # Disclaimer template
 │   ├── reportIntro.html        # Report intro template
 │   └── stockBlock.html         # Stock block template

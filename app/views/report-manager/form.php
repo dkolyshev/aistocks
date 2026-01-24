@@ -47,7 +47,7 @@
                 </div>
                 <div class="col-md-3 form-group">
                     <label>Data Source</label>
-                    <input type="text" name="api_placeholder" class="form-control" value="data.csv" readonly>
+                    <input type="text" name="api_placeholder" class="form-control" value="extended-data.csv" readonly>
                 </div>
                 <div class="col-md-3 form-group">
                     <label>Article Image (180x180)</label>

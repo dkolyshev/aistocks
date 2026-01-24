@@ -122,7 +122,7 @@ class FileUploadHandler {
         $filename = basename($filename);
 
         // Remove special characters
-        $filename = preg_replace("/[^a-zA-Z0-9._-]/", "_", $filename);
+        $filename = preg_replace("/[^a-zA-Z0-9._-]/", "-", $filename);
 
         return $filename;
     }

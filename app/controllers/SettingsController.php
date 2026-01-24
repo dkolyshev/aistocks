@@ -103,7 +103,7 @@ class SettingsController implements ControllerInterface {
             "file_name" => isset($_POST["file_name"]) ? trim($_POST["file_name"]) : "",
             "report_title" => isset($_POST["report_title"]) ? trim($_POST["report_title"]) : "",
             "author_name" => isset($_POST["author_name"]) ? trim($_POST["author_name"]) : "",
-            "api_placeholder" => isset($_POST["api_placeholder"]) ? trim($_POST["api_placeholder"]) : "data.csv",
+            "api_placeholder" => isset($_POST["api_placeholder"]) ? trim($_POST["api_placeholder"]) : "extended-data.csv",
             "stock_count" => isset($_POST["stock_count"]) ? intval($_POST["stock_count"]) : 6,
             "article_image" => isset($_POST["existing_article_image"]) ? $_POST["existing_article_image"] : "",
             "pdf_cover_image" => isset($_POST["existing_pdf_cover"]) ? $_POST["existing_pdf_cover"] : "",
