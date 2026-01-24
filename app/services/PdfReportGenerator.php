@@ -61,6 +61,7 @@ class PdfReportGenerator {
     private function generateWithWkhtmltopdf($outputPath) {
         // Create temporary HTML file
         $tempHtml = tempnam(sys_get_temp_dir(), "report_") . ".html";
+        $this->htmlGenerator->setPdfMode(true);
         $htmlContent = $this->htmlGenerator->generate();
 
         if (file_put_contents($tempHtml, $htmlContent) === false) {

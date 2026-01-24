@@ -8,6 +8,7 @@ class HtmlReportGenerator {
     private $settings;
     private $stocks;
     private $shortcodeProcessor;
+    private $isPdfMode = false;
 
     /**
      * Constructor
@@ -24,6 +25,14 @@ class HtmlReportGenerator {
         if (!empty($settings["article_image"])) {
             $this->shortcodeProcessor->setArticleImagePath($settings["article_image"]);
         }
+    }
+
+    /**
+     * Set PDF mode (enables cover page)
+     * @param bool $isPdfMode Whether generating for PDF output
+     */
+    public function setPdfMode($isPdfMode) {
+        $this->isPdfMode = $isPdfMode;
     }
 
     /**
@@ -90,7 +99,9 @@ class HtmlReportGenerator {
     private function generateBody() {
         $body = '<div id="article-body">' . "\n";
 
-        $body .= $this->generateCoverPage();
+        if ($this->isPdfMode) {
+            $body .= $this->generateCoverPage();
+        }
 
         $body .= '<div class="report-content">' . "\n";
 
