@@ -152,7 +152,7 @@ class FlipbookGenerator extends BaseReportGenerator {
      */
     private function generateDefaultStockContent($stock, $index) {
         $company = isset($stock["Company"]) ? $stock["Company"] : "";
-        $exchange = isset($stock["Exchange"]) ? $stock["Exchange"] : "NASDAQ";
+        $exchange = isset($stock["Exchange"]) ? $stock["Exchange"] : "";
         $ticker = isset($stock["Ticker"]) ? $stock["Ticker"] : "";
         $price = isset($stock["Price"]) ? $stock["Price"] : null;
         $description = isset($stock["Description"]) ? $stock["Description"] : "";
@@ -171,6 +171,7 @@ class FlipbookGenerator extends BaseReportGenerator {
             "stockNumber" => $index + 1,
             "company" => $company,
             "exchange" => $exchange,
+            "showExchangeDelimiter" => !empty($exchange),
             "ticker" => $ticker,
             "price" => $price,
             "marketCap" => $marketCap,

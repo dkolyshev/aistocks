@@ -1,5 +1,13 @@
 <div class="order-md-1">
-    <h2 class="mt-1"><?php echo $stockNumber; ?>) <?php echo View::escape($company); ?> (<?php echo View::escape($exchange); ?>:<?php echo View::escape($ticker); ?>)</h2>
+    <h2 class="mt-1">
+        <?php echo $stockNumber; ?>) 
+        <?php echo View::escape($company); ?> 
+        (<?php
+        echo View::escape($exchange);
+        echo $showExchangeDelimiter ? ":" : "";
+        echo View::escape($ticker);
+        ?>)
+    </h2>
     <?php if (!empty($chartHtml)): ?>
         <?php echo $chartHtml; ?>
     <?php endif; ?>
