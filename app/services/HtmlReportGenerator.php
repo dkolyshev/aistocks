@@ -223,7 +223,7 @@ class HtmlReportGenerator {
         $html .= "        <h2>" . $this->escapeHtml($company) . " (" . $this->escapeHtml($exchange) . ":" . $this->escapeHtml($ticker) . ")</h2>" . "\n";
 
         // Add chart
-        if (!empty($ticker)) {
+        if (!empty($ticker) && !$this->isPdfMode) {
             $this->shortcodeProcessor->setStockData($stock);
             $chartHtml = $this->shortcodeProcessor->process("[Chart]", "html");
             $html .= $chartHtml . "<br>" . "\n";
