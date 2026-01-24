@@ -9,7 +9,6 @@ composer.phar
 composer.lock
 
 # Data directories
-/data/*
 !/data/.gitkeep
 /reports/*
 !/reports/.gitkeep
