@@ -44,6 +44,9 @@ RUN { \
 # Set working directory
 WORKDIR /var/www/html
 
+# Copy application files into the image
+COPY . /var/www/html
+
 # Create necessary directories with proper permissions
 RUN mkdir -p /var/www/html/reports /var/www/html/images /var/www/html/data \
     && chown -R www-data:www-data /var/www/html \
