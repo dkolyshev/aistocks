@@ -296,7 +296,7 @@ class ReportController {
             // Generate PDF report
             $pdfGenerator = new PdfReportGenerator($settings, $htmlGenerator);
             $pdfPath = REPORTS_DIR . "/" . $fileName . ".pdf";
-            $result["pdf"] = $pdfGenerator->generate($pdfPath);
+            $result["pdf"] = $pdfGenerator->saveToFile($pdfPath);
 
             if (!$result["pdf"]) {
                 $result["errors"][] = "Failed to generate PDF report (install wkhtmltopdf or upload manual PDF)";

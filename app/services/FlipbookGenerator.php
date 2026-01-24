@@ -4,28 +4,9 @@
  * PHP 5.5 compatible
  */
 
-class FlipbookGenerator {
-    private $settings;
-    private $stocks;
-    private $shortcodeProcessor;
+require_once __DIR__ . "/BaseReportGenerator.php";
 
-    /**
-     * Constructor
-     * @param array $settings Report settings
-     * @param array $stocks Stock data array
-     * @param ShortcodeProcessor $shortcodeProcessor Shortcode processor instance
-     */
-    public function __construct($settings, $stocks, $shortcodeProcessor) {
-        $this->settings = $settings;
-        $this->stocks = $stocks;
-        $this->shortcodeProcessor = $shortcodeProcessor;
-
-        // Set article image path if available
-        if (!empty($settings["article_image"])) {
-            $this->shortcodeProcessor->setArticleImagePath($settings["article_image"]);
-        }
-    }
-
+class FlipbookGenerator extends BaseReportGenerator {
     /**
      * Generate flipbook HTML
      * @return string Generated HTML content
@@ -64,7 +45,7 @@ class FlipbookGenerator {
 
         // Render the complete layout
         return View::render("reports/flipbook/layout", [
-            "title" => $this->settings["file_name"],
+            "title" => $this->getSetting("file_name"),
             "styles" => $styles,
             "coverHtml" => $coverHtml,
             "disclaimerHtml" => $disclaimerHtml,
@@ -80,11 +61,7 @@ class FlipbookGenerator {
      * @return string CSS content
      */
     private function loadStyles() {
-        $cssFile = PUBLIC_DIR . "/assets/css/flipbook-report.css";
-        if (file_exists($cssFile)) {
-            return file_get_contents($cssFile);
-        }
-        return "";
+        return $this->fileLoaderService->loadStyles("assets/css/flipbook-report.css");
     }
 
     /**
@@ -92,11 +69,8 @@ class FlipbookGenerator {
      * @return string JS content
      */
     private function loadScript() {
-        $jsFile = APP_DIR . "/services/flipbook-script.js";
-        if (file_exists($jsFile)) {
-            return file_get_contents($jsFile);
-        }
-        return "";
+        $jsFile = defined("APP_DIR") ? APP_DIR . "/services/flipbook-script.js" : __DIR__ . "/flipbook-script.js";
+        return $this->fileLoaderService->loadScript($jsFile);
     }
 
     /**
@@ -104,31 +78,14 @@ class FlipbookGenerator {
      * @return string Cover page HTML
      */
     private function generateCoverPage() {
-        $coverImagePath = !empty($this->settings["pdf_cover_image"])
-            ? $this->settings["pdf_cover_image"]
-            : "";
-
-        $hasCoverImage = !empty($coverImagePath) && file_exists($coverImagePath);
-        $coverImageDataUri = $hasCoverImage ? $this->convertImageToDataUri($coverImagePath) : "";
+        $hasCoverImage = $this->hasCoverImage();
+        $coverImageDataUri = $hasCoverImage ? $this->getCoverImageDataUri() : "";
 
         return View::render("reports/flipbook/cover", [
             "hasCoverImage" => $hasCoverImage,
             "coverImageDataUri" => $coverImageDataUri,
-            "title" => $this->settings["report_title"],
+            "title" => $this->getSetting("report_title"),
         ]);
-    }
-
-    /**
-     * Convert image file to base64 data URI
-     * @param string $imagePath Path to image file
-     * @return string Base64 data URI
-     */
-    private function convertImageToDataUri($imagePath) {
-        $imageData = file_get_contents($imagePath);
-        $mimeType = $this->getImageMimeType($imagePath);
-        $base64Data = base64_encode($imageData);
-
-        return "data:" . $mimeType . ";base64," . $base64Data;
     }
 
     /**
@@ -136,9 +93,7 @@ class FlipbookGenerator {
      * @return string Disclaimer page HTML
      */
     private function generateDisclaimerPage() {
-        $disclaimer = !empty($this->settings["disclaimer_html"])
-            ? $this->settings["disclaimer_html"]
-            : $this->loadDataFile(DEFAULT_REPORT_DISCLAIMER_HTML);
+        $disclaimer = $this->loadDisclaimer();
 
         if (empty($disclaimer)) {
             return "";
@@ -156,9 +111,7 @@ class FlipbookGenerator {
      * @return string Intro page HTML
      */
     private function generateIntroPage() {
-        $intro = !empty($this->settings["report_intro_html"])
-            ? $this->settings["report_intro_html"]
-            : $this->loadDataFile(DEFAULT_REPORT_INTRO_HTML);
+        $intro = $this->loadIntro();
 
         if (empty($intro)) {
             return "";
@@ -179,8 +132,9 @@ class FlipbookGenerator {
      */
     private function generateStockPage($stock, $index) {
         // Use custom stock block if provided, otherwise use default template
-        if (!empty($this->settings["stock_block_html"])) {
-            $stockContent = $this->shortcodeProcessor->process($this->settings["stock_block_html"], "flipbook");
+        $stockBlockHtml = $this->getSetting("stock_block_html");
+        if (!empty($stockBlockHtml)) {
+            $stockContent = $this->shortcodeProcessor->process($stockBlockHtml, "flipbook");
         } else {
             $stockContent = $this->generateDefaultStockContent($stock, $index);
         }
@@ -223,61 +177,5 @@ class FlipbookGenerator {
             "chartHtml" => $chartHtml,
             "description" => $description,
         ]);
-    }
-
-    /**
-     * Save generated flipbook to file
-     * @param string $outputPath Output file path
-     * @return bool Success status
-     */
-    public function saveToFile($outputPath) {
-        $html = $this->generate();
-        return file_put_contents($outputPath, $html) !== false;
-    }
-
-    /**
-     * Get image MIME type from file
-     * @param string $filePath Path to image file
-     * @return string MIME type
-     */
-    private function getImageMimeType($filePath) {
-        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-
-        $mimeTypes = [
-            "jpg" => "image/jpeg",
-            "jpeg" => "image/jpeg",
-            "png" => "image/png",
-            "gif" => "image/gif",
-            "webp" => "image/webp",
-            "svg" => "image/svg+xml",
-        ];
-
-        if (isset($mimeTypes[$extension])) {
-            return $mimeTypes[$extension];
-        }
-
-        // Fallback: try to detect with getimagesize if available
-        if (function_exists("getimagesize")) {
-            $info = @getimagesize($filePath);
-            if ($info !== false && isset($info["mime"])) {
-                return $info["mime"];
-            }
-        }
-
-        // Default fallback
-        return "image/jpeg";
-    }
-
-    /**
-     * Load content from data file as fallback
-     * @param string $filename File name in data directory
-     * @return string File content or empty string
-     */
-    private function loadDataFile($filename) {
-        $filePath = __DIR__ . "/../../data/" . $filename;
-        if (file_exists($filePath)) {
-            return file_get_contents($filePath);
-        }
-        return "";
     }
 }

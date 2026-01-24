@@ -7,8 +7,13 @@
  * Alternative: Integrate TCPDF or mPDF library for pure PHP solution
  */
 
-class PdfReportGenerator {
+require_once __DIR__ . "/Contracts/ReportGeneratorInterface.php";
+
+class PdfReportGenerator implements ReportGeneratorInterface {
+    /** @var array Report settings */
     private $settings;
+
+    /** @var HtmlReportGenerator HTML generator instance */
     private $htmlGenerator;
 
     /**
@@ -22,13 +27,24 @@ class PdfReportGenerator {
     }
 
     /**
-     * Generate PDF report
+     * Generate PDF content
+     * Note: Returns empty string as PDF is binary - use saveToFile() instead
+     * @return string Empty string (use saveToFile for PDF generation)
+     */
+    public function generate() {
+        // PDF is binary content, this method exists for interface compliance
+        // Use saveToFile() for actual PDF generation
+        return "";
+    }
+
+    /**
+     * Save PDF report to file
      * @param string $outputPath Output PDF file path
      * @return bool Success status
      */
-    public function generate($outputPath) {
+    public function saveToFile($outputPath) {
         // Check if custom PDF was uploaded
-        if (!empty($this->settings["manual_pdf_path"]) && file_exists($this->settings["manual_pdf_path"])) {
+        if ($this->hasManualPdf()) {
             return copy($this->settings["manual_pdf_path"], $outputPath);
         }
 
@@ -93,20 +109,22 @@ class PdfReportGenerator {
      * @return bool Success status
      */
     private function createPlaceholderNotice($outputPath) {
+        $fileName = isset($this->settings["file_name"]) ? $this->settings["file_name"] : "report";
+
         $notice = "PDF Generation Not Available\n\n";
         $notice .= "To enable PDF generation, install wkhtmltopdf:\n";
         $notice .= "- Ubuntu/Debian: sudo apt-get install wkhtmltopdf\n";
         $notice .= "- CentOS/RHEL: sudo yum install wkhtmltopdf\n";
         $notice .= "- macOS: brew install wkhtmltopdf\n\n";
         $notice .= "Alternative: Upload manual PDF via Report Manager\n\n";
-        $notice .= "HTML report available: " . $this->settings["file_name"] . ".html\n";
+        $notice .= "HTML report available: " . $fileName . ".html\n";
 
         // Save as text file with .pdf.txt extension to indicate it's a placeholder
         $placeholderPath = $outputPath . ".txt";
         $result = file_put_contents($placeholderPath, $notice) !== false;
 
         // Also log the notice
-        error_log("PDF generation not available for: " . $this->settings["file_name"]);
+        error_log("PDF generation not available for: " . $fileName);
 
         return $result;
     }
