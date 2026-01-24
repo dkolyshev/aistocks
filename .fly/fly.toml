@@ -2,7 +2,7 @@ app = "aistocks"
 primary_region = "ams"
 
 [build]
-  dockerfile = ".docker/Dockerfile"
+  dockerfile = "../.docker/Dockerfile"
 
 [env]
   APACHE_DOCUMENT_ROOT = "/var/www/html"
