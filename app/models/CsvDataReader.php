@@ -4,19 +4,24 @@
  * PHP 5.5 compatible
  */
 
-class CsvDataReader {
+require_once dirname(__FILE__) . "/Contracts/CsvDataReaderInterface.php";
+
+class CsvDataReader implements CsvDataReaderInterface {
     private $csvFile;
     private $headers;
     private $data;
+    private $keyField;
 
     /**
      * Constructor
      * @param string $csvFile Path to CSV file
+     * @param string $keyField Key field name for lookups (default: "Ticker")
      */
-    public function __construct($csvFile) {
+    public function __construct($csvFile, $keyField = "Ticker") {
         $this->csvFile = $csvFile;
         $this->headers = [];
         $this->data = [];
+        $this->keyField = $keyField;
     }
 
     /**
@@ -87,18 +92,28 @@ class CsvDataReader {
     }
 
     /**
-     * Get stock by ticker
-     * @param string $ticker Stock ticker symbol
-     * @return array|null Stock data or null if not found
+     * Get row by key field value (OCP: configurable key field)
+     * @param string $value Value to search for
+     * @return array|null Data row or null if not found
      */
-    public function getStockByTicker($ticker) {
-        foreach ($this->data as $stock) {
-            if (isset($stock["Ticker"]) && strcasecmp($stock["Ticker"], $ticker) === 0) {
-                return $stock;
+    public function getByKeyField($value) {
+        foreach ($this->data as $row) {
+            if (isset($row[$this->keyField]) && strcasecmp($row[$this->keyField], $value) === 0) {
+                return $row;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Get stock by ticker (convenience method, uses key field)
+     * @param string $ticker Stock ticker symbol
+     * @return array|null Stock data or null if not found
+     * @deprecated Use getByKeyField() instead
+     */
+    public function getStockByTicker($ticker) {
+        return $this->getByKeyField($ticker);
     }
 
     /**
@@ -126,19 +141,18 @@ class CsvDataReader {
     }
 
     /**
-     * Format market cap value
-     * @param string $marketCap Market cap value
-     * @return string Formatted market cap
+     * Get the configured key field name
+     * @return string Key field name
      */
-    public static function formatMarketCap($marketCap) {
-        $value = floatval($marketCap);
+    public function getKeyField() {
+        return $this->keyField;
+    }
 
-        if ($value >= 1000) {
-            return '$' . number_format($value / 1000, 2) . "T";
-        } elseif ($value >= 1) {
-            return '$' . number_format($value, 2) . "B";
-        } else {
-            return '$' . number_format($value * 1000, 2) . "M";
-        }
+    /**
+     * Set the key field name
+     * @param string $keyField Key field name
+     */
+    public function setKeyField($keyField) {
+        $this->keyField = $keyField;
     }
 }

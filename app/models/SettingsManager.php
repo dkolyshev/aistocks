@@ -4,17 +4,24 @@
  * PHP 5.5 compatible
  */
 
-class SettingsManager {
+require_once dirname(__FILE__) . "/Contracts/SettingsManagerInterface.php";
+require_once dirname(__FILE__) . "/Contracts/FileSystemInterface.php";
+require_once dirname(__FILE__) . "/Support/FileSystem.php";
+
+class SettingsManager implements SettingsManagerInterface {
     private $settingsFile;
+    private $fileSystem;
 
     /**
      * Constructor
      * @param string $settingsFile Path to settings JSON file
+     * @param FileSystemInterface|null $fileSystem File system abstraction (optional)
      */
-    public function __construct($settingsFile) {
+    public function __construct($settingsFile, $fileSystem = null) {
         $this->settingsFile = $settingsFile;
+        $this->fileSystem = $fileSystem !== null ? $fileSystem : new FileSystem();
 
-        if (!file_exists($this->settingsFile)) {
+        if (!$this->fileSystem->exists($this->settingsFile)) {
             $this->initializeSettingsFile();
         }
     }
@@ -24,7 +31,7 @@ class SettingsManager {
      */
     private function initializeSettingsFile() {
         $emptySettings = [];
-        file_put_contents($this->settingsFile, json_encode($emptySettings, JSON_PRETTY_PRINT));
+        $this->fileSystem->write($this->settingsFile, json_encode($emptySettings, JSON_PRETTY_PRINT));
     }
 
     /**
@@ -32,11 +39,15 @@ class SettingsManager {
      * @return array Array of all settings
      */
     public function getAllSettings() {
-        if (!file_exists($this->settingsFile)) {
+        if (!$this->fileSystem->exists($this->settingsFile)) {
             return [];
         }
 
-        $content = file_get_contents($this->settingsFile);
+        $content = $this->fileSystem->read($this->settingsFile);
+        if ($content === false) {
+            return [];
+        }
+
         $settings = json_decode($content, true);
 
         return is_array($settings) ? $settings : [];
@@ -139,7 +150,7 @@ class SettingsManager {
             return false;
         }
 
-        return file_put_contents($this->settingsFile, $json) !== false;
+        return $this->fileSystem->write($this->settingsFile, $json) !== false;
     }
 
     /**
