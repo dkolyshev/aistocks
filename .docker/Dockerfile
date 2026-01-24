@@ -48,10 +48,10 @@ WORKDIR /var/www/html
 COPY . /var/www/html
 
 # Create necessary directories with proper permissions
-RUN mkdir -p /var/www/html/reports /var/www/html/images /var/www/html/data \
+RUN mkdir -p /var/www/html/reports /var/www/html/images \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
-    && chmod -R 777 /var/www/html/reports /var/www/html/images /var/www/html/data
+    && chmod -R 777 /var/www/html/reports /var/www/html/images
 
 # Expose port 80
 EXPOSE 80
