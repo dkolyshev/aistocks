@@ -30,4 +30,10 @@ interface ShortcodeProcessorInterface {
      * @return string Current date
      */
     public function getCurrentDate();
+
+    /**
+     * Set author name for [Author] shortcode
+     * @param string $authorName Author name
+     */
+    public function setAuthorName($authorName);
 }

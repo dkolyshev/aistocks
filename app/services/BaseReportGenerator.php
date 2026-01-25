@@ -49,6 +49,11 @@ abstract class BaseReportGenerator implements ReportGeneratorInterface {
         if (!empty($settings["article_image"])) {
             $this->shortcodeProcessor->setArticleImagePath($settings["article_image"]);
         }
+
+        // Set author name if available
+        if (!empty($settings["author_name"])) {
+            $this->shortcodeProcessor->setAuthorName($settings["author_name"]);
+        }
     }
 
     /**

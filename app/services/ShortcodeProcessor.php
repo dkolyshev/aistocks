@@ -1,7 +1,7 @@
 <?php
 /**
  * ShortcodeProcessor - Processes shortcodes in templates
- * Supports: [Current Date], [Chart], [ArticleImage], and all CSV column names
+ * Supports: [Current Date], [Author], [Chart], [ArticleImage], and all CSV column names
  * PHP 5.5 compatible
  */
 
@@ -12,6 +12,7 @@ class ShortcodeProcessor implements ShortcodeProcessorInterface {
     private $stockData;
     private $currentDate;
     private $articleImagePath;
+    private $authorName;
     private $imageService;
 
     /**
@@ -22,6 +23,7 @@ class ShortcodeProcessor implements ShortcodeProcessorInterface {
         $this->currentDate = date(DATE_FORMAT);
         $this->stockData = [];
         $this->articleImagePath = "";
+        $this->authorName = "";
         $this->imageService = $imageService !== null ? $imageService : new ImageService();
     }
 
@@ -42,6 +44,14 @@ class ShortcodeProcessor implements ShortcodeProcessorInterface {
     }
 
     /**
+     * Set author name for [Author] shortcode
+     * @param string $authorName Author name
+     */
+    public function setAuthorName($authorName) {
+        $this->authorName = $authorName;
+    }
+
+    /**
      * Process all shortcodes in content
      * @param string $content Content with shortcodes
      * @param string $format Output format ('html' or 'flipbook')
@@ -54,6 +64,9 @@ class ShortcodeProcessor implements ShortcodeProcessorInterface {
 
         // Replace [Current Date]
         $content = str_replace("[Current Date]", $this->currentDate, $content);
+
+        // Replace [Author]
+        $content = str_replace("[Author]", $this->escapeHtml($this->authorName), $content);
 
         // Replace [ArticleImage]
         if (!empty($this->articleImagePath)) {

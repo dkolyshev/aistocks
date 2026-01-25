@@ -17,7 +17,7 @@ class ShortcodeProvider {
      */
     public function __construct($csvFilePath, $specialShortcodes = null) {
         $this->csvFilePath = $csvFilePath;
-        $this->specialShortcodes = $specialShortcodes !== null ? $specialShortcodes : ["[Chart]", "[ArticleImage]", "[Current Date]"];
+        $this->specialShortcodes = $specialShortcodes !== null ? $specialShortcodes : ["[Chart]", "[ArticleImage]", "[Current Date]", "[Author]"];
     }
 
     /**
