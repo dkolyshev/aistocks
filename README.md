@@ -7,7 +7,7 @@ The small app with a service that generates stock reports based on settings we c
 - [How to use](#how-to-use)
   - [Prerequisites](#prerequisites)
   - [Quick Start](#quick-start)
-- [UI improvements](#ui-improvements)
+- [Added UI improvements](#added-ui-improvements)
 
 # The app features
 
@@ -182,12 +182,12 @@ docker-compose down
 
 ---
 
-# UI improvements
+# Added UI improvements
 
 - Pagination in flipbook.
 - "Generated Reports" panel.
 - Messages about success/failure.
 - Click-to-copy feature for shortcodes.
 - Customizable data source.
-- Theme selector for the Report Manager page.
-- Flexible content fields "Report Intro HTML", "Stock Block HTML", "Disclaimer HTML".
+- Theme selector for the Report Manager page (see footer).
+- More flexible settings for content fields: "Report Intro HTML", "Stock Block HTML", "Disclaimer HTML".
