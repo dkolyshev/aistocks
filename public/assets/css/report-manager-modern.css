@@ -1,0 +1,138 @@
+/**
+ * Modern theme overrides for Report Manager
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap");
+
+html[data-theme="modern"],
+body[data-theme="modern"],
+body.theme-modern {
+  font-family: "Manrope", "Helvetica Neue", Arial, sans-serif;
+  background-color: #f7efe6;
+  color: #2d2f49;
+}
+
+html[data-theme="modern"] .container,
+body[data-theme="modern"] .container,
+body.theme-modern .container {
+  max-width: 1080px;
+}
+
+html[data-theme="modern"] h1,
+html[data-theme="modern"] h2,
+html[data-theme="modern"] h3,
+html[data-theme="modern"] h4,
+body[data-theme="modern"] h1,
+body[data-theme="modern"] h2,
+body[data-theme="modern"] h3,
+body[data-theme="modern"] h4,
+body.theme-modern h1,
+body.theme-modern h2,
+body.theme-modern h3,
+body.theme-modern h4 {
+  color: #232642;
+  font-weight: 700;
+}
+
+html[data-theme="modern"] .display-5,
+body[data-theme="modern"] .display-5,
+body.theme-modern .display-5 {
+  letter-spacing: -0.6px;
+}
+
+html[data-theme="modern"] .card,
+body[data-theme="modern"] .card,
+body.theme-modern .card {
+  border-radius: 0;
+  box-shadow: 0 10px 24px rgba(22, 24, 43, 0.1);
+  border: 1px solid #e5e0d8;
+}
+
+html[data-theme="modern"] .btn,
+body[data-theme="modern"] .btn,
+body.theme-modern .btn {
+  border-radius: 0;
+  font-weight: 700;
+  text-transform: none;
+}
+
+html[data-theme="modern"] .btn-success,
+body[data-theme="modern"] .btn-success,
+body.theme-modern .btn-success {
+  background-color: #ff7a2f;
+  border-color: #ff7a2f;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+html[data-theme="modern"] .btn-success:hover,
+body[data-theme="modern"] .btn-success:hover,
+body.theme-modern .btn-success:hover {
+  background-color: #f06c23;
+  border-color: #f06c23;
+}
+
+html[data-theme="modern"] .form-control,
+html[data-theme="modern"] .custom-select,
+body[data-theme="modern"] .form-control,
+body[data-theme="modern"] .custom-select,
+body.theme-modern .form-control,
+body.theme-modern .custom-select {
+  border-radius: 0;
+  border-color: #dad4cb;
+  background-color: #ffffff;
+}
+
+html[data-theme="modern"] .section-header,
+body[data-theme="modern"] .section-header,
+body.theme-modern .section-header {
+  border-bottom: 2px solid #ff7a2f;
+  color: #232642;
+}
+
+html[data-theme="modern"] .table,
+body[data-theme="modern"] .table,
+body.theme-modern .table {
+  background-color: #ffffff;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+html[data-theme="modern"] .table thead th,
+body[data-theme="modern"] .table thead th,
+body.theme-modern .table thead th {
+  background-color: #f5efe8;
+  border-bottom: 1px solid #e2ddd4;
+  color: #2d2f49;
+  font-weight: 700;
+}
+
+html[data-theme="modern"] .html-code-area,
+body[data-theme="modern"] .html-code-area,
+body.theme-modern .html-code-area {
+  background-color: #f6f0e8;
+  border: 1px solid #e2ddd4;
+  border-radius: 0;
+}
+
+html[data-theme="modern"] footer,
+body[data-theme="modern"] footer,
+body.theme-modern footer {
+  color: #6a655e;
+}
+
+html[data-theme="modern"] a,
+body[data-theme="modern"] a,
+body.theme-modern a {
+  color: #000;
+  background-color: #d2dcdd;
+  border: 1px solid #d2dcdd;
+}
+
+html[data-theme="modern"] a:hover,
+body[data-theme="modern"] a:hover,
+body.theme-modern a:hover {
+  color: #000;
+  background-color: #fff;
+  border: 1px solid #000;
+}

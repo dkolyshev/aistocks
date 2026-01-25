@@ -70,3 +70,25 @@ body {
 .shortcode-hint {
   font-size: 0.85em;
 }
+
+.footer-meta {
+  margin-bottom: 8px;
+}
+
+.footer-theme {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-theme label {
+  font-weight: 600;
+  color: #6c757d;
+}
+
+@media (max-width: 576px) {
+  .footer-theme {
+    flex-direction: column;
+    gap: 4px;
+  }
+}

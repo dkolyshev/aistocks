@@ -86,10 +86,78 @@
     });
   }
 
+  /**
+   * Initialize theme selector with local persistence
+   */
+  function initThemeSelector() {
+    var themeSelect = document.getElementById("theme-select");
+    if (!themeSelect) {
+      return;
+    }
+
+    var storageKey = "reportManagerTheme";
+
+    function applyTheme(themeName) {
+      var root = document.documentElement;
+      var body = document.body;
+
+      if (themeName === "default") {
+        if (root) {
+          root.removeAttribute("data-theme");
+        }
+        if (body) {
+          body.removeAttribute("data-theme");
+          body.classList.remove("theme-modern");
+        }
+        themeSelect.value = "default";
+        return;
+      }
+      if (root) {
+        root.setAttribute("data-theme", themeName);
+      }
+      if (body) {
+        body.setAttribute("data-theme", themeName);
+        body.classList.add("theme-modern");
+      }
+      themeSelect.value = themeName;
+    }
+
+    var savedTheme = null;
+    try {
+      savedTheme = localStorage.getItem(storageKey);
+    } catch (err) {
+      console.warn("Theme storage unavailable:", err);
+    }
+
+    if (savedTheme === "modern") {
+      applyTheme("modern");
+    } else {
+      applyTheme("default");
+    }
+
+    themeSelect.addEventListener("change", function (e) {
+      var selectedTheme = e.target.value;
+      applyTheme(selectedTheme);
+      try {
+        if (selectedTheme === "default") {
+          localStorage.removeItem(storageKey);
+        } else {
+          localStorage.setItem(storageKey, selectedTheme);
+        }
+      } catch (err) {
+        console.warn("Theme storage unavailable:", err);
+      }
+    });
+  }
+
   // Initialize when DOM is ready
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initShortcodeCopy);
+    document.addEventListener("DOMContentLoaded", function () {
+      initShortcodeCopy();
+      initThemeSelector();
+    });
   } else {
     initShortcodeCopy();
+    initThemeSelector();
   }
 })();
