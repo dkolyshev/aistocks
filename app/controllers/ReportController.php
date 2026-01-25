@@ -139,50 +139,10 @@ class ReportController {
     }
 
     /**
-     * Get the settings controller instance
-     * @return SettingsController
-     */
-    public function getSettingsController() {
-        return $this->settingsController;
-    }
-
-    /**
-     * Get the report file controller instance
-     * @return ReportFileController
-     */
-    public function getReportFileController() {
-        return $this->reportFileController;
-    }
-
-    /**
-     * Get the report orchestrator instance
-     * @return ReportGenerationOrchestrator
-     */
-    public function getReportOrchestrator() {
-        return $this->reportOrchestrator;
-    }
-
-    /**
-     * Get the shortcode provider instance
-     * @return ShortcodeProvider
-     */
-    public function getShortcodeProvider() {
-        return $this->shortcodeProvider;
-    }
-
-    /**
      * Get available data sources (delegates to DataSourceProvider)
      * @return array Array of available CSV file names
      */
     public function getAvailableDataSources() {
         return $this->dataSourceProvider->getAvailableDataSources();
-    }
-
-    /**
-     * Get the data source provider instance
-     * @return DataSourceProvider
-     */
-    public function getDataSourceProvider() {
-        return $this->dataSourceProvider;
     }
 }
