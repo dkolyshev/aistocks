@@ -10,12 +10,14 @@ require_once dirname(__FILE__) . "/SettingsController.php";
 require_once dirname(__FILE__) . "/ReportFileController.php";
 require_once dirname(__FILE__) . "/Support/ReportGenerationOrchestrator.php";
 require_once dirname(__FILE__) . "/Support/ShortcodeProvider.php";
+require_once dirname(__FILE__) . "/Support/DataSourceProvider.php";
 
 class ReportController {
     private $settingsController;
     private $reportFileController;
     private $reportOrchestrator;
     private $shortcodeProvider;
+    private $dataSourceProvider;
 
     /**
      * Constructor with dependency injection
@@ -25,8 +27,9 @@ class ReportController {
      * @param ReportFileController|null $reportFileController Report file controller
      * @param ReportGenerationOrchestrator|null $reportOrchestrator Report generation orchestrator
      * @param ShortcodeProvider|null $shortcodeProvider Shortcode provider
+     * @param DataSourceProvider|null $dataSourceProvider Data source provider
      */
-    public function __construct($settingsController = null, $reportFileController = null, $reportOrchestrator = null, $shortcodeProvider = null) {
+    public function __construct($settingsController = null, $reportFileController = null, $reportOrchestrator = null, $shortcodeProvider = null, $dataSourceProvider = null) {
         // Create default instances if not provided (backward compatibility)
         if ($settingsController === null) {
             $settingsManager = new SettingsManager(SETTINGS_FILE);
@@ -41,17 +44,22 @@ class ReportController {
 
         if ($reportOrchestrator === null) {
             $settingsManager = new SettingsManager(SETTINGS_FILE);
-            $reportOrchestrator = new ReportGenerationOrchestrator($settingsManager, DATA_CSV_FILE, REPORTS_DIR);
+            $reportOrchestrator = new ReportGenerationOrchestrator($settingsManager, DATA_DIR, REPORTS_DIR);
         }
 
         if ($shortcodeProvider === null) {
             $shortcodeProvider = new ShortcodeProvider(DATA_CSV_FILE);
         }
 
+        if ($dataSourceProvider === null) {
+            $dataSourceProvider = new DataSourceProvider(DATA_DIR);
+        }
+
         $this->settingsController = $settingsController;
         $this->reportFileController = $reportFileController;
         $this->reportOrchestrator = $reportOrchestrator;
         $this->shortcodeProvider = $shortcodeProvider;
+        $this->dataSourceProvider = $dataSourceProvider;
     }
 
     /**
@@ -179,5 +187,21 @@ class ReportController {
      */
     public function getShortcodeProvider() {
         return $this->shortcodeProvider;
+    }
+
+    /**
+     * Get available data sources (delegates to DataSourceProvider)
+     * @return array Array of available CSV file names
+     */
+    public function getAvailableDataSources() {
+        return $this->dataSourceProvider->getAvailableDataSources();
+    }
+
+    /**
+     * Get the data source provider instance
+     * @return DataSourceProvider
+     */
+    public function getDataSourceProvider() {
+        return $this->dataSourceProvider;
     }
 }

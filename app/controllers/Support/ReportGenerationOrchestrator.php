@@ -8,20 +8,20 @@
 
 class ReportGenerationOrchestrator {
     private $settingsManager;
-    private $csvFilePath;
+    private $dataDir;
     private $reportsDir;
     private $generatorTypes;
 
     /**
      * Constructor with dependency injection
      * @param SettingsManagerInterface $settingsManager Settings manager
-     * @param string $csvFilePath Path to CSV data file
+     * @param string $dataDir Path to data directory containing CSV files
      * @param string $reportsDir Reports output directory
      * @param array $generatorTypes Array of generator type configurations (OCP)
      */
-    public function __construct($settingsManager, $csvFilePath, $reportsDir, $generatorTypes = null) {
+    public function __construct($settingsManager, $dataDir, $reportsDir, $generatorTypes = null) {
         $this->settingsManager = $settingsManager;
-        $this->csvFilePath = $csvFilePath;
+        $this->dataDir = rtrim($dataDir, "/");
         $this->reportsDir = rtrim($reportsDir, "/");
 
         // Default generator types (can be overridden for OCP)
@@ -91,10 +91,25 @@ class ReportGenerationOrchestrator {
         ];
 
         try {
+            // Validate data source is specified
+            if (empty($settings["api_placeholder"])) {
+                $result["errors"][] = "Data source (api_placeholder) is not specified";
+                return $result;
+            }
+
+            // Build CSV file path from data directory and api_placeholder
+            $csvFilePath = $this->dataDir . "/" . $settings["api_placeholder"];
+
+            // Validate data source file exists
+            if (!file_exists($csvFilePath)) {
+                $result["errors"][] = "Data source file not found: " . $settings["api_placeholder"];
+                return $result;
+            }
+
             // Load CSV data
-            $csvReader = new CsvDataReader($this->csvFilePath);
+            $csvReader = new CsvDataReader($csvFilePath);
             if (!$csvReader->load()) {
-                $result["errors"][] = "Failed to load CSV data";
+                $result["errors"][] = "Failed to load CSV data from: " . $settings["api_placeholder"];
                 return $result;
             }
 

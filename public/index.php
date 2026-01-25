@@ -30,6 +30,7 @@ require_once APP_DIR . "/helpers/StockFormatter.php";
 // Load controller contracts and implementations
 require_once APP_DIR . "/controllers/Contracts/ControllerInterface.php";
 require_once APP_DIR . "/controllers/Support/ShortcodeProvider.php";
+require_once APP_DIR . "/controllers/Support/DataSourceProvider.php";
 require_once APP_DIR . "/controllers/Support/ReportGenerationOrchestrator.php";
 require_once APP_DIR . "/controllers/SettingsController.php";
 require_once APP_DIR . "/controllers/ReportFileController.php";
@@ -55,10 +56,11 @@ $reportFileController = new ReportFileController(REPORTS_DIR, $fileSystem, DATE_
 
 // Create support services
 $shortcodeProvider = new ShortcodeProvider(DATA_CSV_FILE);
-$reportOrchestrator = new ReportGenerationOrchestrator($settingsManager, DATA_CSV_FILE, REPORTS_DIR);
+$dataSourceProvider = new DataSourceProvider(DATA_DIR);
+$reportOrchestrator = new ReportGenerationOrchestrator($settingsManager, DATA_DIR, REPORTS_DIR);
 
 // Create main controller (facade) with all dependencies injected
-$controller = new ReportController($settingsController, $reportFileController, $reportOrchestrator, $shortcodeProvider);
+$controller = new ReportController($settingsController, $reportFileController, $reportOrchestrator, $shortcodeProvider, $dataSourceProvider);
 
 // ============================================================
 // Handle HTTP Requests
@@ -102,6 +104,9 @@ $allSettings = $controller->getAllSettings();
 // Get available shortcodes
 $availableShortcodes = $controller->getAvailableShortcodes();
 
+// Get available data sources
+$availableDataSources = $controller->getAvailableDataSources();
+
 // Get report files for display
 $reportFiles = $controller->getReportFiles();
 
@@ -125,6 +130,7 @@ $content = View::render("report-manager/index", [
     "editData" => $editData,
     "allSettings" => $allSettings,
     "availableShortcodes" => $availableShortcodes,
+    "availableDataSources" => $availableDataSources,
     "reportFiles" => $reportFiles,
 ]);
 

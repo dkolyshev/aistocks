@@ -8,14 +8,14 @@
             <?php if ($editMode): ?>
                 <input type="hidden" name="original_file_name" value="<?php echo View::escape($editData["file_name"]); ?>">
                 <input type="hidden" name="existing_article_image" value="<?php echo isset($editData["article_image"])
-                                                                                ? View::escape($editData["article_image"])
-                                                                                : ""; ?>">
+                    ? View::escape($editData["article_image"])
+                    : ""; ?>">
                 <input type="hidden" name="existing_pdf_cover" value="<?php echo isset($editData["pdf_cover_image"])
-                                                                            ? View::escape($editData["pdf_cover_image"])
-                                                                            : ""; ?>">
+                    ? View::escape($editData["pdf_cover_image"])
+                    : ""; ?>">
                 <input type="hidden" name="existing_manual_pdf" value="<?php echo isset($editData["manual_pdf_path"])
-                                                                            ? View::escape($editData["manual_pdf_path"])
-                                                                            : ""; ?>">
+                    ? View::escape($editData["manual_pdf_path"])
+                    : ""; ?>">
             <?php endif; ?>
 
             <h6 class="section-header">Basic Information</h6>
@@ -47,7 +47,19 @@
                 </div>
                 <div class="col-md-3 form-group">
                     <label>Data Source</label>
-                    <input type="text" name="api_placeholder" class="form-control" value="extended-data.csv" readonly>
+                    <select name="api_placeholder" class="form-control" required>
+                        <option value="">-- Select data source --</option>
+                        <?php
+                        $currentDataSource = $editMode && isset($editData["api_placeholder"]) ? $editData["api_placeholder"] : "";
+                        foreach ($availableDataSources as $dataSource):
+                            $selected = $dataSource === $currentDataSource ? "selected" : ""; ?>
+                            <option value="<?php echo View::escape($dataSource); ?>" <?php echo $selected; ?>>
+                                <?php echo View::escape($dataSource); ?>
+                            </option>
+                        <?php
+                        endforeach;
+                        ?>
+                    </select>
                 </div>
                 <div class="col-md-3 form-group">
                     <label>Article Image (180x180)</label>
@@ -72,14 +84,18 @@
                     <div class="mb-1">
                         <em>Special:</em>
                         <?php foreach ($availableShortcodes["special"] as $code): ?>
-                            <span class="shortcode-copy shortcode-badge badge-secondary" data-shortcode="<?php echo View::escape($code); ?>"><?php echo View::escape($code); ?></span>
+                            <span class="shortcode-copy shortcode-badge badge-secondary" data-shortcode="<?php echo View::escape(
+                                $code
+                            ); ?>"><?php echo View::escape($code); ?></span>
                         <?php endforeach; ?>
                     </div>
                     <?php if (!empty($availableShortcodes["data"])): ?>
                         <div>
                             <em>Data columns:</em>
                             <?php foreach ($availableShortcodes["data"] as $code): ?>
-                                <span class="shortcode-copy shortcode-badge badge-light" data-shortcode="<?php echo View::escape($code); ?>"><?php echo View::escape($code); ?></span>
+                                <span class="shortcode-copy shortcode-badge badge-light" data-shortcode="<?php echo View::escape(
+                                    $code
+                                ); ?>"><?php echo View::escape($code); ?></span>
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
@@ -90,24 +106,24 @@
                 <label>Report Intro HTML</label>
                 <textarea name="report_intro_html" class="form-control html-code-area" rows="4"
                     placeholder="<p>Welcome to our daily stock analysis...</p>"><?php echo $editMode
-                                                                                    ? View::escape($editData["report_intro_html"])
-                                                                                    : ""; ?></textarea>
+                        ? View::escape($editData["report_intro_html"])
+                        : ""; ?></textarea>
             </div>
 
             <div class="form-group">
                 <label>Stock Block HTML</label>
                 <textarea name="stock_block_html" class="form-control html-code-area" rows="6"
                     placeholder="<div class='stock-card'><h3>[Company] ([Ticker])</h3><p>Price: [Price]</p><div>[Chart]</div></div>"><?php echo $editMode
-                                                                                                                                            ? View::escape($editData["stock_block_html"])
-                                                                                                                                            : ""; ?></textarea>
+                        ? View::escape($editData["stock_block_html"])
+                        : ""; ?></textarea>
             </div>
 
             <div class="form-group">
                 <label>Disclaimer HTML</label>
                 <textarea name="disclaimer_html" class="form-control html-code-area" rows="3"
                     placeholder="<p><i>Disclaimer: Investment carries risk...</i></p>"><?php echo $editMode
-                                                                                            ? View::escape($editData["disclaimer_html"])
-                                                                                            : ""; ?></textarea>
+                        ? View::escape($editData["disclaimer_html"])
+                        : ""; ?></textarea>
             </div>
 
             <div class="mt-4 p-3 bg-light border rounded">

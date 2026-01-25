@@ -29,7 +29,7 @@ class FileUploadHandler {
      * @param string $customName Optional custom filename (without extension)
      * @return string|false Uploaded filename or false on failure
      */
-    public function upload($file, $customName = null) {
+    public function upload($file, $customName = null, $maxWidth = null, $maxHeight = null) {
         $this->errors = [];
 
         // Check if file was uploaded
@@ -58,6 +58,23 @@ class FileUploadHandler {
         if (!in_array($mimeType, $this->allowedTypes)) {
             $this->errors[] = "File type not allowed";
             return false;
+        }
+
+        // Validate image dimensions when constraints are provided
+        if ($maxWidth !== null || $maxHeight !== null) {
+            $imageInfo = @getimagesize($file["tmp_name"]);
+            if ($imageInfo === false) {
+                $this->errors[] = "Unable to read image dimensions";
+                return false;
+            }
+
+            $width = (int) $imageInfo[0];
+            $height = (int) $imageInfo[1];
+
+            if (($maxWidth !== null && $width > $maxWidth) || ($maxHeight !== null && $height > $maxHeight)) {
+                $this->errors[] = "Image dimensions exceed maximum allowed size ($maxWidth x $maxHeight)";
+                return false;
+            }
         }
 
         // Generate filename

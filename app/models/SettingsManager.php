@@ -169,6 +169,10 @@ class SettingsManager implements SettingsManagerInterface {
             $errors[] = "Report title is required";
         }
 
+        if (empty($settingData["api_placeholder"])) {
+            $errors[] = "Data source is required";
+        }
+
         if (!isset($settingData["stock_count"]) || $settingData["stock_count"] < 1) {
             $errors[] = "Stock count must be at least 1";
         }

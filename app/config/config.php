@@ -22,6 +22,8 @@ define("DATA_CSV_FILE", DATA_DIR . "/extended-data.csv");
 define("ALLOWED_IMAGE_TYPES", "image/jpeg,image/jpg,image/png");
 define("ALLOWED_PDF_TYPES", "application/pdf");
 define("MAX_FILE_SIZE", 5242880); // 5MB
+define("ARTICLE_IMAGE_MAX_WIDTH", 200);
+define("ARTICLE_IMAGE_MAX_HEIGHT", 200);
 
 define("DATE_FORMAT", "Y-m-d H:i:s");
 

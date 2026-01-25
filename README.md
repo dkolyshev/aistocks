@@ -23,7 +23,8 @@ The small app with a service that generates stock reports based on settings we c
 - [x] Instead of an API, the app uses the `extended-data.csv` - it's an extended version of the `data.csv` with added columns "Exchange" and "Target Price" that are missing in the original `data.csv`.
 - [x] The `Number of Stocks` field is configurable.
 - [x] The `PDF Cover Image` is configurable.
-- [x] The `Article Image` field is configurable. Image size is limited by 180x180.
+- [x] The `Article Image` field is configurable.
+- [x] The `Article Image` size is limited by 200x200 (based on the articleImage.jpg size from examples).
 - [x] The `Disclaimer HTML` field is configurable. By default - uses predefined template: `data/disclaimer.html`.
 - [x] The `Report intro HTML` is configurable. By default - uses predefined template: `data/reportIntro.html`.
 - [x] The `Stock Block HTML` is configurable. By default - uses predefined template: `data/stockBlock.html`.
@@ -189,3 +190,5 @@ docker-compose down
 ## Messages about success/fail
 
 ## Click-to-copy feature for shortcodes
+
+## Customizable data source

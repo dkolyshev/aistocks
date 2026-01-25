@@ -103,7 +103,7 @@ class SettingsController implements ControllerInterface {
             "file_name" => isset($_POST["file_name"]) ? trim($_POST["file_name"]) : "",
             "report_title" => isset($_POST["report_title"]) ? trim($_POST["report_title"]) : "",
             "author_name" => isset($_POST["author_name"]) ? trim($_POST["author_name"]) : "",
-            "api_placeholder" => isset($_POST["api_placeholder"]) ? trim($_POST["api_placeholder"]) : "extended-data.csv",
+            "api_placeholder" => isset($_POST["api_placeholder"]) ? trim($_POST["api_placeholder"]) : "",
             "stock_count" => isset($_POST["stock_count"]) ? intval($_POST["stock_count"]) : 6,
             "article_image" => isset($_POST["existing_article_image"]) ? $_POST["existing_article_image"] : "",
             "pdf_cover_image" => isset($_POST["existing_pdf_cover"]) ? $_POST["existing_pdf_cover"] : "",
@@ -124,7 +124,12 @@ class SettingsController implements ControllerInterface {
 
         // Handle article image upload
         if ($this->imageUploadHandler->hasUploadedFile("article_image")) {
-            $filename = $this->imageUploadHandler->upload($_FILES["article_image"], $settingData["file_name"] . "_article");
+            $filename = $this->imageUploadHandler->upload(
+                $_FILES["article_image"],
+                $settingData["file_name"] . "_article",
+                ARTICLE_IMAGE_MAX_WIDTH,
+                ARTICLE_IMAGE_MAX_HEIGHT
+            );
 
             if ($filename === false) {
                 return [
