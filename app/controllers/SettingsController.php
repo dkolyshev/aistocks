@@ -9,6 +9,7 @@ class SettingsController {
     private $settingsManager;
     private $imageUploadHandler;
     private $pdfUploadHandler;
+    private $htmlSanitizer;
 
     /**
      * Constructor with dependency injection
@@ -16,10 +17,11 @@ class SettingsController {
      * @param FileUploadHandler $imageUploadHandler Image upload handler
      * @param FileUploadHandler $pdfUploadHandler PDF upload handler
      */
-    public function __construct($settingsManager, $imageUploadHandler, $pdfUploadHandler) {
+    public function __construct($settingsManager, $imageUploadHandler, $pdfUploadHandler, $htmlSanitizer = null) {
         $this->settingsManager = $settingsManager;
         $this->imageUploadHandler = $imageUploadHandler;
         $this->pdfUploadHandler = $pdfUploadHandler;
+        $this->htmlSanitizer = $htmlSanitizer !== null ? $htmlSanitizer : new HtmlSanitizer();
     }
 
     /**
@@ -105,14 +107,23 @@ class SettingsController {
             "stock_count" => isset($_POST["stock_count"]) ? intval($_POST["stock_count"]) : 6,
             "article_image" => isset($_POST["existing_article_image"]) ? $_POST["existing_article_image"] : "",
             "pdf_cover_image" => isset($_POST["existing_pdf_cover"]) ? $_POST["existing_pdf_cover"] : "",
-            "report_intro_html" => isset($_POST["report_intro_html"]) ? $_POST["report_intro_html"] : "",
+            "report_intro_html" => $this->sanitizeHtml(isset($_POST["report_intro_html"]) ? $_POST["report_intro_html"] : ""),
             "report_intro_html_state" => $this->extractFieldState("report_intro_html_state"),
-            "stock_block_html" => isset($_POST["stock_block_html"]) ? $_POST["stock_block_html"] : "",
+            "stock_block_html" => $this->sanitizeHtml(isset($_POST["stock_block_html"]) ? $_POST["stock_block_html"] : ""),
             "stock_block_html_state" => $this->extractFieldState("stock_block_html_state"),
-            "disclaimer_html" => isset($_POST["disclaimer_html"]) ? $_POST["disclaimer_html"] : "",
+            "disclaimer_html" => $this->sanitizeHtml(isset($_POST["disclaimer_html"]) ? $_POST["disclaimer_html"] : ""),
             "disclaimer_html_state" => $this->extractFieldState("disclaimer_html_state"),
             "manual_pdf_path" => isset($_POST["existing_manual_pdf"]) ? $_POST["existing_manual_pdf"] : "",
         ];
+    }
+
+    /**
+     * Sanitize HTML content before persisting.
+     * @param string $html Raw HTML
+     * @return string Sanitized HTML
+     */
+    private function sanitizeHtml($html) {
+        return $this->htmlSanitizer->sanitize($html);
     }
 
     /**

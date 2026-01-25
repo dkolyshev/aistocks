@@ -21,7 +21,8 @@ $imageUploadHandler = new FileUploadHandler(IMAGES_DIR, ALLOWED_IMAGE_TYPES, MAX
 $pdfUploadHandler = new FileUploadHandler(REPORTS_DIR, ALLOWED_PDF_TYPES, MAX_FILE_SIZE);
 
 // Create specialized controllers
-$settingsController = new SettingsController($settingsManager, $imageUploadHandler, $pdfUploadHandler);
+$htmlSanitizer = new HtmlSanitizer();
+$settingsController = new SettingsController($settingsManager, $imageUploadHandler, $pdfUploadHandler, $htmlSanitizer);
 $reportFileController = new ReportFileController(REPORTS_DIR, $fileSystem, DATE_FORMAT);
 
 // Create support services
