@@ -1,7 +1,7 @@
 <?php
 /**
  * Router - Front controller router for HTTP requests
- * Single Responsibility: Dispatch requests and prepare view data
+ * Single Responsibility: Route requests to appropriate handlers
  * PHP 5.5 compatible
  */
 
@@ -22,14 +22,21 @@ class Router {
     private $csrfService;
 
     /**
+     * @var ViewRenderer
+     */
+    private $viewRenderer;
+
+    /**
      * Constructor with dependency injection
      * @param ReportController $controller Main controller
      * @param FileLoaderService $fileLoaderService File loader service
+     * @param ViewRenderer $viewRenderer View renderer for output
      * @param CsrfServiceInterface|null $csrfService CSRF protection service
      */
-    public function __construct($controller, $fileLoaderService, $csrfService = null) {
+    public function __construct($controller, $fileLoaderService, $viewRenderer, $csrfService = null) {
         $this->controller = $controller;
         $this->fileLoaderService = $fileLoaderService;
+        $this->viewRenderer = $viewRenderer;
         $this->csrfService = $csrfService;
     }
 
@@ -57,25 +64,7 @@ class Router {
             $messageType = "success";
         }
 
-        $viewData = $this->prepareViewData($get);
-
-        $content = View::render("report-manager/index", [
-            "editMode" => $viewData["editMode"],
-            "editData" => $viewData["editData"],
-            "fieldStates" => $viewData["fieldStates"],
-            "allSettings" => $viewData["allSettings"],
-            "availableShortcodes" => $viewData["availableShortcodes"],
-            "availableDataSources" => $viewData["availableDataSources"],
-            "reportFiles" => $viewData["reportFiles"],
-            "formAction" => REPORT_MANAGER_URL,
-        ]);
-
-        View::show("report-manager/layout", [
-            "message" => $message,
-            "messageType" => $messageType,
-            "content" => $content,
-            "formAction" => REPORT_MANAGER_URL,
-        ]);
+        $this->viewRenderer->render($get, $message, $messageType);
     }
 
     /**
@@ -168,37 +157,4 @@ class Router {
         return $this->csrfService->validateToken($token);
     }
 
-    /**
-     * Prepare view data for rendering
-     * @param array $get Query parameters
-     * @return array View data
-     */
-    private function prepareViewData($get) {
-        $allSettings = $this->controller->getAllSettings();
-        $availableShortcodes = $this->controller->getAvailableShortcodes();
-        $availableDataSources = $this->controller->getAvailableDataSources();
-        $reportFiles = $this->controller->getReportFiles();
-
-        $editMode = false;
-        $editData = null;
-
-        if (isset($get["edit"])) {
-            $editData = $this->controller->getSettingByFileName($get["edit"]);
-            if ($editData !== null) {
-                $editMode = true;
-            }
-        }
-
-        $fieldStates = FieldStateResolver::resolveAll($editMode, $editData);
-
-        return [
-            "editMode" => $editMode,
-            "editData" => $editData,
-            "fieldStates" => $fieldStates,
-            "allSettings" => $allSettings,
-            "availableShortcodes" => $availableShortcodes,
-            "availableDataSources" => $availableDataSources,
-            "reportFiles" => $reportFiles,
-        ];
-    }
 }

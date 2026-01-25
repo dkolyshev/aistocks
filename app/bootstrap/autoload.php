@@ -20,6 +20,7 @@ $classMap = [
     "FieldStateResolver" => APP_DIR . "/helpers/FieldStateResolver.php",
     "HtmlSanitizer" => APP_DIR . "/helpers/HtmlSanitizer.php",
     "RequestValidator" => APP_DIR . "/helpers/RequestValidator.php",
+    "ViewRenderer" => APP_DIR . "/controllers/Support/ViewRenderer.php",
     "Action" => APP_DIR . "/controllers/Support/Action.php",
     "ShortcodeProvider" => APP_DIR . "/controllers/Support/ShortcodeProvider.php",
     "DataSourceProvider" => APP_DIR . "/controllers/Support/DataSourceProvider.php",

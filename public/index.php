@@ -39,5 +39,8 @@ View::setCsrfService($csrfService);
 // Create main controller (facade) with all dependencies injected
 $controller = new ReportController($settingsController, $reportFileController, $reportOrchestrator, $shortcodeProvider, $dataSourceProvider);
 
-$router = new Router($controller, new FileLoaderService(), $csrfService);
+// Create view renderer for presentation concerns
+$viewRenderer = new ViewRenderer($controller);
+
+$router = new Router($controller, new FileLoaderService(), $viewRenderer, $csrfService);
 $router->dispatch();
