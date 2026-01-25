@@ -5,18 +5,24 @@
  * PHP 5.5 compatible
  */
 
-class ShortcodeProcessor {
+require_once dirname(__FILE__) . "/Contracts/ShortcodeProcessorInterface.php";
+require_once dirname(__FILE__) . "/Support/ImageService.php";
+
+class ShortcodeProcessor implements ShortcodeProcessorInterface {
     private $stockData;
     private $currentDate;
     private $articleImagePath;
+    private $imageService;
 
     /**
      * Constructor
+     * @param ImageService|null $imageService Image service for MIME detection (optional)
      */
-    public function __construct() {
+    public function __construct($imageService = null) {
         $this->currentDate = date(DATE_FORMAT);
         $this->stockData = [];
         $this->articleImagePath = "";
+        $this->imageService = $imageService !== null ? $imageService : new ImageService();
     }
 
     /**
@@ -206,43 +212,12 @@ class ShortcodeProcessor {
             return "";
         }
 
-        if ($format === "flipbook") {
-            // Embed as base64 for flipbook
-            $imageData = file_get_contents($imagePath);
-            $mimeType = $this->getImageMimeType($imagePath);
-            $base64Data = base64_encode($imageData);
-            $dataUri = "data:" . $mimeType . ";base64," . $base64Data;
-            return '<img alt="" src="' . $dataUri . '" style="float: left; width: 200px; height: 200px; margin: 14px;">';
-        } else {
-            // Use base64 for HTML (works with PDF generation and local files)
-            $imageData = file_get_contents($imagePath);
-            $mimeType = $this->getImageMimeType($imagePath);
-            $base64Data = base64_encode($imageData);
-            $dataUri = "data:" . $mimeType . ";base64," . $base64Data;
-            return '<img alt="" src="' . $dataUri . '" style="float: left; width: 200px; height: 200px; margin: 14px;">';
-        }
-    }
-
-    /**
-     * Get image MIME type from file
-     * @param string $filePath Path to image file
-     * @return string MIME type
-     */
-    private function getImageMimeType($filePath) {
-        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-
-        $mimeTypes = [
-            "jpg" => "image/jpeg",
-            "jpeg" => "image/jpeg",
-            "png" => "image/png",
-            "gif" => "image/gif",
-            "webp" => "image/webp",
-        ];
-
-        if (isset($mimeTypes[$extension])) {
-            return $mimeTypes[$extension];
+        // Both formats use base64 data URI (works with PDF generation and local files)
+        $dataUri = $this->imageService->convertToDataUri($imagePath);
+        if (empty($dataUri)) {
+            return "";
         }
 
-        return "image/jpeg";
+        return '<img alt="" src="' . $dataUri . '" style="float: left; width: 200px; height: 200px; margin: 14px;">';
     }
 }
