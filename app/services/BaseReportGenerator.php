@@ -78,24 +78,36 @@ abstract class BaseReportGenerator implements ReportGeneratorInterface {
     }
 
     /**
-     * Load disclaimer content based on field state
-     * @return string Disclaimer HTML content (empty if state is "empty")
+     * Load field content based on state (empty/custom/default)
+     * @param string $stateKey Settings key for the field state
+     * @param string $contentKey Settings key for custom content
+     * @param string $defaultFile Path to default template file
+     * @return string Content based on state (empty string if state is "empty")
      */
-    protected function loadDisclaimer() {
-        $state = $this->getSetting("disclaimer_html_state", "default");
+    protected function loadFieldContent($stateKey, $contentKey, $defaultFile) {
+        $state = $this->getSetting($stateKey, "default");
 
-        // If state is empty, exclude from report
         if ($state === "empty") {
             return "";
         }
 
-        // If state is custom, use the saved content
         if ($state === "custom") {
-            return $this->getSetting("disclaimer_html", "");
+            return $this->getSetting($contentKey, "");
         }
 
-        // Default state: load from default template file
-        return $this->fileLoaderService->loadDataFile(DEFAULT_REPORT_DISCLAIMER_HTML);
+        return $this->fileLoaderService->loadDataFile($defaultFile);
+    }
+
+    /**
+     * Load disclaimer content based on field state
+     * @return string Disclaimer HTML content (empty if state is "empty")
+     */
+    protected function loadDisclaimer() {
+        return $this->loadFieldContent(
+            "disclaimer_html_state",
+            "disclaimer_html",
+            DEFAULT_REPORT_DISCLAIMER_HTML
+        );
     }
 
     /**
@@ -103,20 +115,11 @@ abstract class BaseReportGenerator implements ReportGeneratorInterface {
      * @return string Intro HTML content (empty if state is "empty")
      */
     protected function loadIntro() {
-        $state = $this->getSetting("report_intro_html_state", "default");
-
-        // If state is empty, exclude from report
-        if ($state === "empty") {
-            return "";
-        }
-
-        // If state is custom, use the saved content
-        if ($state === "custom") {
-            return $this->getSetting("report_intro_html", "");
-        }
-
-        // Default state: load from default template file
-        return $this->fileLoaderService->loadDataFile(DEFAULT_REPORT_INTRO_HTML);
+        return $this->loadFieldContent(
+            "report_intro_html_state",
+            "report_intro_html",
+            DEFAULT_REPORT_INTRO_HTML
+        );
     }
 
     /**
@@ -124,20 +127,11 @@ abstract class BaseReportGenerator implements ReportGeneratorInterface {
      * @return string Stock block HTML template (empty if state is "empty")
      */
     protected function loadStockBlockTemplate() {
-        $state = $this->getSetting("stock_block_html_state", "default");
-
-        // If state is empty, exclude from report
-        if ($state === "empty") {
-            return "";
-        }
-
-        // If state is custom, use the saved content
-        if ($state === "custom") {
-            return $this->getSetting("stock_block_html", "");
-        }
-
-        // Default state: load from default template file
-        return $this->fileLoaderService->loadDataFile(DEFAULT_REPORT_STOCK_BLOCK_HTML);
+        return $this->loadFieldContent(
+            "stock_block_html_state",
+            "stock_block_html",
+            DEFAULT_REPORT_STOCK_BLOCK_HTML
+        );
     }
 
     /**
