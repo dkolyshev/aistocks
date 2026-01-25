@@ -1,6 +1,7 @@
 <?php echo View::render("report-manager/form", [
     "editMode" => $editMode,
     "editData" => $editData,
+    "fieldStates" => $fieldStates,
     "availableShortcodes" => $availableShortcodes,
     "availableDataSources" => $availableDataSources,
 ]); ?>

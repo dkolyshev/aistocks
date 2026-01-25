@@ -177,6 +177,22 @@ class SettingsManager implements SettingsManagerInterface {
             $errors[] = "Stock count must be at least 1";
         }
 
+        // Validate HTML template fields when state is "custom"
+        $templateFields = [
+            "report_intro_html" => "Report Intro HTML",
+            "stock_block_html" => "Stock Block HTML",
+            "disclaimer_html" => "Disclaimer HTML",
+        ];
+
+        foreach ($templateFields as $fieldKey => $fieldLabel) {
+            $stateKey = $fieldKey . "_state";
+            $state = isset($settingData[$stateKey]) ? $settingData[$stateKey] : "default";
+
+            if ($state === "custom" && empty(trim($settingData[$fieldKey]))) {
+                $errors[] = $fieldLabel . " is required when set to Custom";
+            }
+        }
+
         return $errors;
     }
 }

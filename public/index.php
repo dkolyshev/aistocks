@@ -19,6 +19,7 @@ require_once APP_DIR . "/models/CsvDataReader.php";
 // Load services
 require_once APP_DIR . "/services/FileUploadHandler.php";
 require_once APP_DIR . "/services/ShortcodeProcessor.php";
+require_once APP_DIR . "/services/Support/FileLoaderService.php";
 require_once APP_DIR . "/services/HtmlReportGenerator.php";
 require_once APP_DIR . "/services/PdfReportGenerator.php";
 require_once APP_DIR . "/services/FlipbookGenerator.php";
@@ -26,6 +27,7 @@ require_once APP_DIR . "/services/FlipbookGenerator.php";
 // Load helpers
 require_once APP_DIR . "/helpers/View.php";
 require_once APP_DIR . "/helpers/StockFormatter.php";
+require_once APP_DIR . "/helpers/FieldStateResolver.php";
 
 // Load controller contracts and implementations
 require_once APP_DIR . "/controllers/Contracts/ControllerInterface.php";
@@ -65,6 +67,29 @@ $controller = new ReportController($settingsController, $reportFileController, $
 // ============================================================
 // Handle HTTP Requests
 // ============================================================
+
+// Handle AJAX request for default template content
+if (isset($_GET["action"]) && $_GET["action"] === "get_template") {
+    header("Content-Type: application/json");
+
+    $templateFile = isset($_GET["template"]) ? basename($_GET["template"]) : "";
+    $allowedTemplates = [
+        DEFAULT_REPORT_INTRO_HTML,
+        DEFAULT_REPORT_STOCK_BLOCK_HTML,
+        DEFAULT_REPORT_DISCLAIMER_HTML,
+    ];
+
+    if (empty($templateFile) || !in_array($templateFile, $allowedTemplates, true)) {
+        echo json_encode(["success" => false, "error" => "Invalid template"]);
+        exit;
+    }
+
+    $fileLoaderService = new FileLoaderService();
+    $content = $fileLoaderService->loadDataFile($templateFile);
+
+    echo json_encode(["success" => true, "content" => $content]);
+    exit;
+}
 
 $message = "";
 $messageType = "info";
@@ -120,6 +145,9 @@ if (isset($_GET["edit"])) {
     }
 }
 
+// Resolve template field states for the form
+$fieldStates = FieldStateResolver::resolveAll($editMode, $editData);
+
 // ============================================================
 // Render Views
 // ============================================================
@@ -128,6 +156,7 @@ if (isset($_GET["edit"])) {
 $content = View::render("report-manager/index", [
     "editMode" => $editMode,
     "editData" => $editData,
+    "fieldStates" => $fieldStates,
     "allSettings" => $allSettings,
     "availableShortcodes" => $availableShortcodes,
     "availableDataSources" => $availableDataSources,

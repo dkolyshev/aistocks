@@ -108,10 +108,24 @@ class SettingsController implements ControllerInterface {
             "article_image" => isset($_POST["existing_article_image"]) ? $_POST["existing_article_image"] : "",
             "pdf_cover_image" => isset($_POST["existing_pdf_cover"]) ? $_POST["existing_pdf_cover"] : "",
             "report_intro_html" => isset($_POST["report_intro_html"]) ? $_POST["report_intro_html"] : "",
+            "report_intro_html_state" => $this->extractFieldState("report_intro_html_state"),
             "stock_block_html" => isset($_POST["stock_block_html"]) ? $_POST["stock_block_html"] : "",
+            "stock_block_html_state" => $this->extractFieldState("stock_block_html_state"),
             "disclaimer_html" => isset($_POST["disclaimer_html"]) ? $_POST["disclaimer_html"] : "",
+            "disclaimer_html_state" => $this->extractFieldState("disclaimer_html_state"),
             "manual_pdf_path" => isset($_POST["existing_manual_pdf"]) ? $_POST["existing_manual_pdf"] : "",
         ];
+    }
+
+    /**
+     * Extract and validate field state from POST
+     * @param string $fieldName POST field name
+     * @return string Valid state value (default, custom, or empty)
+     */
+    private function extractFieldState($fieldName) {
+        $validStates = ["default", "custom", "empty"];
+        $state = isset($_POST[$fieldName]) ? trim($_POST[$fieldName]) : "default";
+        return in_array($state, $validStates, true) ? $state : "default";
     }
 
     /**

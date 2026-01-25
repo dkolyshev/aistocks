@@ -102,26 +102,51 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group html-template-field" data-field="report_intro_html" data-default-template="<?php echo View::escape(DEFAULT_REPORT_INTRO_HTML); ?>">
                 <label>Report Intro HTML</label>
+                <div class="field-state-selector btn-group btn-group-sm mb-2" role="group">
+                    <input type="radio" class="btn-check" name="report_intro_html_state" id="report_intro_html_default" value="default" <?php echo $fieldStates["report_intro_html"] === "default" ? "checked" : ""; ?>>
+                    <label class="btn btn-outline-primary" for="report_intro_html_default">Default</label>
+                    <input type="radio" class="btn-check" name="report_intro_html_state" id="report_intro_html_custom" value="custom" <?php echo $fieldStates["report_intro_html"] === "custom" ? "checked" : ""; ?>>
+                    <label class="btn btn-outline-primary" for="report_intro_html_custom">Custom</label>
+                    <input type="radio" class="btn-check" name="report_intro_html_state" id="report_intro_html_empty" value="empty" <?php echo $fieldStates["report_intro_html"] === "empty" ? "checked" : ""; ?>>
+                    <label class="btn btn-outline-primary" for="report_intro_html_empty">Empty</label>
+                </div>
                 <textarea name="report_intro_html" class="form-control html-code-area" rows="4"
-                    placeholder="<p>Welcome to our daily stock analysis...</p>"><?php echo $editMode
+                    placeholder="<p>Welcome to our daily stock analysis...</p>"
+                    <?php echo $fieldStates["report_intro_html"] === "empty" ? "readonly" : ""; ?>><?php echo $editMode
                         ? View::escape($editData["report_intro_html"])
                         : ""; ?></textarea>
             </div>
 
-            <div class="form-group">
+            <div class="form-group html-template-field" data-field="stock_block_html" data-default-template="<?php echo View::escape(DEFAULT_REPORT_STOCK_BLOCK_HTML); ?>">
                 <label>Stock Block HTML</label>
+                <div class="field-state-selector btn-group btn-group-sm mb-2" role="group">
+                    <input type="radio" class="btn-check" name="stock_block_html_state" id="stock_block_html_default" value="default" <?php echo $fieldStates["stock_block_html"] === "default" ? "checked" : ""; ?>>
+                    <label class="btn btn-outline-primary" for="stock_block_html_default">Default</label>
+                    <input type="radio" class="btn-check" name="stock_block_html_state" id="stock_block_html_custom" value="custom" <?php echo $fieldStates["stock_block_html"] === "custom" ? "checked" : ""; ?>>
+                    <label class="btn btn-outline-primary" for="stock_block_html_custom">Custom</label>
+                </div>
                 <textarea name="stock_block_html" class="form-control html-code-area" rows="6"
-                    placeholder="<div class='stock-card'><h3>[Company] ([Ticker])</h3><p>Price: [Price]</p><div>[Chart]</div></div>"><?php echo $editMode
+                    placeholder="<div class='stock-card'><h3>[Company] ([Ticker])</h3><p>Price: [Price]</p><div>[Chart]</div></div>"
+                    <?php echo $fieldStates["stock_block_html"] === "empty" ? "readonly" : ""; ?>><?php echo $editMode
                         ? View::escape($editData["stock_block_html"])
                         : ""; ?></textarea>
             </div>
 
-            <div class="form-group">
+            <div class="form-group html-template-field" data-field="disclaimer_html" data-default-template="<?php echo View::escape(DEFAULT_REPORT_DISCLAIMER_HTML); ?>">
                 <label>Disclaimer HTML</label>
+                <div class="field-state-selector btn-group btn-group-sm mb-2" role="group">
+                    <input type="radio" class="btn-check" name="disclaimer_html_state" id="disclaimer_html_default" value="default" <?php echo $fieldStates["disclaimer_html"] === "default" ? "checked" : ""; ?>>
+                    <label class="btn btn-outline-primary" for="disclaimer_html_default">Default</label>
+                    <input type="radio" class="btn-check" name="disclaimer_html_state" id="disclaimer_html_custom" value="custom" <?php echo $fieldStates["disclaimer_html"] === "custom" ? "checked" : ""; ?>>
+                    <label class="btn btn-outline-primary" for="disclaimer_html_custom">Custom</label>
+                    <input type="radio" class="btn-check" name="disclaimer_html_state" id="disclaimer_html_empty" value="empty" <?php echo $fieldStates["disclaimer_html"] === "empty" ? "checked" : ""; ?>>
+                    <label class="btn btn-outline-primary" for="disclaimer_html_empty">Empty</label>
+                </div>
                 <textarea name="disclaimer_html" class="form-control html-code-area" rows="3"
-                    placeholder="<p><i>Disclaimer: Investment carries risk...</i></p>"><?php echo $editMode
+                    placeholder="<p><i>Disclaimer: Investment carries risk...</i></p>"
+                    <?php echo $fieldStates["disclaimer_html"] === "empty" ? "readonly" : ""; ?>><?php echo $editMode
                         ? View::escape($editData["disclaimer_html"])
                         : ""; ?></textarea>
             </div>
