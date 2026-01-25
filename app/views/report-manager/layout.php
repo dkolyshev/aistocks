@@ -16,7 +16,7 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="display-5">Report Manager</h1>
-            <form action="reportManager.html" method="POST">
+            <form action="<?php echo View::escape($formAction); ?>" method="POST">
                 <input type="hidden" name="action" value="generate">
                 <button type="submit" class="btn btn-success btn-lg shadow-sm">&#128640; Run Report Generation Service</button>
             </form>

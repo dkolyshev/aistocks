@@ -32,6 +32,9 @@ define("TRADINGVIEW_WIDGET_URL", "https://www.tradingview-widget.com/embed-widge
 define("TRADINGVIEW_WIDGET_WIDTH", 600);
 define("TRADINGVIEW_WIDGET_HEIGHT", 220);
 
+// URLs
+define("REPORT_MANAGER_URL", "reportManager.html");
+
 // Default fields
 define("DEFAULT_REPORT_INTRO_HTML", "reportIntro.html");
 define("DEFAULT_REPORT_DISCLAIMER_HTML", "disclaimer.html");

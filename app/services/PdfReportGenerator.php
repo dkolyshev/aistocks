@@ -100,6 +100,15 @@ class PdfReportGenerator implements ReportGeneratorInterface {
             unlink($tempHtml);
         }
 
+        // Log error output on failure
+        if ($returnVar !== 0) {
+            $fileName = isset($this->settings["file_name"]) ? $this->settings["file_name"] : "report";
+            error_log("PDF generation failed for: " . $fileName . " (exit code: " . $returnVar . ")");
+            if (!empty($output)) {
+                error_log("wkhtmltopdf output: " . implode("\n", $output));
+            }
+        }
+
         return $returnVar === 0 && file_exists($outputPath);
     }
 

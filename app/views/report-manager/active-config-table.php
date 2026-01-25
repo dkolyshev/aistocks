@@ -25,7 +25,7 @@
                             <td><?php echo View::escape($setting["report_title"]); ?></td>
                             <td><?php echo View::escape($setting["stock_count"]); ?></td>
                             <td class="action-btns">
-                                <a href="reportManager.html?edit=<?php echo urlencode($setting["file_name"]); ?>"
+                                <a href="<?php echo View::escape($formAction); ?>?edit=<?php echo urlencode($setting["file_name"]); ?>"
                                     class="btn btn-sm btn-outline-info">Edit</a>
                                 <form method="POST" style="display: inline;"
                                     onsubmit="return confirm('Delete this configuration?');">

@@ -32,9 +32,5 @@ $reportOrchestrator = new ReportGenerationOrchestrator($settingsManager, DATA_DI
 // Create main controller (facade) with all dependencies injected
 $controller = new ReportController($settingsController, $reportFileController, $reportOrchestrator, $shortcodeProvider, $dataSourceProvider);
 
-// ============================================================
-// Front Controller - Delegate to router
-// ============================================================
-
 $router = new Router($controller, new FileLoaderService());
 $router->dispatch();

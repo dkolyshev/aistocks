@@ -60,12 +60,14 @@ class Router {
             "availableShortcodes" => $viewData["availableShortcodes"],
             "availableDataSources" => $viewData["availableDataSources"],
             "reportFiles" => $viewData["reportFiles"],
+            "formAction" => REPORT_MANAGER_URL,
         ]);
 
         View::show("report-manager/layout", [
             "message" => $message,
             "messageType" => $messageType,
             "content" => $content,
+            "formAction" => REPORT_MANAGER_URL,
         ]);
     }
 

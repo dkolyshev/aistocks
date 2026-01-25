@@ -5,23 +5,28 @@
  */
 
 require_once dirname(__FILE__) . "/Contracts/CsvDataReaderInterface.php";
+require_once dirname(__FILE__) . "/Contracts/FileSystemInterface.php";
+require_once dirname(__FILE__) . "/Support/FileSystem.php";
 
 class CsvDataReader implements CsvDataReaderInterface {
     private $csvFile;
     private $headers;
     private $data;
     private $keyField;
+    private $fileSystem;
 
     /**
      * Constructor
      * @param string $csvFile Path to CSV file
      * @param string $keyField Key field name for lookups (default: "Ticker")
+     * @param FileSystemInterface|null $fileSystem File system abstraction (optional)
      */
-    public function __construct($csvFile, $keyField = "Ticker") {
+    public function __construct($csvFile, $keyField = "Ticker", $fileSystem = null) {
         $this->csvFile = $csvFile;
         $this->headers = [];
         $this->data = [];
         $this->keyField = $keyField;
+        $this->fileSystem = $fileSystem !== null ? $fileSystem : new FileSystem();
     }
 
     /**
@@ -29,10 +34,11 @@ class CsvDataReader implements CsvDataReaderInterface {
      * @return bool Success status
      */
     public function load() {
-        if (!file_exists($this->csvFile)) {
+        if (!$this->fileSystem->exists($this->csvFile)) {
             return false;
         }
 
+        // Use native fopen/fgetcsv for CSV parsing (specialized operation)
         $handle = fopen($this->csvFile, "r");
         if ($handle === false) {
             return false;

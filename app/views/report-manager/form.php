@@ -3,7 +3,7 @@
         <h5 class="mb-0"><?php echo $editMode ? "Edit" : "Create"; ?> Report Settings</h5>
     </div>
     <div class="card-body">
-        <form action="reportManager.html" method="POST" enctype="multipart/form-data">
+        <form action="<?php echo View::escape($formAction); ?>" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="action" value="<?php echo $editMode ? "update" : "add"; ?>">
             <?php if ($editMode): ?>
                 <input type="hidden" name="original_file_name" value="<?php echo View::escape($editData["file_name"]); ?>">
@@ -202,7 +202,7 @@
                     <?php echo $editMode ? "Update" : "Save"; ?> Report Configuration
                 </button>
                 <?php if ($editMode): ?>
-                    <a href="reportManager.html" class="btn btn-secondary btn-block">Cancel Edit</a>
+                    <a href="<?php echo View::escape($formAction); ?>" class="btn btn-secondary btn-block">Cancel Edit</a>
                 <?php endif; ?>
             </div>
         </form>

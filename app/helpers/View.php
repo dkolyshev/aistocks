@@ -1,44 +1,122 @@
 <?php
 /**
  * View - Simple template renderer
- * Dependency Inversion: Views directory is configurable
+ * Supports both static usage (backward compatible) and instance usage (testable)
  * PHP 5.5 compatible
  */
 
 class View {
     /**
-     * @var string|null Views directory path (configurable)
+     * @var string|null Static views directory path (for backward compatibility)
      */
     private static $viewsDir = null;
 
     /**
-     * Configure the views directory
+     * @var string Instance views directory path
+     */
+    private $instanceViewsDir;
+
+    /**
+     * Constructor for instance-based usage
+     * @param string|null $viewsDir Path to views directory (optional)
+     */
+    public function __construct($viewsDir = null) {
+        if ($viewsDir !== null) {
+            $this->instanceViewsDir = rtrim($viewsDir, "/");
+        } else {
+            $this->instanceViewsDir = self::resolveDefaultViewsDir();
+        }
+    }
+
+    /**
+     * Resolve the default views directory
+     * @return string Views directory path
+     */
+    private static function resolveDefaultViewsDir() {
+        if (defined("APP_DIR")) {
+            return APP_DIR . "/views";
+        }
+        return dirname(dirname(__FILE__)) . "/views";
+    }
+
+    // =========================================================================
+    // Instance Methods (preferred for new code and testing)
+    // =========================================================================
+
+    /**
+     * Get the instance views directory
+     * @return string Views directory path
+     */
+    public function getViewsDirectory() {
+        return $this->instanceViewsDir;
+    }
+
+    /**
+     * Render a view template with data (instance method)
+     * @param string $viewPath Path to view file (relative to views directory)
+     * @param array $data Data to pass to the view
+     * @return string Rendered HTML
+     */
+    public function renderView($viewPath, $data = []) {
+        $viewFile = $this->instanceViewsDir . "/" . $viewPath . ".php";
+
+        if (!file_exists($viewFile)) {
+            throw new Exception("View file not found: " . $viewFile);
+        }
+
+        extract($data);
+
+        ob_start();
+        include $viewFile;
+        return ob_get_clean();
+    }
+
+    /**
+     * Render and output a view directly (instance method)
+     * @param string $viewPath Path to view file
+     * @param array $data Data to pass to the view
+     */
+    public function showView($viewPath, $data = []) {
+        echo $this->renderView($viewPath, $data);
+    }
+
+    /**
+     * Check if a view exists (instance method)
+     * @param string $viewPath Path to view file (relative to views directory)
+     * @return bool True if view exists
+     */
+    public function viewExists($viewPath) {
+        $viewFile = $this->instanceViewsDir . "/" . $viewPath . ".php";
+        return file_exists($viewFile);
+    }
+
+    // =========================================================================
+    // Static Methods (backward compatible, kept for existing code)
+    // =========================================================================
+
+    /**
+     * Configure the static views directory
      * @param string $viewsDir Path to views directory
+     * @deprecated Use instance-based View instead
      */
     public static function setViewsDir($viewsDir) {
         self::$viewsDir = rtrim($viewsDir, "/");
     }
 
     /**
-     * Get the views directory
+     * Get the static views directory
      * @return string Views directory path
+     * @deprecated Use instance-based View instead
      */
     public static function getViewsDir() {
         if (self::$viewsDir !== null) {
             return self::$viewsDir;
         }
-
-        // Fall back to APP_DIR constant for backward compatibility
-        if (defined("APP_DIR")) {
-            return APP_DIR . "/views";
-        }
-
-        // Last resort: try to determine from current file location
-        return dirname(dirname(__FILE__)) . "/views";
+        return self::resolveDefaultViewsDir();
     }
 
     /**
-     * Render a view template with data
+     * Render a view template with data (static method)
      * @param string $viewPath Path to view file (relative to views directory)
      * @param array $data Data to pass to the view
      * @return string Rendered HTML
@@ -67,7 +145,7 @@ class View {
     }
 
     /**
-     * Render and output a view directly
+     * Render and output a view directly (static method)
      * @param string $viewPath Path to view file
      * @param array $data Data to pass to the view
      */
@@ -76,7 +154,7 @@ class View {
     }
 
     /**
-     * Check if a view exists
+     * Check if a view exists (static method)
      * @param string $viewPath Path to view file (relative to views directory)
      * @return bool True if view exists
      */
@@ -86,7 +164,7 @@ class View {
     }
 
     /**
-     * Reset the views directory to default
+     * Reset the static views directory to default
      * Useful for testing
      */
     public static function resetViewsDir() {
