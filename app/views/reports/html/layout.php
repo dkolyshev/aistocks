@@ -21,12 +21,13 @@
             <hr/>
 
             <div class="pagebreak">
-                <?php if (!empty($introHtml)): ?>
+                <div class="clearfix">
                     <?php echo $articleImageHtml; ?>
-                    <?php echo $introHtml; ?>
-                <?php else: ?>
-                    <div class="display-inline-block"><?php echo $articleImageHtml; ?></div>
-                <?php endif; ?>
+
+                    <?php if (!empty($introHtml)): ?>
+                        <?php echo $introHtml; ?>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <?php foreach ($stockBlocks as $stockBlock): ?>

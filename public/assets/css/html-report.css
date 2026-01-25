@@ -98,6 +98,8 @@ strong {
   margin-bottom: 30px;
 }
 
-.display-inline-block {
-  display: inline-block;
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
 }
