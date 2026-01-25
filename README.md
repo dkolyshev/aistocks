@@ -7,16 +7,17 @@ The small app with a service that generates stock reports based on settings we c
 - [How to use](#how-to-use)
   - [Prerequisites](#prerequisites)
   - [Quick Start](#quick-start)
+- [UI improvements](#ui-improvements)
 
 # The app features
 
 > [!IMPORTANT]
 > For improved testing results and better user experience, the original `data.csv` was replaced with its extended version `extended-data.csv`. Basically, it's the same file but with two additional columns, "Exchange" and "Target Price," which are missing in `data.csv` but used in the example reports. You can check this file here [data/extended-data.csv](data/extended-data.csv).
 
-- [x] The app generates report in 3 formats: HTML, PDF and flipbook.
+- [x] The app generates a report in 3 formats: HTML, PDF, and flipbook.
 - [x] Add/update/delete settings for report generation. Settings are stored in the `reportSettings.json`.
-- [x] The `Generate reports` button to run reports service.
-- [x] The app allows upload of images to `/images` folder and upload of pdf to the `/reports` folder.
+- [x] The `Generate reports` button to run the reports service.
+- [x] The app allows upload of images to the `/images` folder and upload of PDF to the `/reports` folder.
 - [x] The `Report File Name` field is configurable.
 - [x] The `Report Title` field is configurable.
 - [x] The `Author Name` field is configurable.
@@ -24,21 +25,21 @@ The small app with a service that generates stock reports based on settings we c
 - [x] The `Number of Stocks` field is configurable.
 - [x] The `PDF Cover Image` is configurable.
 - [x] The `Article Image` field is configurable.
-- [x] The `Article Image` size is limited by 200x200 (based on the articleImage.jpg size from examples).
+- [x] The `Article Image` size is limited to 200x200 (based on the articleImage.jpg size from examples).
 - [x] The `Disclaimer HTML` field is configurable. By default - uses predefined template: `data/disclaimer.html`.
 - [x] The `Report intro HTML` is configurable. By default - uses predefined template: `data/reportIntro.html`.
 - [x] The `Stock Block HTML` is configurable. By default - uses predefined template: `data/stockBlock.html`.
-- [x] The `Upload PDF` field should upload PDF to /reports/ and uses it instead the PDF report generation.
-- [x] The app generates report for each entry in `reportSettings.json`
+- [x] The `Upload PDF` field should upload the PDF to /reports/ and use it instead of the PDF report generation.
+- [x] The app generates a report for each entry in `reportSettings.json`.
 - [x] Generated files are overwritten on every generation.
 - [x] Filenames are specified in settings.
-- [x] Number of stocks is used to limit the number of companies so if we set it to 3, the output would use top 3 companies from `extended-data.csv`.
-- [x] Reports is generated in the `/reports/` folder.
+- [x] Number of stocks is used to limit the number of companies, so if we set it to 3, the output would use the top 3 companies from `extended-data.csv`.
+- [x] Reports are generated in the `/reports/` folder.
 - [x] Use `Trading View` service for embedding charts.
 - [x] Following short codes is supported: `[Current Date]`, `[Chart]`, each `extended-data.csv` column as shortcode (`[Company]`, `[Exchange]`, `[Ticker]`, `[Price]`, etc).
 
 > [!IMPORTANT]
-> I intentionally apply a filter on filenames that removes special characters and replaces spaces with hyphens. Such filtering helps to keep stability, compatibility, and safety, and guarantees that the generated reports' file names will show/work the same way on different systems. For example, if you put this string "Top 6 AI Stocks report" in the `Report File Name` field and generate reports, the output will be:
+> I intentionally apply a filter on filenames that removes special characters and replaces spaces with hyphens. Such filtering helps maintain stability, compatibility, and safety, and guarantees that the generated reports' file names will appear and work the same way across different systems. How it works: if you put the string "Top 6 AI Stocks report" in the `Report File Name` field and generate reports, the output will be:
 >
 > - `Top-6-AI-Stocks-report.html`
 > - `Top-6-AI-Stocks-report-flipbook.html`
@@ -183,14 +184,10 @@ docker-compose down
 
 # UI improvements
 
-## Pagination in flipbook
-
-## "Generated Reports" panel
-
-## Messages about success/fail
-
-## Click-to-copy feature for shortcodes
-
-## Customizable data source
-
-## Theme selector for the Report Manager page
+- Pagination in flipbook.
+- "Generated Reports" panel.
+- Messages about success/failure.
+- Click-to-copy feature for shortcodes.
+- Customizable data source.
+- Theme selector for the Report Manager page.
+- Flexible content fields "Report Intro HTML", "Stock Block HTML", "Disclaimer HTML".
