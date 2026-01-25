@@ -17,6 +17,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="display-5">Report Manager</h1>
             <form action="<?php echo View::escape($formAction); ?>" method="POST">
+                <?php echo View::csrfField(); ?>
                 <input type="hidden" name="action" value="generate">
                 <button type="submit" class="btn btn-success btn-lg shadow-sm">&#128640; Run Report Generation Service</button>
             </form>
@@ -32,7 +33,10 @@
     <footer class="text-center mt-5 mb-5 text-muted">
         <hr>
         <div class="footer-meta">
-            <small>System Date: <?php echo date(DATE_FORMAT); ?> | PHP <?php echo PHP_VERSION; ?> Compatibility Mode</small>
+            <small>
+                System Date: <?php echo date(DATE_FORMAT); ?> | 
+                <a href="/phpinfo" target="_blank">PHP <?php echo PHP_VERSION; ?></a> Compatibility Mode
+            </small>
         </div>
         <div class="footer-theme">
             <label for="theme-select" class="mb-0">Theme</label>

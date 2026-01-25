@@ -26,7 +26,10 @@ php_value post_max_size 10M
     RewriteRule ^assets/(.*)$ public/assets/$1 [L]
 
     # Rewrite reportManager.html to public/index.php
-    RewriteRule ^reportManager\.html$ public/index.php [L,QSA]
+    RewriteRule ^reportManager$ public/index.php [L,QSA]
+
+    # Rewrite reportManager.html to public/index.php
+    RewriteRule ^phpinfo$ public/phpinfo.php [L,QSA]
 
     # Rewrite root and index.php to public/index.php
     RewriteRule ^index\.php$ public/index.php [L,QSA]

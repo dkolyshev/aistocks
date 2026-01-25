@@ -33,7 +33,7 @@ define("TRADINGVIEW_WIDGET_WIDTH", 600);
 define("TRADINGVIEW_WIDGET_HEIGHT", 220);
 
 // URLs
-define("REPORT_MANAGER_URL", "reportManager.html");
+define("REPORT_MANAGER_URL", "reportManager");
 
 // Default fields
 define("DEFAULT_REPORT_INTRO_HTML", "reportIntro.html");

@@ -4,6 +4,7 @@
     </div>
     <div class="card-body">
         <form action="<?php echo View::escape($formAction); ?>" method="POST" enctype="multipart/form-data">
+            <?php echo View::csrfField(); ?>
             <input type="hidden" name="action" value="<?php echo $editMode ? "update" : "add"; ?>">
             <?php if ($editMode): ?>
                 <input type="hidden" name="original_file_name" value="<?php echo View::escape($editData["file_name"]); ?>">

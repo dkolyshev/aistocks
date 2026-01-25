@@ -101,4 +101,45 @@ class View {
     public static function resetViewsDir() {
         self::$viewsDir = null;
     }
+
+    // =========================================================================
+    // CSRF Protection Helpers
+    // =========================================================================
+
+    /**
+     * @var CsrfServiceInterface|null CSRF service instance
+     */
+    private static $csrfService = null;
+
+    /**
+     * Set the CSRF service instance
+     * @param CsrfServiceInterface $csrfService CSRF service
+     */
+    public static function setCsrfService($csrfService) {
+        self::$csrfService = $csrfService;
+    }
+
+    /**
+     * Render a hidden CSRF token field for forms
+     * @return string HTML hidden input field
+     */
+    public static function csrfField() {
+        if (self::$csrfService === null) {
+            return '';
+        }
+        $fieldName = self::$csrfService->getTokenFieldName();
+        $token = self::$csrfService->getToken();
+        return '<input type="hidden" name="' . self::escape($fieldName) . '" value="' . self::escape($token) . '">';
+    }
+
+    /**
+     * Get the current CSRF token value
+     * @return string Token value or empty string
+     */
+    public static function csrfToken() {
+        if (self::$csrfService === null) {
+            return '';
+        }
+        return self::$csrfService->getToken();
+    }
 }

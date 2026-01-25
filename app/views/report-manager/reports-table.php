@@ -4,6 +4,7 @@
         <?php if (!empty($reportFiles)): ?>
             <form method="POST" style="display: inline;"
                 onsubmit="return confirm('Delete ALL report files? This cannot be undone!');">
+                <?php echo View::csrfField(); ?>
                 <input type="hidden" name="action" value="delete_all_reports">
                 <button type="submit" class="btn btn-sm btn-danger">Delete All Reports</button>
             </form>
@@ -35,6 +36,7 @@
                                     download class="btn btn-sm btn-outline-secondary">Download</a>
                                 <form method="POST" style="display: inline;"
                                     onsubmit="return confirm('Delete this report file?');">
+                                    <?php echo View::csrfField(); ?>
                                     <input type="hidden" name="action" value="delete_report">
                                     <input type="hidden" name="report_filename" value="<?php echo View::escape($file["filename"]); ?>">
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>

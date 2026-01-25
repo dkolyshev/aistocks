@@ -29,6 +29,7 @@
                                     class="btn btn-sm btn-outline-info">Edit</a>
                                 <form method="POST" style="display: inline;"
                                     onsubmit="return confirm('Delete this configuration?');">
+                                    <?php echo View::csrfField(); ?>
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="file_name" value="<?php echo View::escape($setting["file_name"]); ?>">
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>

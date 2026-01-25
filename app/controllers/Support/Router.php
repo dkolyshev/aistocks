@@ -17,13 +17,20 @@ class Router {
     private $fileLoaderService;
 
     /**
+     * @var CsrfServiceInterface|null
+     */
+    private $csrfService;
+
+    /**
      * Constructor with dependency injection
      * @param ReportController $controller Main controller
      * @param FileLoaderService $fileLoaderService File loader service
+     * @param CsrfServiceInterface|null $csrfService CSRF protection service
      */
-    public function __construct($controller, $fileLoaderService) {
+    public function __construct($controller, $fileLoaderService, $csrfService = null) {
         $this->controller = $controller;
         $this->fileLoaderService = $fileLoaderService;
+        $this->csrfService = $csrfService;
     }
 
     /**
@@ -117,6 +124,14 @@ class Router {
             ];
         }
 
+        // Validate CSRF token
+        if (!$this->validateCsrfToken($post)) {
+            return [
+                "message" => "Invalid security token. Please refresh the page and try again.",
+                "messageType" => "danger",
+            ];
+        }
+
         $action = isset($post["action"]) ? $post["action"] : "";
 
         if ($action === Action::DELETE) {
@@ -135,6 +150,22 @@ class Router {
             "message" => $result["message"],
             "messageType" => $result["success"] ? "success" : "danger",
         ];
+    }
+
+    /**
+     * Validate CSRF token from POST data
+     * @param array $post POST parameters
+     * @return bool True if valid or no CSRF service configured
+     */
+    private function validateCsrfToken($post) {
+        if ($this->csrfService === null) {
+            return true;
+        }
+
+        $fieldName = $this->csrfService->getTokenFieldName();
+        $token = isset($post[$fieldName]) ? $post[$fieldName] : "";
+
+        return $this->csrfService->validateToken($token);
     }
 
     /**

@@ -99,7 +99,7 @@
 
       // Fetch template via AJAX
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", "reportManager.html?action=get_template&template=" + encodeURIComponent(templateFile), true);
+      xhr.open("GET", "reportManager?action=get_template&template=" + encodeURIComponent(templateFile), true);
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
           textarea.disabled = false;
@@ -194,7 +194,7 @@
      * Initialize form validation
      */
     initFormValidation: function () {
-      var form = document.querySelector('form[action="reportManager.html"]');
+      var form = document.querySelector('form[action="reportManager"]');
       if (!form) {
         return;
       }

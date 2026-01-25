@@ -31,8 +31,12 @@ $dataSourceProvider = new DataSourceProvider(DATA_DIR);
 $reportServiceFactory = new ReportServiceFactory();
 $reportOrchestrator = new ReportGenerationOrchestrator($settingsManager, DATA_DIR, REPORTS_DIR, $reportServiceFactory);
 
+// Create CSRF protection service
+$csrfService = new CsrfService();
+View::setCsrfService($csrfService);
+
 // Create main controller (facade) with all dependencies injected
 $controller = new ReportController($settingsController, $reportFileController, $reportOrchestrator, $shortcodeProvider, $dataSourceProvider);
 
-$router = new Router($controller, new FileLoaderService());
+$router = new Router($controller, new FileLoaderService(), $csrfService);
 $router->dispatch();

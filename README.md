@@ -50,18 +50,23 @@ The small app with a service that generates stock reports based on settings we c
 ```
 aiStocks/
 ├── app/                                    # Application core (MVC architecture)
+│   ├── bootstrap/
+│   │   └── autoload.php                    # Class autoloader
 │   ├── config/
 │   │   └── config.php                      # App configuration and paths
 │   ├── controllers/
-│   │   ├── Contracts/
-│   │   │   └── ControllerInterface.php     # Controller contract
 │   │   ├── Support/
+│   │   │   ├── Action.php                  # Action constants for routing
+│   │   │   ├── DataSourceProvider.php      # Provides available data sources
 │   │   │   ├── ReportGenerationOrchestrator.php  # Coordinates report generation
+│   │   │   ├── Router.php                  # Request routing handler
 │   │   │   └── ShortcodeProvider.php       # Provides shortcode replacements
 │   │   ├── ReportController.php            # Routes requests to handlers
 │   │   ├── ReportFileController.php        # Handles report file requests
 │   │   └── SettingsController.php          # Handles settings requests
 │   ├── helpers/
+│   │   ├── FieldStateResolver.php          # Resolves form field states
+│   │   ├── HtmlSanitizer.php               # Sanitizes HTML content
 │   │   ├── StockFormatter.php              # Formats stock data values
 │   │   └── View.php                        # Renders view templates
 │   ├── models/
@@ -75,35 +80,41 @@ aiStocks/
 │   │   └── SettingsManager.php             # Manages report settings
 │   ├── services/
 │   │   ├── Contracts/
-│   │   │   └── ReportGeneratorInterface.php  # Report generator contract
+│   │   │   ├── ReportGeneratorInterface.php      # Report generator contract
+│   │   │   ├── ReportServiceFactoryInterface.php # Service factory contract
+│   │   │   └── ShortcodeProcessorInterface.php   # Shortcode processor contract
+│   │   ├── Security/
+│   │   │   ├── CsrfService.php             # CSRF token management
+│   │   │   └── CsrfServiceInterface.php    # CSRF service contract
 │   │   ├── Support/
 │   │   │   ├── FileLoaderService.php       # Loads template files
 │   │   │   └── ImageService.php            # Handles image processing
 │   │   ├── BaseReportGenerator.php         # Abstract base for generators
+│   │   ├── FileUploadHandler.php           # Handles file uploads
+│   │   ├── FlipbookGenerator.php           # Generates flipbook reports
 │   │   ├── HtmlReportGenerator.php         # Generates HTML reports
 │   │   ├── PdfReportGenerator.php          # Generates PDF reports
-│   │   ├── FlipbookGenerator.php           # Generates flipbook reports
-│   │   ├── ShortcodeProcessor.php          # Processes template shortcodes
-│   │   └── FileUploadHandler.php           # Handles file uploads
+│   │   ├── ReportServiceFactory.php        # Creates report service instances
+│   │   └── ShortcodeProcessor.php          # Processes template shortcodes
 │   └── views/
 │       ├── report-manager/                 # Report manager UI templates
-│       │   ├── layout.php                  # Main layout wrapper
-│       │   ├── index.php                   # Dashboard page
-│       │   ├── form.php                    # Settings form
 │       │   ├── active-config-table.php     # Active config display
-│       │   ├── reports-table.php           # Reports listing table
-│       │   └── alert.php                   # Alert messages
+│       │   ├── alert.php                   # Alert messages
+│       │   ├── form.php                    # Settings form
+│       │   ├── index.php                   # Dashboard page
+│       │   ├── layout.php                  # Main layout wrapper
+│       │   └── reports-table.php           # Reports listing table
 │       └── reports/                        # Report output templates
 │           ├── flipbook/                   # Flipbook format templates
-│           │   ├── layout.php              # Flipbook layout
 │           │   ├── controls.php            # Navigation controls
 │           │   ├── cover.php               # Cover page
-│           │   ├── intro.php               # Introduction page
 │           │   ├── disclaimer.php          # Disclaimer page
+│           │   ├── intro.php               # Introduction page
+│           │   ├── layout.php              # Flipbook layout
 │           │   └── stock-page.php          # Stock detail page
 │           ├── html/                       # HTML format templates
-│           │   ├── layout.php              # HTML report layout
 │           │   ├── cover.php               # Cover section
+│           │   ├── layout.php              # HTML report layout
 │           │   └── stock-block.php         # Stock block section
 │           └── pdf/                        # PDF format templates
 │               └── layout.php              # PDF report layout
@@ -120,11 +131,15 @@ aiStocks/
 ├── example/                                # Example output files
 ├── images/                                 # Uploaded images storage
 ├── public/                                 # Web root
+│   ├── assets/
+│   │   ├── css/                            # Stylesheets
+│   │   ├── favicon/                        # Favicon files
+│   │   └── js/                             # JavaScript files
 │   ├── index.php                           # Application entry point
-│   └── assets/css/                         # Stylesheets
+│   └── phpinfo.php                         # PHP info page
 ├── reports/                                # Generated reports output
-├── reportSettings.json                     # Report generation settings
 ├── .htaccess                               # Apache URL rewriting
+├── reportSettings.json                     # Report generation settings
 └── README.md
 ```
 
@@ -181,11 +196,11 @@ This will:
 
 ### 6. Access the application
 
-Open your browser and navigate to:
+Open your browser and navigate to Report Manager:
 
-**http://localhost:8080** or **http://localhost:8080/reportManager.html**
+**http://localhost:8080** or **http://localhost:8080/reportManager**.
 
-You'll be redirected to the Report Manager.
+You can also check the actual PHP version that the app is running on here **http://localhost:8080/phpinfo**.
 
 ### 7. Stop the container (when you don't need the app working)
 
