@@ -31,6 +31,8 @@
                             <td class="action-btns">
                                 <a href="/reports/<?php echo urlencode($file["filename"]); ?>"
                                     target="_blank" class="btn btn-sm btn-outline-primary">View</a>
+                                <a href="/reports/<?php echo urlencode($file["filename"]); ?>"
+                                    download class="btn btn-sm btn-outline-secondary">Download</a>
                                 <form method="POST" style="display: inline;"
                                     onsubmit="return confirm('Delete this report file?');">
                                     <input type="hidden" name="action" value="delete_report">
