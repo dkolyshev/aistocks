@@ -10,18 +10,22 @@ class SettingsController {
     private $imageUploadHandler;
     private $pdfUploadHandler;
     private $htmlSanitizer;
+    private $requestValidator;
 
     /**
      * Constructor with dependency injection
      * @param SettingsManagerInterface $settingsManager Settings manager
      * @param FileUploadHandler $imageUploadHandler Image upload handler
      * @param FileUploadHandler $pdfUploadHandler PDF upload handler
+     * @param HtmlSanitizer $htmlSanitizer HTML sanitizer
+     * @param RequestValidator $requestValidator Request validator
      */
-    public function __construct($settingsManager, $imageUploadHandler, $pdfUploadHandler, $htmlSanitizer = null) {
+    public function __construct($settingsManager, $imageUploadHandler, $pdfUploadHandler, $htmlSanitizer = null, $requestValidator = null) {
         $this->settingsManager = $settingsManager;
         $this->imageUploadHandler = $imageUploadHandler;
         $this->pdfUploadHandler = $pdfUploadHandler;
         $this->htmlSanitizer = $htmlSanitizer !== null ? $htmlSanitizer : new HtmlSanitizer();
+        $this->requestValidator = $requestValidator !== null ? $requestValidator : new RequestValidator();
     }
 
     /**
@@ -29,8 +33,9 @@ class SettingsController {
      * @return array Response with success status and message
      */
     public function handleRequest() {
-        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-            return ["success" => false, "message" => "Invalid request method"];
+        $error = $this->requestValidator->requirePost();
+        if ($error !== null) {
+            return $error;
         }
 
         $action = isset($_POST["action"]) ? $_POST["action"] : Action::ADD;

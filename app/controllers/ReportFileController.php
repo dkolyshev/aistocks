@@ -9,17 +9,20 @@ class ReportFileController {
     private $reportsDir;
     private $fileSystem;
     private $dateFormat;
+    private $requestValidator;
 
     /**
      * Constructor with dependency injection
      * @param string $reportsDir Reports directory path
      * @param FileSystemInterface|null $fileSystem File system abstraction
      * @param string $dateFormat Date format for display
+     * @param RequestValidator|null $requestValidator Request validator
      */
-    public function __construct($reportsDir, $fileSystem = null, $dateFormat = "Y-m-d H:i:s") {
+    public function __construct($reportsDir, $fileSystem = null, $dateFormat = "Y-m-d H:i:s", $requestValidator = null) {
         $this->reportsDir = rtrim($reportsDir, "/");
         $this->fileSystem = $fileSystem !== null ? $fileSystem : new FileSystem();
         $this->dateFormat = $dateFormat;
+        $this->requestValidator = $requestValidator !== null ? $requestValidator : new RequestValidator();
     }
 
     /**
@@ -27,8 +30,9 @@ class ReportFileController {
      * @return array Response with success status and message
      */
     public function handleRequest() {
-        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-            return ["success" => false, "message" => "Invalid request method"];
+        $error = $this->requestValidator->requirePost();
+        if ($error !== null) {
+            return $error;
         }
 
         $action = isset($_POST["action"]) ? $_POST["action"] : "";

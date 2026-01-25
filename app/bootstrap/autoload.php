@@ -19,6 +19,7 @@ $classMap = [
     "StockFormatter" => APP_DIR . "/helpers/StockFormatter.php",
     "FieldStateResolver" => APP_DIR . "/helpers/FieldStateResolver.php",
     "HtmlSanitizer" => APP_DIR . "/helpers/HtmlSanitizer.php",
+    "RequestValidator" => APP_DIR . "/helpers/RequestValidator.php",
     "Action" => APP_DIR . "/controllers/Support/Action.php",
     "ShortcodeProvider" => APP_DIR . "/controllers/Support/ShortcodeProvider.php",
     "DataSourceProvider" => APP_DIR . "/controllers/Support/DataSourceProvider.php",

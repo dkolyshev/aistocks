@@ -12,6 +12,7 @@ class ReportController {
     private $reportOrchestrator;
     private $shortcodeProvider;
     private $dataSourceProvider;
+    private $requestValidator;
 
     /**
      * Constructor with dependency injection
@@ -22,19 +23,22 @@ class ReportController {
      * @param ReportGenerationOrchestrator $reportOrchestrator Report generation orchestrator
      * @param ShortcodeProvider $shortcodeProvider Shortcode provider
      * @param DataSourceProvider $dataSourceProvider Data source provider
+     * @param RequestValidator $requestValidator Request validator
      */
     public function __construct(
         SettingsController $settingsController,
         ReportFileController $reportFileController,
         ReportGenerationOrchestrator $reportOrchestrator,
         ShortcodeProvider $shortcodeProvider,
-        DataSourceProvider $dataSourceProvider
+        DataSourceProvider $dataSourceProvider,
+        RequestValidator $requestValidator = null
     ) {
         $this->settingsController = $settingsController;
         $this->reportFileController = $reportFileController;
         $this->reportOrchestrator = $reportOrchestrator;
         $this->shortcodeProvider = $shortcodeProvider;
         $this->dataSourceProvider = $dataSourceProvider;
+        $this->requestValidator = $requestValidator !== null ? $requestValidator : new RequestValidator();
     }
 
     /**
@@ -42,8 +46,9 @@ class ReportController {
      * @return array Response with success status and message
      */
     public function handleSettingsSubmission() {
-        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-            return ["success" => false, "message" => "Invalid request method"];
+        $error = $this->requestValidator->requirePost();
+        if ($error !== null) {
+            return $error;
         }
 
         $action = isset($_POST["action"]) ? $_POST["action"] : "add";
@@ -55,8 +60,9 @@ class ReportController {
      * @return array Response with success status and message
      */
     public function handleDelete() {
-        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-            return ["success" => false, "message" => "Invalid request method"];
+        $error = $this->requestValidator->requirePost();
+        if ($error !== null) {
+            return $error;
         }
 
         return $this->settingsController->handleDelete();
@@ -92,8 +98,9 @@ class ReportController {
      * @return array Response with success status and message
      */
     public function handleGenerate() {
-        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-            return ["success" => false, "message" => "Invalid request method"];
+        $error = $this->requestValidator->requirePost();
+        if ($error !== null) {
+            return $error;
         }
 
         $generationResult = $this->reportOrchestrator->generateAllReports();
