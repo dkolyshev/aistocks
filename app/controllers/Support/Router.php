@@ -77,7 +77,7 @@ class Router {
      * @return bool True if handled
      */
     private function handleTemplateRequest($get) {
-        if (!isset($get["action"]) || $get["action"] !== "get_template") {
+        if (!isset($get["action"]) || $get["action"] !== Action::GET_TEMPLATE) {
             return false;
         }
 
@@ -119,13 +119,13 @@ class Router {
 
         $action = isset($post["action"]) ? $post["action"] : "";
 
-        if ($action === "delete") {
+        if ($action === Action::DELETE) {
             $result = $this->controller->handleDelete();
-        } elseif ($action === "generate") {
+        } elseif ($action === Action::GENERATE) {
             $result = $this->controller->handleGenerate();
-        } elseif ($action === "delete_report") {
+        } elseif ($action === Action::DELETE_REPORT) {
             $result = $this->controller->handleDeleteReport();
-        } elseif ($action === "delete_all_reports") {
+        } elseif ($action === Action::DELETE_ALL_REPORTS) {
             $result = $this->controller->handleDeleteAllReports();
         } else {
             $result = $this->controller->handleSettingsSubmission();

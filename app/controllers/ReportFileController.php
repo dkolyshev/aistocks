@@ -33,9 +33,9 @@ class ReportFileController {
 
         $action = isset($_POST["action"]) ? $_POST["action"] : "";
 
-        if ($action === "delete_report") {
+        if ($action === Action::DELETE_REPORT) {
             return $this->handleDeleteReport();
-        } elseif ($action === "delete_all_reports") {
+        } elseif ($action === Action::DELETE_ALL_REPORTS) {
             return $this->handleDeleteAllReports();
         }
 

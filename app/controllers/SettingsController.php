@@ -31,9 +31,9 @@ class SettingsController {
             return ["success" => false, "message" => "Invalid request method"];
         }
 
-        $action = isset($_POST["action"]) ? $_POST["action"] : "add";
+        $action = isset($_POST["action"]) ? $_POST["action"] : Action::ADD;
 
-        if ($action === "delete") {
+        if ($action === Action::DELETE) {
             return $this->handleDelete();
         }
 
@@ -45,7 +45,7 @@ class SettingsController {
      * @param string $action Action type (add or update)
      * @return array Response with success status and message
      */
-    public function handleSubmission($action = "add") {
+    public function handleSubmission($action = Action::ADD) {
         $settingData = $this->extractSettingData();
 
         // Validate setting data
@@ -63,7 +63,7 @@ class SettingsController {
         $settingData = array_merge($settingData, $uploadResult["data"]);
 
         // Save or update setting
-        if ($action === "update") {
+        if ($action === Action::UPDATE) {
             $originalFileName = isset($_POST["original_file_name"]) ? $_POST["original_file_name"] : $settingData["file_name"];
             $result = $this->settingsManager->updateSetting($originalFileName, $settingData);
             $message = $result ? "Settings updated successfully" : "Failed to update settings";
