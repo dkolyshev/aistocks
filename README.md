@@ -57,16 +57,15 @@ aiStocks/
 │   ├── controllers/
 │   │   ├── Support/
 │   │   │   ├── Action.php                  # Action constants for routing
-│   │   │   ├── DataSourceProvider.php      # Provides available data sources
-│   │   │   ├── ReportGenerationOrchestrator.php  # Coordinates report generation
 │   │   │   ├── Router.php                  # Request routing handler
-│   │   │   └── ShortcodeProvider.php       # Provides shortcode replacements
+│   │   │   └── ViewRenderer.php            # Renders views with data
 │   │   ├── ReportController.php            # Routes requests to handlers
 │   │   ├── ReportFileController.php        # Handles report file requests
 │   │   └── SettingsController.php          # Handles settings requests
 │   ├── helpers/
 │   │   ├── FieldStateResolver.php          # Resolves form field states
 │   │   ├── HtmlSanitizer.php               # Sanitizes HTML content
+│   │   ├── RequestValidator.php            # Validates incoming requests
 │   │   ├── StockFormatter.php              # Formats stock data values
 │   │   └── View.php                        # Renders view templates
 │   ├── models/
@@ -78,6 +77,10 @@ aiStocks/
 │   │   │   └── FileSystem.php              # File system operations
 │   │   ├── CsvDataReader.php               # Parses CSV stock data
 │   │   └── SettingsManager.php             # Manages report settings
+│   ├── providers/
+│   │   ├── DataSourceProvider.php          # Provides available data sources
+│   │   ├── ReportGenerationOrchestrator.php  # Coordinates report generation
+│   │   └── ShortcodeProvider.php           # Provides shortcode replacements
 │   ├── services/
 │   │   ├── Contracts/
 │   │   │   ├── ReportGeneratorInterface.php      # Report generator contract
