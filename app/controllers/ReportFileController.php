@@ -80,9 +80,9 @@ class ReportFileController implements ControllerInterface {
 
         $this->fileSystem->closeDirectory($dirHandle);
 
-        // Sort by created date descending
+        // Sort by filename (case-insensitive) ascending
         usort($files, function ($a, $b) {
-            return strcmp($b["created"], $a["created"]);
+            return strcasecmp($a["filename"], $b["filename"]);
         });
 
         return $files;
