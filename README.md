@@ -12,7 +12,7 @@ The small app with a service that generates stock reports based on settings we c
 # The app features
 
 > [!IMPORTANT]
-> For improved testing results and better user experience, the original `data.csv` was replaced with its extended version `extended-data.csv`. Basically, it's the same file but with two additional columns, "Exchange" and "Target Price," which are missing in `data.csv` but used in the example reports. You can check this file here [data/extended-data.csv](data/extended-data.csv).
+> For improved testing results and better user experience, I've added the extended data source file `extended-data.csv` in additional to the original `data.csv`. Basically, it's the same file but with two additional columns, "Exchange" and "Target Price," which are missing in `data.csv` but used in the example reports. You can check this file here [data/extended-data.csv](data/extended-data.csv).
 
 - [x] The app generates a report in 3 formats: HTML, PDF, and flipbook.
 - [x] Add/update/delete settings for report generation. Settings are stored in the `reportSettings.json`.
@@ -21,7 +21,7 @@ The small app with a service that generates stock reports based on settings we c
 - [x] The `Report File Name` field is configurable.
 - [x] The `Report Title` field is configurable.
 - [x] The `Author Name` field is configurable.
-- [x] Instead of an API, the app uses the `extended-data.csv` - it's an extended version of the `data.csv` with added columns "Exchange" and "Target Price" that are missing in the original `data.csv`.
+- [x] Instead of an API, the app uses the provided CSV file as a source of the data (`extended-data.csv` or `data.csv`, based on the user's choice).
 - [x] The `Number of Stocks` field is configurable.
 - [x] The `PDF Cover Image` is configurable.
 - [x] The `Article Image` field is configurable.
@@ -36,7 +36,7 @@ The small app with a service that generates stock reports based on settings we c
 - [x] Number of stocks is used to limit the number of companies, so if we set it to 3, the output would use the top 3 companies from `extended-data.csv`.
 - [x] Reports are generated in the `/reports/` folder.
 - [x] Use `Trading View` service for embedding charts.
-- [x] Following short codes is supported: `[Current Date]`, `[Chart]`, each `extended-data.csv` column as shortcode (`[Company]`, `[Exchange]`, `[Ticker]`, `[Price]`, etc).
+- [x] Following short codes are supported: `[Current Date]`, `[Chart]`, and each column as a shortcode from the provided CSV file (`[Company]`, `[Exchange]`, `[Ticker]`, `[Price]`, etc).
 
 > [!IMPORTANT]
 > I intentionally apply a filter on filenames that removes special characters and replaces spaces with hyphens. Such filtering helps maintain stability, compatibility, and safety, and guarantees that the generated reports' file names will appear and work the same way across different systems. How it works: if you put the string "Top 6 AI Stocks report" in the `Report File Name` field and generate reports, the output will be:
