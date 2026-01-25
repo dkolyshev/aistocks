@@ -27,7 +27,8 @@ $reportFileController = new ReportFileController(REPORTS_DIR, $fileSystem, DATE_
 // Create support services
 $shortcodeProvider = new ShortcodeProvider(DATA_CSV_FILE);
 $dataSourceProvider = new DataSourceProvider(DATA_DIR);
-$reportOrchestrator = new ReportGenerationOrchestrator($settingsManager, DATA_DIR, REPORTS_DIR);
+$reportServiceFactory = new ReportServiceFactory();
+$reportOrchestrator = new ReportGenerationOrchestrator($settingsManager, DATA_DIR, REPORTS_DIR, $reportServiceFactory);
 
 // Create main controller (facade) with all dependencies injected
 $controller = new ReportController($settingsController, $reportFileController, $reportOrchestrator, $shortcodeProvider, $dataSourceProvider);

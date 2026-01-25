@@ -14,6 +14,7 @@ $classMap = [
     "HtmlReportGenerator" => APP_DIR . "/services/HtmlReportGenerator.php",
     "PdfReportGenerator" => APP_DIR . "/services/PdfReportGenerator.php",
     "FlipbookGenerator" => APP_DIR . "/services/FlipbookGenerator.php",
+    "ReportServiceFactory" => APP_DIR . "/services/ReportServiceFactory.php",
     "View" => APP_DIR . "/helpers/View.php",
     "StockFormatter" => APP_DIR . "/helpers/StockFormatter.php",
     "FieldStateResolver" => APP_DIR . "/helpers/FieldStateResolver.php",

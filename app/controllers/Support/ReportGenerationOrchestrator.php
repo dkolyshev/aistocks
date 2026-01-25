@@ -9,17 +9,20 @@ class ReportGenerationOrchestrator {
     private $settingsManager;
     private $dataDir;
     private $reportsDir;
+    private $serviceFactory;
 
     /**
      * Constructor with dependency injection
      * @param SettingsManagerInterface $settingsManager Settings manager
      * @param string $dataDir Path to data directory containing CSV files
      * @param string $reportsDir Reports output directory
+     * @param ReportServiceFactoryInterface $serviceFactory Factory for creating report services
      */
-    public function __construct($settingsManager, $dataDir, $reportsDir) {
+    public function __construct($settingsManager, $dataDir, $reportsDir, $serviceFactory) {
         $this->settingsManager = $settingsManager;
         $this->dataDir = rtrim($dataDir, "/");
         $this->reportsDir = rtrim($reportsDir, "/");
+        $this->serviceFactory = $serviceFactory;
     }
 
     /**
@@ -82,7 +85,7 @@ class ReportGenerationOrchestrator {
             }
 
             // Load CSV data
-            $csvReader = new CsvDataReader($csvFilePath);
+            $csvReader = $this->serviceFactory->createCsvDataReader($csvFilePath);
             if (!$csvReader->load()) {
                 $result["errors"][] = "Failed to load CSV data from: " . $settings["api_placeholder"];
                 return $result;
@@ -97,10 +100,10 @@ class ReportGenerationOrchestrator {
             }
 
             // Initialize shortcode processor
-            $shortcodeProcessor = new ShortcodeProcessor();
+            $shortcodeProcessor = $this->serviceFactory->createShortcodeProcessor();
 
             // Generate HTML report
-            $htmlGenerator = new HtmlReportGenerator($settings, $stocks, $shortcodeProcessor);
+            $htmlGenerator = $this->serviceFactory->createHtmlReportGenerator($settings, $stocks, $shortcodeProcessor);
             $htmlPath = $this->reportsDir . "/" . $fileName . ".html";
             $result["html"] = $htmlGenerator->saveToFile($htmlPath);
 
@@ -109,7 +112,7 @@ class ReportGenerationOrchestrator {
             }
 
             // Generate PDF report
-            $pdfGenerator = new PdfReportGenerator($settings, $htmlGenerator);
+            $pdfGenerator = $this->serviceFactory->createPdfReportGenerator($settings, $htmlGenerator);
             $pdfPath = $this->reportsDir . "/" . $fileName . ".pdf";
             $result["pdf"] = $pdfGenerator->saveToFile($pdfPath);
 
@@ -118,7 +121,7 @@ class ReportGenerationOrchestrator {
             }
 
             // Generate Flipbook report
-            $flipbookGenerator = new FlipbookGenerator($settings, $stocks, $shortcodeProcessor);
+            $flipbookGenerator = $this->serviceFactory->createFlipbookGenerator($settings, $stocks, $shortcodeProcessor);
             $flipbookPath = $this->reportsDir . "/" . $fileName . "-flipbook.html";
             $result["flipbook"] = $flipbookGenerator->saveToFile($flipbookPath);
 
