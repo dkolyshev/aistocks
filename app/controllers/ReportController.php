@@ -21,40 +21,21 @@ class ReportController {
 
     /**
      * Constructor with dependency injection
-     * Dependencies are optional for backward compatibility
+     * All dependencies are required - wire them in the composition root (index.php)
      *
-     * @param SettingsController|null $settingsController Settings controller
-     * @param ReportFileController|null $reportFileController Report file controller
-     * @param ReportGenerationOrchestrator|null $reportOrchestrator Report generation orchestrator
-     * @param ShortcodeProvider|null $shortcodeProvider Shortcode provider
-     * @param DataSourceProvider|null $dataSourceProvider Data source provider
+     * @param SettingsController $settingsController Settings controller
+     * @param ReportFileController $reportFileController Report file controller
+     * @param ReportGenerationOrchestrator $reportOrchestrator Report generation orchestrator
+     * @param ShortcodeProvider $shortcodeProvider Shortcode provider
+     * @param DataSourceProvider $dataSourceProvider Data source provider
      */
-    public function __construct($settingsController = null, $reportFileController = null, $reportOrchestrator = null, $shortcodeProvider = null, $dataSourceProvider = null) {
-        // Create default instances if not provided (backward compatibility)
-        if ($settingsController === null) {
-            $settingsManager = new SettingsManager(SETTINGS_FILE);
-            $imageUploadHandler = new FileUploadHandler(IMAGES_DIR, ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE);
-            $pdfUploadHandler = new FileUploadHandler(REPORTS_DIR, ALLOWED_PDF_TYPES, MAX_FILE_SIZE);
-            $settingsController = new SettingsController($settingsManager, $imageUploadHandler, $pdfUploadHandler);
-        }
-
-        if ($reportFileController === null) {
-            $reportFileController = new ReportFileController(REPORTS_DIR, null, DATE_FORMAT);
-        }
-
-        if ($reportOrchestrator === null) {
-            $settingsManager = new SettingsManager(SETTINGS_FILE);
-            $reportOrchestrator = new ReportGenerationOrchestrator($settingsManager, DATA_DIR, REPORTS_DIR);
-        }
-
-        if ($shortcodeProvider === null) {
-            $shortcodeProvider = new ShortcodeProvider(DATA_CSV_FILE);
-        }
-
-        if ($dataSourceProvider === null) {
-            $dataSourceProvider = new DataSourceProvider(DATA_DIR);
-        }
-
+    public function __construct(
+        SettingsController $settingsController,
+        ReportFileController $reportFileController,
+        ReportGenerationOrchestrator $reportOrchestrator,
+        ShortcodeProvider $shortcodeProvider,
+        DataSourceProvider $dataSourceProvider
+    ) {
         $this->settingsController = $settingsController;
         $this->reportFileController = $reportFileController;
         $this->reportOrchestrator = $reportOrchestrator;

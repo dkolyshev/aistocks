@@ -13,25 +13,27 @@ class SettingsManager implements SettingsManagerInterface {
     private $fileSystem;
 
     /**
-     * Constructor
+     * Constructor - only assigns dependencies, no side effects
      * @param string $settingsFile Path to settings JSON file
      * @param FileSystemInterface|null $fileSystem File system abstraction (optional)
      */
     public function __construct($settingsFile, $fileSystem = null) {
         $this->settingsFile = $settingsFile;
         $this->fileSystem = $fileSystem !== null ? $fileSystem : new FileSystem();
-
-        if (!$this->fileSystem->exists($this->settingsFile)) {
-            $this->initializeSettingsFile();
-        }
     }
 
     /**
-     * Initialize settings file with empty array
+     * Ensure settings file exists, create with empty array if not
+     * Call this explicitly from composition root during bootstrap
+     * @return bool True if file exists or was created successfully
      */
-    private function initializeSettingsFile() {
+    public function ensureFileExists() {
+        if ($this->fileSystem->exists($this->settingsFile)) {
+            return true;
+        }
+
         $emptySettings = [];
-        $this->fileSystem->write($this->settingsFile, json_encode($emptySettings, JSON_PRETTY_PRINT));
+        return $this->fileSystem->write($this->settingsFile, json_encode($emptySettings, JSON_PRETTY_PRINT)) !== false;
     }
 
     /**

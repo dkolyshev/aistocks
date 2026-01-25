@@ -66,7 +66,7 @@ class ReportFileController implements ControllerInterface {
             $filePath = $this->reportsDir . "/" . $filename;
 
             // Skip directories, hidden files, and .htaccess
-            if ($this->fileSystem->isDirectory($filePath) || $filename[0] === "." || $filename === ".htaccess") {
+            if ($this->fileSystem->isDirectory($filePath) || $this->isHiddenFile($filename)) {
                 continue;
             }
 
@@ -134,7 +134,7 @@ class ReportFileController implements ControllerInterface {
             $filePath = $this->reportsDir . "/" . $filename;
 
             // Skip directories, hidden files, and .htaccess
-            if ($this->fileSystem->isDirectory($filePath) || $filename[0] === "." || $filename === ".htaccess") {
+            if ($this->fileSystem->isDirectory($filePath) || $this->isHiddenFile($filename)) {
                 continue;
             }
 
@@ -154,5 +154,14 @@ class ReportFileController implements ControllerInterface {
 
         $message = "Deleted {$deletedCount} report files successfully";
         return ["success" => true, "message" => $message];
+    }
+
+    /**
+     * Check if filename is a hidden file (starts with dot) or .htaccess
+     * @param string $filename Filename to check
+     * @return bool True if hidden file
+     */
+    private function isHiddenFile($filename) {
+        return strlen($filename) === 0 || $filename[0] === "." || $filename === ".htaccess";
     }
 }

@@ -47,6 +47,7 @@ $fileSystem = new FileSystem();
 
 // Create settings manager with file system injection
 $settingsManager = new SettingsManager(SETTINGS_FILE, $fileSystem);
+$settingsManager->ensureFileExists();
 
 // Create file upload handlers
 $imageUploadHandler = new FileUploadHandler(IMAGES_DIR, ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE);

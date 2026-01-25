@@ -2,7 +2,6 @@
 /**
  * ReportGenerationOrchestrator - Orchestrates report generation
  * Single Responsibility: Coordinate report generation across different formats
- * Open/Closed: Uses registry pattern for extensible report types
  * PHP 5.5 compatible
  */
 
@@ -10,41 +9,17 @@ class ReportGenerationOrchestrator {
     private $settingsManager;
     private $dataDir;
     private $reportsDir;
-    private $generatorTypes;
 
     /**
      * Constructor with dependency injection
      * @param SettingsManagerInterface $settingsManager Settings manager
      * @param string $dataDir Path to data directory containing CSV files
      * @param string $reportsDir Reports output directory
-     * @param array $generatorTypes Array of generator type configurations (OCP)
      */
-    public function __construct($settingsManager, $dataDir, $reportsDir, $generatorTypes = null) {
+    public function __construct($settingsManager, $dataDir, $reportsDir) {
         $this->settingsManager = $settingsManager;
         $this->dataDir = rtrim($dataDir, "/");
         $this->reportsDir = rtrim($reportsDir, "/");
-
-        // Default generator types (can be overridden for OCP)
-        $this->generatorTypes =
-            $generatorTypes !== null
-                ? $generatorTypes
-                : [
-                    "html" => [
-                        "class" => "HtmlReportGenerator",
-                        "extension" => ".html",
-                        "requires_stocks" => true,
-                    ],
-                    "pdf" => [
-                        "class" => "PdfReportGenerator",
-                        "extension" => ".pdf",
-                        "requires_html" => true,
-                    ],
-                    "flipbook" => [
-                        "class" => "FlipbookGenerator",
-                        "extension" => "-flipbook.html",
-                        "requires_stocks" => true,
-                    ],
-                ];
     }
 
     /**
@@ -178,28 +153,4 @@ class ReportGenerationOrchestrator {
         ];
     }
 
-    /**
-     * Add a new generator type (OCP extension point)
-     * @param string $name Generator type name
-     * @param array $config Generator configuration
-     */
-    public function addGeneratorType($name, $config) {
-        $this->generatorTypes[$name] = $config;
-    }
-
-    /**
-     * Remove a generator type
-     * @param string $name Generator type name
-     */
-    public function removeGeneratorType($name) {
-        unset($this->generatorTypes[$name]);
-    }
-
-    /**
-     * Get registered generator types
-     * @return array Generator types configuration
-     */
-    public function getGeneratorTypes() {
-        return $this->generatorTypes;
-    }
 }
