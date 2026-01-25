@@ -20,12 +20,12 @@ class SettingsController {
      * @param HtmlSanitizer $htmlSanitizer HTML sanitizer
      * @param RequestValidator $requestValidator Request validator
      */
-    public function __construct($settingsManager, $imageUploadHandler, $pdfUploadHandler, $htmlSanitizer = null, $requestValidator = null) {
+    public function __construct($settingsManager, $imageUploadHandler, $pdfUploadHandler, $htmlSanitizer, $requestValidator) {
         $this->settingsManager = $settingsManager;
         $this->imageUploadHandler = $imageUploadHandler;
         $this->pdfUploadHandler = $pdfUploadHandler;
-        $this->htmlSanitizer = $htmlSanitizer !== null ? $htmlSanitizer : new HtmlSanitizer();
-        $this->requestValidator = $requestValidator !== null ? $requestValidator : new RequestValidator();
+        $this->htmlSanitizer = $htmlSanitizer;
+        $this->requestValidator = $requestValidator;
     }
 
     /**
