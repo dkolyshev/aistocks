@@ -7,6 +7,7 @@
 class SettingsManager implements SettingsManagerInterface {
     private $settingsFile;
     private $fileSystem;
+    private $settingsCache = null;
 
     /**
      * Constructor - only assigns dependencies, no side effects
@@ -37,18 +38,25 @@ class SettingsManager implements SettingsManagerInterface {
      * @return array Array of all settings
      */
     public function getAllSettings() {
+        if ($this->settingsCache !== null) {
+            return $this->settingsCache;
+        }
+
         if (!$this->fileSystem->exists($this->settingsFile)) {
-            return [];
+            $this->settingsCache = [];
+            return $this->settingsCache;
         }
 
         $content = $this->fileSystem->read($this->settingsFile);
         if ($content === false) {
-            return [];
+            $this->settingsCache = [];
+            return $this->settingsCache;
         }
 
         $settings = json_decode($content, true);
+        $this->settingsCache = is_array($settings) ? $settings : [];
 
-        return is_array($settings) ? $settings : [];
+        return $this->settingsCache;
     }
 
     /**
@@ -148,7 +156,13 @@ class SettingsManager implements SettingsManagerInterface {
             return false;
         }
 
-        return $this->fileSystem->write($this->settingsFile, $json) !== false;
+        $result = $this->fileSystem->write($this->settingsFile, $json) !== false;
+
+        if ($result) {
+            $this->settingsCache = $settings;
+        }
+
+        return $result;
     }
 
     /**
