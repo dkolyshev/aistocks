@@ -1,0 +1,171 @@
+<?php
+/**
+ * Router - Front controller router for HTTP requests
+ * Single Responsibility: Dispatch requests and prepare view data
+ * PHP 5.5 compatible
+ */
+
+class Router {
+    /**
+     * @var ReportController
+     */
+    private $controller;
+
+    /**
+     * @var FileLoaderService
+     */
+    private $fileLoaderService;
+
+    /**
+     * Constructor with dependency injection
+     * @param ReportController $controller Main controller
+     * @param FileLoaderService $fileLoaderService File loader service
+     */
+    public function __construct($controller, $fileLoaderService) {
+        $this->controller = $controller;
+        $this->fileLoaderService = $fileLoaderService;
+    }
+
+    /**
+     * Dispatch the current HTTP request
+     * @param array|null $get Query parameters
+     * @param array|null $post Post parameters
+     * @param array|null $server Server parameters
+     */
+    public function dispatch($get = null, $post = null, $server = null) {
+        $get = $get !== null ? $get : $_GET;
+        $post = $post !== null ? $post : $_POST;
+        $server = $server !== null ? $server : $_SERVER;
+
+        if ($this->handleTemplateRequest($get)) {
+            return;
+        }
+
+        $flash = $this->handlePost($post, $server);
+        $message = $flash["message"];
+        $messageType = $flash["messageType"];
+
+        if (isset($get["message"])) {
+            $message = urldecode($get["message"]);
+            $messageType = "success";
+        }
+
+        $viewData = $this->prepareViewData($get);
+
+        $content = View::render("report-manager/index", [
+            "editMode" => $viewData["editMode"],
+            "editData" => $viewData["editData"],
+            "fieldStates" => $viewData["fieldStates"],
+            "allSettings" => $viewData["allSettings"],
+            "availableShortcodes" => $viewData["availableShortcodes"],
+            "availableDataSources" => $viewData["availableDataSources"],
+            "reportFiles" => $viewData["reportFiles"],
+        ]);
+
+        View::show("report-manager/layout", [
+            "message" => $message,
+            "messageType" => $messageType,
+            "content" => $content,
+        ]);
+    }
+
+    /**
+     * Handle AJAX request for default template content
+     * @param array $get Query parameters
+     * @return bool True if handled
+     */
+    private function handleTemplateRequest($get) {
+        if (!isset($get["action"]) || $get["action"] !== "get_template") {
+            return false;
+        }
+
+        header("Content-Type: application/json");
+
+        $templateFile = isset($get["template"]) ? basename($get["template"]) : "";
+        $allowedTemplates = [
+            DEFAULT_REPORT_INTRO_HTML,
+            DEFAULT_REPORT_STOCK_BLOCK_HTML,
+            DEFAULT_REPORT_DISCLAIMER_HTML,
+        ];
+
+        if (empty($templateFile) || !in_array($templateFile, $allowedTemplates, true)) {
+            echo json_encode(["success" => false, "error" => "Invalid template"]);
+            return true;
+        }
+
+        $content = $this->fileLoaderService->loadDataFile($templateFile);
+        echo json_encode(["success" => true, "content" => $content]);
+        return true;
+    }
+
+    /**
+     * Handle POST actions and return flash message data
+     * @param array $post Post parameters
+     * @param array $server Server parameters
+     * @return array Message data
+     */
+    private function handlePost($post, $server) {
+        $message = "";
+        $messageType = "info";
+
+        if (!isset($server["REQUEST_METHOD"]) || $server["REQUEST_METHOD"] !== "POST") {
+            return [
+                "message" => $message,
+                "messageType" => $messageType,
+            ];
+        }
+
+        $action = isset($post["action"]) ? $post["action"] : "";
+
+        if ($action === "delete") {
+            $result = $this->controller->handleDelete();
+        } elseif ($action === "generate") {
+            $result = $this->controller->handleGenerate();
+        } elseif ($action === "delete_report") {
+            $result = $this->controller->handleDeleteReport();
+        } elseif ($action === "delete_all_reports") {
+            $result = $this->controller->handleDeleteAllReports();
+        } else {
+            $result = $this->controller->handleSettingsSubmission();
+        }
+
+        return [
+            "message" => $result["message"],
+            "messageType" => $result["success"] ? "success" : "danger",
+        ];
+    }
+
+    /**
+     * Prepare view data for rendering
+     * @param array $get Query parameters
+     * @return array View data
+     */
+    private function prepareViewData($get) {
+        $allSettings = $this->controller->getAllSettings();
+        $availableShortcodes = $this->controller->getAvailableShortcodes();
+        $availableDataSources = $this->controller->getAvailableDataSources();
+        $reportFiles = $this->controller->getReportFiles();
+
+        $editMode = false;
+        $editData = null;
+
+        if (isset($get["edit"])) {
+            $editData = $this->controller->getSettingByFileName($get["edit"]);
+            if ($editData !== null) {
+                $editMode = true;
+            }
+        }
+
+        $fieldStates = FieldStateResolver::resolveAll($editMode, $editData);
+
+        return [
+            "editMode" => $editMode,
+            "editData" => $editData,
+            "fieldStates" => $fieldStates,
+            "allSettings" => $allSettings,
+            "availableShortcodes" => $availableShortcodes,
+            "availableDataSources" => $availableDataSources,
+            "reportFiles" => $reportFiles,
+        ];
+    }
+}
