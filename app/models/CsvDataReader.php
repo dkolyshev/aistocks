@@ -4,10 +4,6 @@
  * PHP 5.5 compatible
  */
 
-require_once dirname(__FILE__) . "/Contracts/CsvDataReaderInterface.php";
-require_once dirname(__FILE__) . "/Contracts/FileSystemInterface.php";
-require_once dirname(__FILE__) . "/Support/FileSystem.php";
-
 class CsvDataReader implements CsvDataReaderInterface {
     private $csvFile;
     private $headers;

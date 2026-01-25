@@ -5,11 +5,7 @@
  * PHP 5.5 compatible
  */
 
-require_once dirname(__FILE__) . "/Contracts/ControllerInterface.php";
-require_once dirname(dirname(__FILE__)) . "/models/Contracts/FileSystemInterface.php";
-require_once dirname(dirname(__FILE__)) . "/models/Support/FileSystem.php";
-
-class ReportFileController implements ControllerInterface {
+class ReportFileController {
     private $reportsDir;
     private $fileSystem;
     private $dateFormat;

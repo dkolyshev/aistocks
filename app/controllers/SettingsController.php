@@ -5,9 +5,7 @@
  * PHP 5.5 compatible
  */
 
-require_once dirname(__FILE__) . "/Contracts/ControllerInterface.php";
-
-class SettingsController implements ControllerInterface {
+class SettingsController {
     private $settingsManager;
     private $imageUploadHandler;
     private $pdfUploadHandler;

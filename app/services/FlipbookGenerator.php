@@ -126,8 +126,6 @@ class FlipbookGenerator extends BaseReportGenerator {
 
     /**
      * Generate stock page
-     * @param array $stock Stock data
-     * @param int $index Stock index
      * @return string Stock page HTML
      */
     private function generateStockPage() {

@@ -6,12 +6,6 @@
  * PHP 5.5 compatible
  */
 
-require_once dirname(__FILE__) . "/SettingsController.php";
-require_once dirname(__FILE__) . "/ReportFileController.php";
-require_once dirname(__FILE__) . "/Support/ReportGenerationOrchestrator.php";
-require_once dirname(__FILE__) . "/Support/ShortcodeProvider.php";
-require_once dirname(__FILE__) . "/Support/DataSourceProvider.php";
-
 class ReportController {
     private $settingsController;
     private $reportFileController;

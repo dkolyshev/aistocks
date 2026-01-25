@@ -17,7 +17,6 @@ $classMap = [
     "View" => APP_DIR . "/helpers/View.php",
     "StockFormatter" => APP_DIR . "/helpers/StockFormatter.php",
     "FieldStateResolver" => APP_DIR . "/helpers/FieldStateResolver.php",
-    "ControllerInterface" => APP_DIR . "/controllers/Contracts/ControllerInterface.php",
     "ShortcodeProvider" => APP_DIR . "/controllers/Support/ShortcodeProvider.php",
     "DataSourceProvider" => APP_DIR . "/controllers/Support/DataSourceProvider.php",
     "ReportGenerationOrchestrator" => APP_DIR . "/controllers/Support/ReportGenerationOrchestrator.php",
