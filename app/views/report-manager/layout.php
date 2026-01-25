@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report Manager | Stock Report Service</title>
+    <link rel="icon" href="/assets/favicon/favicon.ico">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/css/report-manager.css">
     <link rel="stylesheet" href="/assets/css/report-manager-modern.css">
