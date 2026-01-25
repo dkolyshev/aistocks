@@ -97,3 +97,7 @@ strong {
 .margin-bottom {
   margin-bottom: 30px;
 }
+
+.display-inline-block {
+  display: inline-block;
+}

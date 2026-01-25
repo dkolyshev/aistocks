@@ -10,10 +10,6 @@
 </head>
 <body>
     <div id="article-body">
-        <?php if ($isPdfMode && !empty($coverHtml)): ?>
-            <?php echo $coverHtml; ?>
-        <?php endif; ?>
-
         <div class="report-content">
             <div class="pagebreak margin-bottom">
                 <h1><?php echo View::escape($title); ?></h1>
@@ -25,10 +21,11 @@
             <hr/>
 
             <div class="pagebreak">
-                
-                <?php echo $articleImageHtml; ?>
                 <?php if (!empty($introHtml)): ?>
+                    <?php echo $articleImageHtml; ?>
                     <?php echo $introHtml; ?>
+                <?php else: ?>
+                    <div class="display-inline-block"><?php echo $articleImageHtml; ?></div>
                 <?php endif; ?>
             </div>
 

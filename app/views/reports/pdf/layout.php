@@ -19,7 +19,8 @@
                 <?php echo $disclaimerHtml; ?>
             <?php endif; ?>
 
-            <div class="pagebreak">
+            <?php $needsPageBreak = !empty($disclaimerHtml); ?>
+            <div class="<?php echo $needsPageBreak ? "pagebreak" : ""; ?>">
                 <h1><?php echo View::escape($title); ?></h1>
                 <?php echo $articleImageHtml; ?>
                 <?php if (!empty($introHtml)): ?>
