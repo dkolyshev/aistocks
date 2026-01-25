@@ -150,9 +150,10 @@
 
         case "custom":
           // Keep current content, make editable
-          // If switching from empty, clear the field
-          if (textarea.readOnly || textarea.value === "") {
+          // If switching from empty, clear the placeholder text
+          if (textarea.value === "" || textarea.value === "The field is disabled and excluded from reports.") {
             textarea.value = "";
+            textarea.placeholder = "";
             textarea.focus();
           }
           break;
