@@ -192,3 +192,5 @@ docker-compose down
 ## Click-to-copy feature for shortcodes
 
 ## Customizable data source
+
+## Theme selector for the Report Manager page
