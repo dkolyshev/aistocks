@@ -1,7 +1,6 @@
 <?php
 /**
- * View - Simple template renderer
- * Supports both static usage (backward compatible) and instance usage (testable)
+ * View - Simple template renderer (static helper)
  * PHP 5.5 compatible
  */
 
@@ -12,23 +11,6 @@ class View {
     private static $viewsDir = null;
 
     /**
-     * @var string Instance views directory path
-     */
-    private $instanceViewsDir;
-
-    /**
-     * Constructor for instance-based usage
-     * @param string|null $viewsDir Path to views directory (optional)
-     */
-    public function __construct($viewsDir = null) {
-        if ($viewsDir !== null) {
-            $this->instanceViewsDir = rtrim($viewsDir, "/");
-        } else {
-            $this->instanceViewsDir = self::resolveDefaultViewsDir();
-        }
-    }
-
-    /**
      * Resolve the default views directory
      * @return string Views directory path
      */
@@ -37,57 +19,6 @@ class View {
             return APP_DIR . "/views";
         }
         return dirname(dirname(__FILE__)) . "/views";
-    }
-
-    // =========================================================================
-    // Instance Methods (preferred for new code and testing)
-    // =========================================================================
-
-    /**
-     * Get the instance views directory
-     * @return string Views directory path
-     */
-    public function getViewsDirectory() {
-        return $this->instanceViewsDir;
-    }
-
-    /**
-     * Render a view template with data (instance method)
-     * @param string $viewPath Path to view file (relative to views directory)
-     * @param array $data Data to pass to the view
-     * @return string Rendered HTML
-     */
-    public function renderView($viewPath, $data = []) {
-        $viewFile = $this->instanceViewsDir . "/" . $viewPath . ".php";
-
-        if (!file_exists($viewFile)) {
-            throw new Exception("View file not found: " . $viewFile);
-        }
-
-        extract($data);
-
-        ob_start();
-        include $viewFile;
-        return ob_get_clean();
-    }
-
-    /**
-     * Render and output a view directly (instance method)
-     * @param string $viewPath Path to view file
-     * @param array $data Data to pass to the view
-     */
-    public function showView($viewPath, $data = []) {
-        echo $this->renderView($viewPath, $data);
-    }
-
-    /**
-     * Check if a view exists (instance method)
-     * @param string $viewPath Path to view file (relative to views directory)
-     * @return bool True if view exists
-     */
-    public function viewExists($viewPath) {
-        $viewFile = $this->instanceViewsDir . "/" . $viewPath . ".php";
-        return file_exists($viewFile);
     }
 
     // =========================================================================
