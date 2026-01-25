@@ -1,4 +1,4 @@
-The small app with a service that generates stock reports based on settings we configure. Basically the settings congigured via app will dictate the companies included and format of output of the reports. Reports will be generated in 3 formats: HTML, PDF and flipbook.
+The small app with a service that generates stock reports based on settings we configure. The settings configured via the app will dictate the companies included and the format of the output of the reports. Reports will be generated in 3 formats: HTML, PDF, and flipbook.
 
 ## Table of Contents
 
@@ -184,10 +184,10 @@ docker-compose down
 
 # Added UI improvements
 
-- Pagination in flipbook.
-- "Generated Reports" panel.
-- Messages about success/failure.
-- Click-to-copy feature for shortcodes.
-- Customizable data source.
+- Added pagination in flipbook.
+- Added the "Generated Reports" panel to the Report Manager (see bottom part).
+- Show messages about success/failure after.
+- Added "click-to-copy" feature for shortcodes.
+- Customizable data source (select list based on the available .csv files).
 - Theme selector for the Report Manager page (see footer).
 - More flexible settings for content fields: "Report Intro HTML", "Stock Block HTML", "Disclaimer HTML".
