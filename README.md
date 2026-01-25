@@ -132,7 +132,8 @@ aiStocks/
 
 ## Prerequisites
 
-- Docker installed on your machine
+- Git installed
+- Docker installed
 - Docker Compose installed
 
 ---
@@ -141,19 +142,31 @@ aiStocks/
 
 You can check the deployed app here https://aistocks.fly.dev or deploy it on your local machine/remote server:
 
-### 1. Navigate to the Docker directory inside the app root
+### 1. Navigate to the directory where you want to deploy the app
 
 ```bash
-cd ~/aiStocks/.docker
+cd ~/apps
 ```
 
-### 2. Copy environment file (optional)
+### 2. Clone my GitHub repository with the app
+
+```bash
+git clone https://github.com/dkolyshev/aistocks.git
+```
+
+### 3. Navigate to the Docker directory inside the app root
+
+```bash
+cd aiStocks/.docker
+```
+
+### 4. Copy environment file
 
 ```bash
 cp .env.example .env
 ```
 
-### 3. Start the Docker container
+### 5. Start the Docker container
 
 ```bash
 docker-compose up -d
@@ -166,7 +179,7 @@ This will:
 - Mount the project directory
 - Start the web server on port 8080
 
-### 4. Access the application
+### 6. Access the application
 
 Open your browser and navigate to:
 
@@ -174,7 +187,7 @@ Open your browser and navigate to:
 
 You'll be redirected to the Report Manager.
 
-### 5. Stop the container
+### 7. Stop the container (when you don't need the app working)
 
 ```bash
 docker-compose down
