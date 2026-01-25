@@ -8,6 +8,7 @@
 class ShortcodeProvider {
     private $csvFilePath;
     private $specialShortcodes;
+    private $cachedDataShortcodes = null;
 
     /**
      * Constructor
@@ -38,19 +39,23 @@ class ShortcodeProvider {
     }
 
     /**
-     * Get data shortcodes from CSV headers
+     * Get data shortcodes from CSV headers (cached after first read)
      * @return array Array of data shortcodes
      */
     private function getDataShortcodes() {
-        $shortcodes = [];
+        if ($this->cachedDataShortcodes !== null) {
+            return $this->cachedDataShortcodes;
+        }
+
+        $this->cachedDataShortcodes = [];
 
         if (!file_exists($this->csvFilePath)) {
-            return $shortcodes;
+            return $this->cachedDataShortcodes;
         }
 
         $csvHandle = fopen($this->csvFilePath, "r");
         if (!$csvHandle) {
-            return $shortcodes;
+            return $this->cachedDataShortcodes;
         }
 
         $headers = fgetcsv($csvHandle);
@@ -58,11 +63,11 @@ class ShortcodeProvider {
 
         if ($headers) {
             foreach ($headers as $header) {
-                $shortcodes[] = "[" . trim($header) . "]";
+                $this->cachedDataShortcodes[] = "[" . trim($header) . "]";
             }
         }
 
-        return $shortcodes;
+        return $this->cachedDataShortcodes;
     }
 
     /**
