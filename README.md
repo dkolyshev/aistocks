@@ -12,7 +12,7 @@ The small app with a service that generates stock reports based on settings we c
 # The app features
 
 > [!IMPORTANT]
-> For improved testing results and better user experience, I've added the extended data source file `extended-data.csv` in additional to the original `data.csv`. Basically, it's the same file but with two additional columns, "Exchange" and "Target Price," which are missing in `data.csv` but used in the example reports. You can check this file here [data/extended-data.csv](data/extended-data.csv).
+> For improved testing results and better user experience, I've added the extended data source file `extended-data.csv` (in additional to the original `data.csv`). Basically, it's the same file but with two additional columns, "Exchange" and "Target Price," which are missing in `data.csv` but used in the example reports. You can check this file here [data/extended-data.csv](data/extended-data.csv).
 
 - [x] The app generates a report in 3 formats: HTML, PDF, and flipbook.
 - [x] Add/update/delete settings for report generation. Settings are stored in the `reportSettings.json`.
