@@ -186,7 +186,7 @@ git clone https://github.com/dkolyshev/aistocks.git
 cd aistocks/.docker
 ```
 
-### 4. Copy environment file
+### 4. Copy the environment file
 
 ```bash
 cp .env.example .env
