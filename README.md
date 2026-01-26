@@ -4,8 +4,9 @@ The small app with a service that generates stock reports based on settings we c
 - SOLID principles.
 - PHP 5.5 compatible.
 - Easy maintain.
-- Easy scale (add new formats/templates for reports, new pages, new configurator options, etc).
+- Easy to scale. For example, add new sources of data like API, new formats/templates for reports, new pages, new configurator options, etc.
 - Easy deploy and run on any environment (via Docker).
+- To simplify and speed up the development process, the app’s UI was built based on the provided examples. As a result, the app’s appearance is not perfect and has some issues (for example, element composition on the mobile version). The emphasis was placed on backend development - code quality and adherence to industry best practices.
 
 ## Table of Contents
 
