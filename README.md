@@ -183,7 +183,7 @@ git clone https://github.com/dkolyshev/aistocks.git
 ### 3. Navigate to the Docker directory inside the app root
 
 ```bash
-cd aiStocks/.docker
+cd aistocks/.docker
 ```
 
 ### 4. Copy environment file
