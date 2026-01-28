@@ -148,6 +148,8 @@ aiStocks/
 
 # How to use
 
+## Run in Docker container
+
 ## Prerequisites
 
 - Git installed
@@ -210,6 +212,102 @@ You can also check the actual PHP version that the app is running on here **http
 ```bash
 docker-compose down
 ```
+
+## Run in subdirectory of your webserver
+
+## Prerequisites
+
+1. You need to install wkhtmltopdf to be able to generate PDF reports.
+
+### Ubuntu/Debian:
+
+```bash
+sudo apt-get install wkhtmltopdf xvfb
+```
+
+### CentOS/RHEL/Fedora:
+
+```bash
+sudo yum install wkhtmltopdf xorg-x11-server-Xvfb
+```
+
+or on newer versions:
+
+```bash
+sudo dnf install wkhtmltopdf xorg-x11-server-Xvfb
+```
+
+### Alpine Linux:
+
+```bash
+apk add wkhtmltopdf xvfb
+```
+
+### Arch Linux:
+
+```bash
+sudo pacman -S wkhtmltopdf xorg-server-xvfb
+```
+
+### macOS (Homebrew):
+
+```bash
+brew install wkhtmltopdf
+```
+
+(No xvfb needed on macOS)
+
+### FreeBSD:
+
+```bash
+pkg install wkhtmltopdf xorg-vfbserver
+```
+
+2. Git
+
+## How to run the app
+
+### 1. Navigate to the directory where you want to deploy the app
+
+```bash
+cd ~/tools/testproject/contractord/aistocks
+```
+
+### 2. Pull the latest update from repository
+
+```bash
+git pull origin main
+```
+
+### 3. Update base URL in the .htaccess file
+
+Edit `aistocks/.htaccess`
+
+Line 27. Change from this
+
+`RewriteBase /`
+
+to this
+
+`RewriteBase /tools/testproject/contractord/aistocks`
+
+### 4. Update BASE_URL in the config.php
+
+Edit `aistocks/app/config/config.php`
+
+Line 15. Change from this
+
+```php
+define("BASE_URL", "");
+```
+
+to this
+
+```php
+define("BASE_URL", "/tools/testproject/contractord/aistocks");
+```
+
+### 5. Check the app
 
 ---
 
