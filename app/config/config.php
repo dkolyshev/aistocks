@@ -6,6 +6,15 @@
 
 date_default_timezone_set("UTC");
 
+// Base URL for subdirectory installations
+// Set this to your app's base path if not at domain root
+// Examples: "" (root), "/myapp", "/tools/testproject/contractord/aistocks"
+if (!defined("BASE_URL")) {
+    // For subdirectory test, use: "/tools/testproject/contractord/aistocks"
+    // For production at root, use: ""
+    define("BASE_URL", "");
+}
+
 if (!defined("APP_ROOT")) {
     define("APP_ROOT", dirname(dirname(dirname(__FILE__))));
 }
@@ -33,7 +42,7 @@ define("TRADINGVIEW_WIDGET_WIDTH", 600);
 define("TRADINGVIEW_WIDGET_HEIGHT", 220);
 
 // URLs
-define("REPORT_MANAGER_URL", "reportManager");
+define("REPORT_MANAGER_URL", BASE_URL . "/reportManager");
 
 // Default fields
 define("DEFAULT_REPORT_INTRO_HTML", "reportIntro.html");

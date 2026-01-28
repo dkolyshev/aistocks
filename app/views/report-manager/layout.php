@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report Manager | Stock Report Service</title>
-    <link rel="icon" href="/assets/favicon/favicon.ico">
+    <link rel="icon" href="<?php echo View::url('/assets/favicon/favicon.ico'); ?>">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/report-manager.css">
-    <link rel="stylesheet" href="/assets/css/report-manager-modern.css">
+    <link rel="stylesheet" href="<?php echo View::url('/assets/css/report-manager.css'); ?>">
+    <link rel="stylesheet" href="<?php echo View::url('/assets/css/report-manager-modern.css'); ?>">
 </head>
 
 <body>
@@ -35,7 +35,7 @@
         <div class="footer-meta">
             <small>
                 System Date: <?php echo date(DATE_FORMAT); ?> | 
-                <a href="/phpinfo" target="_blank">PHP <?php echo PHP_VERSION; ?></a> Compatibility Mode
+                <a href="<?php echo View::url('/phpinfo'); ?>" target="_blank">PHP <?php echo PHP_VERSION; ?></a> Compatibility Mode
             </small>
         </div>
         <div class="footer-theme">
@@ -50,7 +50,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="/assets/js/report-manager.js"></script>
+    <script src="<?php echo View::url('/assets/js/report-manager.js'); ?>"></script>
 
 </body>
 

@@ -111,7 +111,8 @@ class ReportController {
             $stats = $this->reportOrchestrator->calculateStatistics($generationResult["results"]);
         }
 
-        $message = "Generated reports for {$stats["success_count"]} of {$stats["total_count"]} configurations. Check reports <a href='#reports-table'>here</a> or <a href='/reports' target='_blank'>here.</a>";
+        $reportsUrl = (defined("BASE_URL") ? BASE_URL : "") . "/reports";
+        $message = "Generated reports for {$stats["success_count"]} of {$stats["total_count"]} configurations. Check reports <a href='#reports-table'>here</a> or <a href='{$reportsUrl}' target='_blank'>here.</a>";
         return ["success" => $stats["success_count"] > 0, "message" => $message];
     }
 

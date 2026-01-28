@@ -76,6 +76,20 @@ class View {
     }
 
     /**
+     * Generate a URL with the base path prefix
+     * @param string $path Path relative to app root (e.g., "/assets/css/style.css")
+     * @return string Full URL with base path
+     */
+    public static function url($path) {
+        $base = defined("BASE_URL") ? BASE_URL : "";
+        // Ensure path starts with /
+        if (strlen($path) > 0 && $path[0] !== "/") {
+            $path = "/" . $path;
+        }
+        return $base . $path;
+    }
+
+    /**
      * Render and output a view directly (static method)
      * @param string $viewPath Path to view file
      * @param array $data Data to pass to the view
