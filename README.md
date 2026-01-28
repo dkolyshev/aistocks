@@ -15,6 +15,7 @@ The small app with a service that generates stock reports based on settings we c
 - [How to use](#how-to-use)
   - [Prerequisites](#prerequisites)
   - [Quick Start](#quick-start)
+  - [Run the app in subdirectory](#run-in-subdirectory-of-your-webserver)
 - [Added UI improvements](#added-ui-improvements)
 
 # The app features
@@ -223,9 +224,7 @@ docker-compose down
 
 ## Run in subdirectory of your webserver
 
-## Prerequisites
-
-1. You need to install wkhtmltopdf to be able to generate PDF reports.
+1. You need to install `wkhtmltopdf` to be able to generate PDF reports.
 
 ### Ubuntu/Debian:
 
