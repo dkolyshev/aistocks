@@ -37,8 +37,15 @@ RUN set -eux; \
 # Enable Apache modules
 RUN a2enmod rewrite
 
-# Configure Apache to allow .htaccess overrides
-RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+# Configure Apache to allow .htaccess overrides in the app docroot
+RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf; \
+  printf '%s\n' \
+    '<Directory /var/www/html>' \
+    '  AllowOverride All' \
+    '  Require all granted' \
+    '</Directory>' \
+    > /etc/apache2/conf-available/aistocks.conf; \
+  a2enconf aistocks
 
 # Configure PHP settings for file uploads
 RUN { \
