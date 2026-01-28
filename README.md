@@ -316,6 +316,8 @@ define("BASE_URL", "/tools/testproject/contractord/aistocks");
 
 ### 5. Check the app
 
+Now the app should be available on https://sendy.musthtest.ca/tools/testproject/contractord/aistocks/
+
 ---
 
 # Added UI improvements
