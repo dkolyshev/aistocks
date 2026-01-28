@@ -270,9 +270,9 @@ brew install wkhtmltopdf
 pkg install wkhtmltopdf xorg-vfbserver
 ```
 
-2. Git
+2. Installed Git
 
-## How to run the app
+## How to run the app in subdirectory
 
 ### 1. Navigate to the directory where you want to deploy the app
 
