@@ -1,6 +1,8 @@
+I found that it's quite tricky to deploy a PHP 5.5 image on DigitalOcean from the official Docker Hub. Probably due to security reasons. To reduce complexity and avoid issues during deployment, this example was built using the nearest available PHP5.6.
+
 # How to deploy the app on the DigitalOcean droplet
 
-Create a DO droplet and navigate to the droplet's dashboard. Open an in-built console with root access to the droplet terminal.
+Create a DO droplet, then navigate to its dashboard. Open an in-built console with root access to the droplet terminal.
 
 ### Install Docker using the official guide
 
