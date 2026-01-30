@@ -54,6 +54,7 @@ class FmpApiClient implements DataSourceInterface {
 
     /**
      * Load data from FMP API using configured endpoint
+     * Fetches most-actives list, then enriches with profile data
      * @return bool Success status
      */
     public function load() {
@@ -74,15 +75,24 @@ class FmpApiClient implements DataSourceInterface {
                 return false;
             }
 
+            // Extract symbols from most-actives response
+            $symbols = $this->extractSymbols($apiData);
+
+            // Fetch profile data for all symbols
+            $profileData = $this->fetchProfileData($symbols);
+
+            // Merge most-actives data with profile data
+            $enrichedData = $this->mergeWithProfileData($apiData, $profileData);
+
             // Map API response to standardized format
             if ($this->dataMapper !== null) {
-                $this->data = $this->dataMapper->mapStockScreenerData($apiData);
+                $this->data = $this->dataMapper->mapStockScreenerData($enrichedData);
                 $this->headers = $this->dataMapper->getStandardHeaders();
             } else {
                 // Fallback: use raw API data
-                $this->data = $apiData;
-                if (!empty($apiData)) {
-                    $this->headers = array_keys($apiData[0]);
+                $this->data = $enrichedData;
+                if (!empty($enrichedData)) {
+                    $this->headers = array_keys($enrichedData[0]);
                 }
             }
 
@@ -97,6 +107,90 @@ class FmpApiClient implements DataSourceInterface {
             error_log("FmpApiClient: Exception during load - " . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Extract symbols from API response
+     * @param array $apiData Raw API response
+     * @return array Array of symbol strings
+     */
+    private function extractSymbols($apiData) {
+        $symbols = array();
+
+        foreach ($apiData as $stock) {
+            if (isset($stock['symbol']) && !empty($stock['symbol'])) {
+                $symbols[] = $stock['symbol'];
+            }
+        }
+
+        return $symbols;
+    }
+
+    /**
+     * Fetch profile data for multiple symbols
+     * @param array $symbols Array of stock symbols
+     * @return array Associative array of profile data keyed by symbol
+     */
+    private function fetchProfileData($symbols) {
+        $profileData = array();
+
+        if (empty($symbols)) {
+            return $profileData;
+        }
+
+        // Fetch profile for each symbol
+        foreach ($symbols as $symbol) {
+            $response = $this->makeRequest("/profile", array('symbol' => $symbol));
+
+            if ($response !== false) {
+                $profile = json_decode($response, true);
+
+                // Profile endpoint returns array with single item
+                if (is_array($profile) && !empty($profile)) {
+                    $profileData[$symbol] = isset($profile[0]) ? $profile[0] : $profile;
+                }
+            }
+        }
+
+        return $profileData;
+    }
+
+    /**
+     * Merge most-actives data with profile data
+     * @param array $apiData Original most-actives data
+     * @param array $profileData Profile data keyed by symbol
+     * @return array Enriched data array
+     */
+    private function mergeWithProfileData($apiData, $profileData) {
+        $enrichedData = array();
+
+        foreach ($apiData as $stock) {
+            $symbol = isset($stock['symbol']) ? $stock['symbol'] : '';
+            $enrichedStock = $stock;
+
+            // Merge profile data if available
+            if (!empty($symbol) && isset($profileData[$symbol])) {
+                $profile = $profileData[$symbol];
+
+                // Add profile fields that are missing in most-actives
+                $enrichedStock['sector'] = isset($profile['sector']) ? $profile['sector'] : '';
+                $enrichedStock['industry'] = isset($profile['industry']) ? $profile['industry'] : '';
+                $enrichedStock['country'] = isset($profile['country']) ? $profile['country'] : '';
+                $enrichedStock['marketCap'] = isset($profile['marketCap']) ? $profile['marketCap'] : '';
+                $enrichedStock['peRatio'] = isset($profile['peRatio']) ? $profile['peRatio'] : '';
+                $enrichedStock['volume'] = isset($profile['volAvg']) ? $profile['volAvg'] : '';
+                $enrichedStock['description'] = isset($profile['description']) ? $profile['description'] : '';
+
+                // Use profile name if available (may be more complete)
+                if (isset($profile['companyName']) && !empty($profile['companyName'])) {
+                    $enrichedStock['name'] = $profile['companyName'];
+                }
+            }
+
+            $enrichedData[] = $enrichedStock;
+        }
+
+        return $enrichedData;
     }
 
     /**

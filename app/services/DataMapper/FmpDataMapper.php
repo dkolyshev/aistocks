@@ -60,9 +60,10 @@ class FmpDataMapper {
     }
 
     /**
-     * Map single stock data from most-actives endpoint
-     * API returns: symbol, name, price, change, changesPercentage, exchange
-     * @param array $stock Raw stock data from API
+     * Map single stock data from most-actives endpoint enriched with profile data
+     * Most-actives returns: symbol, name, price, change, changesPercentage, exchange
+     * Profile adds: sector, industry, country, marketCap, peRatio, volume, description
+     * @param array $stock Raw stock data from API (enriched with profile data)
      * @return array|null Mapped stock data or null
      */
     private function mapStockData($stock) {
@@ -73,15 +74,15 @@ class FmpDataMapper {
         return [
             "Ticker" => $this->getValue($stock, "symbol", ""),
             "Company" => $this->getValue($stock, "name", ""),
-            "Sector" => "",
-            "Industry" => "",
-            "Country" => "",
-            "Market Cap" => "",
-            "P/E" => "",
+            "Sector" => $this->getValue($stock, "sector", ""),
+            "Industry" => $this->getValue($stock, "industry", ""),
+            "Country" => $this->getValue($stock, "country", ""),
+            "Market Cap" => $this->formatMarketCap($this->getValue($stock, "marketCap", "")),
+            "P/E" => $this->formatRatio($this->getValue($stock, "peRatio", "")),
             "Price" => $this->formatPrice($this->getValue($stock, "price", 0)),
             "Change" => $this->formatChange($this->getValue($stock, "changesPercentage", 0)),
-            "Volume" => "",
-            "Description" => "",
+            "Volume" => $this->formatVolume($this->getValue($stock, "volume", "")),
+            "Description" => $this->getValue($stock, "description", ""),
             "Exchange" => $this->getValue($stock, "exchange", ""),
         ];
     }
