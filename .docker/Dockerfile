@@ -48,7 +48,7 @@ WORKDIR /var/www/html
 COPY . /var/www/html
 
 # Copy and set up entrypoint script
-COPY docker-entrypoint.sh /usr/local/bin/
+COPY .docker/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Create necessary directories with proper permissions

@@ -50,7 +50,8 @@ define("DEFAULT_REPORT_DISCLAIMER_HTML", "disclaimer.html");
 define("DEFAULT_REPORT_STOCK_BLOCK_HTML", "stockBlock.html");
 
 // Financial Modeling Prep API Configuration
-define("FMP_API_KEY", "3rtO1ZEiKHJHkkQOqwrwPsSa9ugfT7xQ"); // Set your FMP API key here
+// API key is read from environment variable (set in .docker/.env)
+define("FMP_API_KEY", getenv("FMP_API_KEY") ? getenv("FMP_API_KEY") : "");
 define("FMP_BASE_URL", "https://financialmodelingprep.com/stable");
 define("FMP_API_TIMEOUT", 30); // Timeout in seconds
 define("FMP_CACHE_TTL", 3600); // Cache time-to-live in seconds (1 hour)
