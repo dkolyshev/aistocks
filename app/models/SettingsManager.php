@@ -54,7 +54,18 @@ class SettingsManager implements SettingsManagerInterface {
         }
 
         $settings = json_decode($content, true);
-        $this->settingsCache = is_array($settings) ? $settings : [];
+        if (!is_array($settings)) {
+            $this->settingsCache = [];
+            return $this->settingsCache;
+        }
+
+        // Migrate settings to new format on retrieval for backward compatibility
+        $migratedSettings = [];
+        foreach ($settings as $setting) {
+            $migratedSettings[] = $this->migrateSettingFormat($setting);
+        }
+
+        $this->settingsCache = $migratedSettings;
 
         return $this->settingsCache;
     }
@@ -69,7 +80,7 @@ class SettingsManager implements SettingsManagerInterface {
 
         foreach ($allSettings as $setting) {
             if (isset($setting["file_name"]) && $setting["file_name"] === $fileName) {
-                return $setting;
+                return $this->migrateSettingFormat($setting);
             }
         }
 
@@ -89,6 +100,9 @@ class SettingsManager implements SettingsManagerInterface {
             return false;
         }
 
+        // Migrate to new format before adding
+        $settingData = $this->migrateSettingFormat($settingData);
+
         $allSettings[] = $settingData;
 
         return $this->saveSettings($allSettings);
@@ -103,6 +117,9 @@ class SettingsManager implements SettingsManagerInterface {
     public function updateSetting($fileName, $settingData) {
         $allSettings = $this->getAllSettings();
         $updated = false;
+
+        // Migrate to new format before updating
+        $settingData = $this->migrateSettingFormat($settingData);
 
         foreach ($allSettings as $index => $setting) {
             if (isset($setting["file_name"]) && $setting["file_name"] === $fileName) {
@@ -166,6 +183,55 @@ class SettingsManager implements SettingsManagerInterface {
     }
 
     /**
+     * Migrate old settings format to new format
+     * Converts api_placeholder to data_source and adds data_source_type
+     * @param array $settingData Setting data to migrate
+     * @return array Migrated setting data
+     */
+    public function migrateSettingFormat($settingData) {
+        // If already using new format, return as-is
+        if (isset($settingData["data_source"]) && isset($settingData["data_source_type"])) {
+            return $settingData;
+        }
+
+        // Convert old api_placeholder to new data_source
+        if (isset($settingData["api_placeholder"]) && !isset($settingData["data_source"])) {
+            $settingData["data_source"] = $settingData["api_placeholder"];
+            unset($settingData["api_placeholder"]);
+        }
+
+        // Add data_source_type if missing (default to csv for backward compatibility)
+        if (!isset($settingData["data_source_type"])) {
+            $settingData["data_source_type"] = "csv";
+        }
+
+        return $settingData;
+    }
+
+    /**
+     * Migrate all settings in the file to new format
+     * @return bool Success status
+     */
+    public function migrateAllSettings() {
+        $allSettings = $this->getAllSettings();
+        $migrated = false;
+
+        foreach ($allSettings as $index => $setting) {
+            $migratedSetting = $this->migrateSettingFormat($setting);
+            if ($migratedSetting !== $setting) {
+                $allSettings[$index] = $migratedSetting;
+                $migrated = true;
+            }
+        }
+
+        if ($migrated) {
+            return $this->saveSettings($allSettings);
+        }
+
+        return true;
+    }
+
+    /**
      * Validate setting data
      * @param array $settingData Setting data to validate
      * @return array Array of validation errors (empty if valid)
@@ -181,8 +247,29 @@ class SettingsManager implements SettingsManagerInterface {
             $errors[] = "Report title is required";
         }
 
-        if (empty($settingData["api_placeholder"])) {
+        // Support both old (api_placeholder) and new (data_source) field names for backward compatibility
+        if (empty($settingData["data_source"]) && empty($settingData["api_placeholder"])) {
             $errors[] = "Data source is required";
+        }
+
+        // Validate data_source_type if present
+        if (isset($settingData["data_source_type"])) {
+            $validTypes = ["csv", "api"];
+            if (!in_array($settingData["data_source_type"], $validTypes)) {
+                $errors[] = "Data source type must be 'csv' or 'api'";
+            }
+
+            // Validate api_config when data_source_type is "api"
+            if ($settingData["data_source_type"] === "api") {
+                if (empty($settingData["api_config"])) {
+                    $errors[] = "API configuration is required when data source type is 'api'";
+                } elseif (is_array($settingData["api_config"])) {
+                    if (empty($settingData["api_config"]["endpoint"])) {
+                        $errors[] = "API endpoint is required in API configuration";
+                    }
+                    // Filters are optional, no validation needed
+                }
+            }
         }
 
         if (!isset($settingData["stock_count"]) || $settingData["stock_count"] < 1) {

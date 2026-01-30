@@ -43,6 +43,38 @@ class DataSourceProvider {
     }
 
     /**
+     * Get available API data sources
+     * @return array Array of API source names
+     */
+    public function getAvailableApiSources() {
+        return [
+            'fmp-most-actives'
+        ];
+    }
+
+    /**
+     * Get all available data sources with type indicators
+     * @return array Array of data sources prefixed with type (csv: or api:)
+     */
+    public function getAllDataSourcesWithType() {
+        $sources = [];
+
+        // Add CSV sources
+        $csvFiles = $this->getAvailableDataSources();
+        foreach ($csvFiles as $csvFile) {
+            $sources[] = 'csv:' . $csvFile;
+        }
+
+        // Add API sources
+        $apiSources = $this->getAvailableApiSources();
+        foreach ($apiSources as $apiSource) {
+            $sources[] = 'api:' . $apiSource;
+        }
+
+        return $sources;
+    }
+
+    /**
      * Check if a file is a CSV file
      * @param string $filename File name to check
      * @return bool True if file is a CSV

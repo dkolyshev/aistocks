@@ -10,6 +10,7 @@ class ReportGenerationOrchestrator {
     private $dataDir;
     private $reportsDir;
     private $serviceFactory;
+    private $dataSourceFactory;
 
     /**
      * Constructor with dependency injection
@@ -17,12 +18,14 @@ class ReportGenerationOrchestrator {
      * @param string $dataDir Path to data directory containing CSV files
      * @param string $reportsDir Reports output directory
      * @param ReportServiceFactoryInterface $serviceFactory Factory for creating report services
+     * @param DataSourceFactory $dataSourceFactory Factory for creating data sources
      */
-    public function __construct($settingsManager, $dataDir, $reportsDir, $serviceFactory) {
+    public function __construct($settingsManager, $dataDir, $reportsDir, $serviceFactory, $dataSourceFactory) {
         $this->settingsManager = $settingsManager;
         $this->dataDir = rtrim($dataDir, "/");
         $this->reportsDir = rtrim($reportsDir, "/");
         $this->serviceFactory = $serviceFactory;
+        $this->dataSourceFactory = $dataSourceFactory;
     }
 
     /**
@@ -69,30 +72,43 @@ class ReportGenerationOrchestrator {
         ];
 
         try {
+            // Support both old (api_placeholder) and new (data_source + data_source_type) formats
+            $dataSourceString = "";
+
+            if (!empty($settings["api_placeholder"])) {
+                // Old format: already in "type:name" format
+                $dataSourceString = $settings["api_placeholder"];
+            } elseif (!empty($settings["data_source"]) && !empty($settings["data_source_type"])) {
+                // New format: construct "type:name" format
+                $dataSourceString = $settings["data_source_type"] . ":" . $settings["data_source"];
+            }
+
             // Validate data source is specified
-            if (empty($settings["api_placeholder"])) {
-                $result["errors"][] = "Data source (api_placeholder) is not specified";
+            if (empty($dataSourceString)) {
+                $result["errors"][] = "Data source is not specified";
                 return $result;
             }
 
-            // Build CSV file path from data directory and api_placeholder
-            $csvFilePath = $this->dataDir . "/" . $settings["api_placeholder"];
+            // Extract API config if available
+            $apiConfig = isset($settings["api_config"]) && is_array($settings["api_config"]) ? $settings["api_config"] : null;
 
-            // Validate data source file exists
-            if (!file_exists($csvFilePath)) {
-                $result["errors"][] = "Data source file not found: " . $settings["api_placeholder"];
+            // Load data source using factory
+            try {
+                $dataSource = $this->dataSourceFactory->create($dataSourceString, $apiConfig);
+            } catch (InvalidArgumentException $e) {
+                $result["errors"][] = "Invalid data source: " . $e->getMessage();
                 return $result;
             }
 
-            // Load CSV data
-            $csvReader = $this->serviceFactory->createCsvDataReader($csvFilePath);
-            if (!$csvReader->load()) {
-                $result["errors"][] = "Failed to load CSV data from: " . $settings["api_placeholder"];
+            // Load data from source
+            if (!$dataSource->load()) {
+                $result["errors"][] = "Failed to load data from: " . $dataSourceString;
                 return $result;
             }
 
+            // Validate data is available
             $stockCount = isset($settings["stock_count"]) ? intval($settings["stock_count"]) : 6;
-            $stocks = $csvReader->getLimitedData($stockCount);
+            $stocks = $dataSource->getLimitedData($stockCount);
 
             if (empty($stocks)) {
                 $result["errors"][] = "No stock data available";
@@ -103,7 +119,7 @@ class ReportGenerationOrchestrator {
             $shortcodeProcessor = $this->serviceFactory->createShortcodeProcessor();
 
             // Generate HTML report
-            $htmlGenerator = $this->serviceFactory->createHtmlReportGenerator($settings, $stocks, $shortcodeProcessor);
+            $htmlGenerator = $this->serviceFactory->createHtmlReportGenerator($settings, $dataSource, $shortcodeProcessor);
             $htmlPath = $this->reportsDir . "/" . $fileName . ".html";
             $result["html"] = $htmlGenerator->saveToFile($htmlPath);
 
@@ -121,7 +137,7 @@ class ReportGenerationOrchestrator {
             }
 
             // Generate Flipbook report
-            $flipbookGenerator = $this->serviceFactory->createFlipbookGenerator($settings, $stocks, $shortcodeProcessor);
+            $flipbookGenerator = $this->serviceFactory->createFlipbookGenerator($settings, $dataSource, $shortcodeProcessor);
             $flipbookPath = $this->reportsDir . "/" . $fileName . "-flipbook.html";
             $result["flipbook"] = $flipbookGenerator->saveToFile($flipbookPath);
 

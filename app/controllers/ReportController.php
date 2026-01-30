@@ -147,4 +147,87 @@ class ReportController {
     public function getAvailableDataSources() {
         return $this->dataSourceProvider->getAvailableDataSources();
     }
+
+    /**
+     * Test API connection and preview data
+     * @param array $postData POST data containing endpoint and filters
+     * @return array Response with success status, preview data, and shortcodes
+     */
+    public function testApiConnection($postData) {
+        try {
+            $endpoint = isset($postData["endpoint"]) ? $postData["endpoint"] : "";
+            $filtersJson = isset($postData["filters"]) ? $postData["filters"] : "{}";
+            $filters = json_decode($filtersJson, true);
+
+            if (empty($endpoint)) {
+                return [
+                    "success" => false,
+                    "error" => "No endpoint specified",
+                ];
+            }
+
+            // Create FMP API client instance
+            $apiKey = defined("FMP_API_KEY") ? FMP_API_KEY : "";
+            if (empty($apiKey)) {
+                return [
+                    "success" => false,
+                    "error" => "FMP API key not configured",
+                ];
+            }
+
+            $cacheService = new FileCacheService(FMP_CACHE_DIR);
+            $dataMapper = new FmpDataMapper();
+
+            // Create API client with endpoint and filters
+            $apiClient = new FmpApiClient($apiKey, "Ticker", $dataMapper, $cacheService, $endpoint, $filters);
+
+            // Test the most-actives endpoint
+            $previewData = null;
+            $headers = array();
+
+            if ($endpoint === "most-actives") {
+                // Load most-actives data
+                $loadSuccess = $apiClient->load();
+                if (!$loadSuccess) {
+                    return [
+                        "success" => false,
+                        "error" => "Failed to connect to API endpoint: " . $endpoint,
+                    ];
+                }
+                $previewData = $apiClient->getLimitedData(3);
+                $headers = $apiClient->getHeaders();
+
+            } else {
+                return [
+                    "success" => false,
+                    "error" => "Unknown endpoint: " . $endpoint,
+                ];
+            }
+
+            if (empty($previewData)) {
+                return [
+                    "success" => false,
+                    "error" => "No data returned from API",
+                ];
+            }
+
+            // Get available headers/shortcodes
+            $shortcodes = [];
+            foreach ($headers as $header) {
+                $shortcodes[] = "[" . $header . "]";
+            }
+
+            return [
+                "success" => true,
+                "preview" => $previewData,
+                "shortcodes" => $shortcodes,
+                "endpoint" => $endpoint,
+            ];
+        } catch (Exception $e) {
+            return [
+                "success" => false,
+                "error" => "Exception: " . $e->getMessage(),
+            ];
+        }
+    }
 }

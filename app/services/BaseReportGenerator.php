@@ -27,20 +27,24 @@ abstract class BaseReportGenerator implements ReportGeneratorInterface {
     /**
      * Constructor
      * @param array $settings Report settings
-     * @param array $stocks Stock data array
+     * @param DataSourceInterface $dataSource Data source instance
      * @param ShortcodeProcessor $shortcodeProcessor Shortcode processor instance
      * @param ImageService|null $imageService Image service (optional, creates default if null)
      * @param FileLoaderService|null $fileLoaderService File loader service (optional, creates default if null)
      */
     public function __construct(
         $settings,
-        $stocks,
+        $dataSource,
         $shortcodeProcessor,
         $imageService = null,
         $fileLoaderService = null
     ) {
         $this->settings = $settings;
-        $this->stocks = $stocks;
+
+        // Extract stock data from data source based on settings
+        $stockCount = isset($settings["stock_count"]) ? intval($settings["stock_count"]) : 6;
+        $this->stocks = $dataSource->getLimitedData($stockCount);
+
         $this->shortcodeProcessor = $shortcodeProcessor;
         $this->imageService = $imageService !== null ? $imageService : new ImageService();
         $this->fileLoaderService = $fileLoaderService !== null ? $fileLoaderService : new FileLoaderService();

@@ -30,7 +30,8 @@ $reportFileController = new ReportFileController(REPORTS_DIR, $fileSystem, DATE_
 $shortcodeProvider = new ShortcodeProvider(DATA_CSV_FILE);
 $dataSourceProvider = new DataSourceProvider(DATA_DIR);
 $reportServiceFactory = new ReportServiceFactory();
-$reportOrchestrator = new ReportGenerationOrchestrator($settingsManager, DATA_DIR, REPORTS_DIR, $reportServiceFactory);
+$dataSourceFactory = new DataSourceFactory(DATA_DIR);
+$reportOrchestrator = new ReportGenerationOrchestrator($settingsManager, DATA_DIR, REPORTS_DIR, $reportServiceFactory, $dataSourceFactory);
 
 // Create CSRF protection service
 $csrfService = new CsrfService();

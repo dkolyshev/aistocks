@@ -104,11 +104,12 @@ class SettingsController {
      * @return array Setting data
      */
     private function extractSettingData() {
-        return [
+        $sourceType = isset($_POST["source_type"]) ? trim($_POST["source_type"]) : "csv";
+
+        $data = [
             "file_name" => isset($_POST["file_name"]) ? trim($_POST["file_name"]) : "",
             "report_title" => isset($_POST["report_title"]) ? trim($_POST["report_title"]) : "",
             "author_name" => isset($_POST["author_name"]) ? trim($_POST["author_name"]) : "",
-            "api_placeholder" => isset($_POST["api_placeholder"]) ? trim($_POST["api_placeholder"]) : "",
             "stock_count" => isset($_POST["stock_count"]) ? intval($_POST["stock_count"]) : 6,
             "article_image" => isset($_POST["existing_article_image"]) ? $_POST["existing_article_image"] : "",
             "pdf_cover_image" => isset($_POST["existing_pdf_cover"]) ? $_POST["existing_pdf_cover"] : "",
@@ -119,7 +120,57 @@ class SettingsController {
             "disclaimer_html" => $this->sanitizeHtml(isset($_POST["disclaimer_html"]) ? $_POST["disclaimer_html"] : ""),
             "disclaimer_html_state" => $this->extractFieldState("disclaimer_html_state"),
             "manual_pdf_path" => isset($_POST["existing_manual_pdf"]) ? $_POST["existing_manual_pdf"] : "",
+            "data_source_type" => $sourceType,
         ];
+
+        // Set data_source and api_config based on source type
+        if ($sourceType === "csv") {
+            $csvSource = isset($_POST["api_placeholder"]) ? trim($_POST["api_placeholder"]) : "";
+            $data["data_source"] = $csvSource;
+        } elseif ($sourceType === "api") {
+            $apiEndpoint = isset($_POST["api_endpoint"]) ? trim($_POST["api_endpoint"]) : "";
+
+            // Map endpoint to DataSourceFactory format
+            $endpointMap = array(
+                "most-actives" => "fmp-most-actives"
+            );
+            $factoryEndpoint = isset($endpointMap[$apiEndpoint]) ? $endpointMap[$apiEndpoint] : "fmp-most-actives";
+            $data["data_source"] = $factoryEndpoint;
+
+            // Collect API configuration
+            $apiConfig = array(
+                "endpoint" => $apiEndpoint
+            );
+
+            // Collect API filters (applied client-side after receiving API data)
+            $apiFilters = array();
+            if (isset($_POST["api_filter_marketcap_min"]) && $_POST["api_filter_marketcap_min"] !== "") {
+                $apiFilters["marketcap_min"] = intval($_POST["api_filter_marketcap_min"]);
+            }
+            if (isset($_POST["api_filter_marketcap_max"]) && $_POST["api_filter_marketcap_max"] !== "") {
+                $apiFilters["marketcap_max"] = intval($_POST["api_filter_marketcap_max"]);
+            }
+            if (isset($_POST["api_filter_price_min"]) && $_POST["api_filter_price_min"] !== "") {
+                $apiFilters["price_min"] = floatval($_POST["api_filter_price_min"]);
+            }
+            if (isset($_POST["api_filter_price_max"]) && $_POST["api_filter_price_max"] !== "") {
+                $apiFilters["price_max"] = floatval($_POST["api_filter_price_max"]);
+            }
+            if (isset($_POST["api_filter_exchange"]) && !empty($_POST["api_filter_exchange"])) {
+                $apiFilters["exchange"] = trim($_POST["api_filter_exchange"]);
+            }
+            if (isset($_POST["api_filter_country"]) && !empty($_POST["api_filter_country"])) {
+                $apiFilters["country"] = trim($_POST["api_filter_country"]);
+            }
+
+            if (!empty($apiFilters)) {
+                $apiConfig["filters"] = $apiFilters;
+            }
+
+            $data["api_config"] = $apiConfig;
+        }
+
+        return $data;
     }
 
     /**

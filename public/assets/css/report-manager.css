@@ -165,3 +165,68 @@ body {
   display: block;
   margin-bottom: 0.5rem;
 }
+
+/* Data source toggle styling */
+.btn-group-toggle label.btn {
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+}
+
+.btn-group-toggle label.btn.active {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+}
+
+/* API configuration section */
+.api-config-section {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+  border: 1px solid #dee2e6;
+}
+
+.api-config-section .form-group label {
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.api-config-section .card {
+  border: 1px solid #dee2e6;
+  box-shadow: none;
+}
+
+/* API preview button */
+#api-preview-btn {
+  font-weight: 500;
+  min-width: 280px;
+}
+
+#api-preview-btn .spinner-border {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15em;
+}
+
+/* API preview results */
+#api-preview-result .card-header {
+  font-weight: 600;
+}
+
+#api-preview-content pre {
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
+}
+
+/* API shortcodes display */
+#api-shortcodes-display .alert {
+  margin-bottom: 0;
+}
+
+#api-shortcodes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}

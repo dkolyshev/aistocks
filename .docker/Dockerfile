@@ -47,14 +47,21 @@ WORKDIR /var/www/html
 # Copy application files into the image
 COPY . /var/www/html
 
+# Copy and set up entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Create necessary directories with proper permissions
-RUN mkdir -p /var/www/html/reports /var/www/html/images \
+RUN mkdir -p /var/www/html/reports /var/www/html/images /var/www/html/data/cache /var/www/html/cache/fmp \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
-    && chmod -R 777 /var/www/html/reports /var/www/html/images
+    && chmod -R 777 /var/www/html/reports /var/www/html/images /var/www/html/data /var/www/html/cache
 
 # Expose port 80
 EXPOSE 80
+
+# Use entrypoint script to fix permissions on startup
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 # Start Apache
 CMD ["apache2-foreground"]

@@ -55,6 +55,10 @@ class Router {
             return;
         }
 
+        if ($this->handleApiTestRequest($post, $server)) {
+            return;
+        }
+
         $flash = $this->handlePost($post, $server);
         $message = $flash["message"];
         $messageType = $flash["messageType"];
@@ -155,6 +159,28 @@ class Router {
         $token = isset($post[$fieldName]) ? $post[$fieldName] : "";
 
         return $this->csrfService->validateToken($token);
+    }
+
+    /**
+     * Handle AJAX request for testing API connection
+     * @param array $post Post parameters
+     * @param array $server Server parameters
+     * @return bool True if handled
+     */
+    private function handleApiTestRequest($post, $server) {
+        if (!isset($server["REQUEST_METHOD"]) || $server["REQUEST_METHOD"] !== "POST") {
+            return false;
+        }
+
+        if (!isset($post["action"]) || $post["action"] !== Action::TEST_API_CONNECTION) {
+            return false;
+        }
+
+        header("Content-Type: application/json");
+
+        $result = $this->controller->testApiConnection($post);
+        echo json_encode($result);
+        return true;
     }
 
 }

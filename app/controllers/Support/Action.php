@@ -12,4 +12,5 @@ class Action {
     const DELETE_REPORT = "delete_report";
     const DELETE_ALL_REPORTS = "delete_all_reports";
     const GET_TEMPLATE = "get_template";
+    const TEST_API_CONNECTION = "test_api_connection";
 }

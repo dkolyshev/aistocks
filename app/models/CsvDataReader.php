@@ -4,7 +4,7 @@
  * PHP 5.5 compatible
  */
 
-class CsvDataReader implements CsvDataReaderInterface {
+class CsvDataReader implements CsvDataReaderInterface, DataSourceInterface {
     private $csvFile;
     private $headers;
     private $data;

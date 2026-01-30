@@ -28,12 +28,12 @@ class ReportServiceFactory implements ReportServiceFactoryInterface {
     /**
      * Create HTML report generator instance
      * @param array $settings Report settings
-     * @param array $stocks Stock data array
+     * @param DataSourceInterface $dataSource Data source instance
      * @param ShortcodeProcessorInterface $shortcodeProcessor Shortcode processor
      * @return ReportGeneratorInterface HTML report generator instance
      */
-    public function createHtmlReportGenerator($settings, $stocks, $shortcodeProcessor) {
-        return new HtmlReportGenerator($settings, $stocks, $shortcodeProcessor);
+    public function createHtmlReportGenerator($settings, $dataSource, $shortcodeProcessor) {
+        return new HtmlReportGenerator($settings, $dataSource, $shortcodeProcessor);
     }
 
     /**
@@ -49,11 +49,11 @@ class ReportServiceFactory implements ReportServiceFactoryInterface {
     /**
      * Create flipbook generator instance
      * @param array $settings Report settings
-     * @param array $stocks Stock data array
+     * @param DataSourceInterface $dataSource Data source instance
      * @param ShortcodeProcessorInterface $shortcodeProcessor Shortcode processor
      * @return ReportGeneratorInterface Flipbook generator instance
      */
-    public function createFlipbookGenerator($settings, $stocks, $shortcodeProcessor) {
-        return new FlipbookGenerator($settings, $stocks, $shortcodeProcessor);
+    public function createFlipbookGenerator($settings, $dataSource, $shortcodeProcessor) {
+        return new FlipbookGenerator($settings, $dataSource, $shortcodeProcessor);
     }
 }

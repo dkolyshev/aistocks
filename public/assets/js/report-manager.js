@@ -376,16 +376,233 @@
     });
   }
 
+  /**
+   * Data source toggle management
+   * Handles switching between CSV and API data sources
+   */
+  var dataSourceToggle = {
+    /**
+     * Initialize data source toggle
+     */
+    init: function () {
+      var self = this;
+      var csvRadio = document.getElementById("source_type_csv");
+      var apiRadio = document.getElementById("source_type_api");
+      var csvContainer = document.getElementById("csv-source-container");
+      var apiContainer = document.getElementById("api-source-container");
+
+      if (!csvRadio || !apiRadio || !csvContainer || !apiContainer) {
+        return;
+      }
+
+      // Use event delegation on the parent for Bootstrap button groups
+      var buttonGroup = csvRadio.parentElement.parentElement;
+      if (buttonGroup) {
+        buttonGroup.addEventListener("click", function () {
+          // Small delay to ensure radio state is updated
+          setTimeout(function () {
+            self.updateContainers();
+          }, 10);
+        });
+      }
+
+      // Also add direct listeners as fallback
+      csvRadio.addEventListener("change", function () {
+        self.updateContainers();
+      });
+
+      apiRadio.addEventListener("change", function () {
+        self.updateContainers();
+      });
+
+      // Show appropriate container based on initial selection
+      this.updateContainers();
+    },
+
+    /**
+     * Update visibility of containers based on selected source type
+     */
+    updateContainers: function () {
+      var csvRadio = document.getElementById("source_type_csv");
+      var apiRadio = document.getElementById("source_type_api");
+      var csvContainer = document.getElementById("csv-source-container");
+      var apiContainer = document.getElementById("api-source-container");
+
+      if (!csvRadio || !apiRadio || !csvContainer || !apiContainer) {
+        return;
+      }
+
+      var csvSelect = csvContainer.querySelector("select[name='api_placeholder']");
+
+      if (csvRadio.checked) {
+        csvContainer.style.display = "block";
+        apiContainer.style.display = "none";
+        // Make CSV select required
+        if (csvSelect) {
+          csvSelect.setAttribute("required", "required");
+        }
+        // Remove required from API fields
+        this.setApiFieldsRequired(false);
+      } else if (apiRadio.checked) {
+        csvContainer.style.display = "none";
+        apiContainer.style.display = "block";
+        // Remove required from CSV select
+        if (csvSelect) {
+          csvSelect.removeAttribute("required");
+        }
+        // Make API endpoint required
+        this.setApiFieldsRequired(true);
+      }
+    },
+
+    /**
+     * Set required attribute on API fields
+     * @param {boolean} required - Whether fields should be required
+     */
+    setApiFieldsRequired: function (required) {
+      var apiEndpoint = document.getElementById("api_endpoint");
+      if (apiEndpoint) {
+        if (required) {
+          apiEndpoint.setAttribute("required", "required");
+        } else {
+          apiEndpoint.removeAttribute("required");
+        }
+      }
+    }
+  };
+
+  /**
+   * API Preview functionality
+   * Handles testing API connection and displaying available fields
+   */
+  var apiPreview = {
+    /**
+     * Initialize API preview
+     */
+    init: function () {
+      var previewBtn = document.getElementById("api-preview-btn");
+
+      if (!previewBtn) {
+        return;
+      }
+
+      previewBtn.addEventListener("click", function () {
+        apiPreview.testConnection();
+      });
+    },
+
+    /**
+     * Test API connection and preview data
+     */
+    testConnection: function () {
+      var endpoint = document.getElementById("api_endpoint").value;
+      var btnText = document.getElementById("preview-btn-text");
+      var btnSpinner = document.getElementById("preview-btn-spinner");
+      var resultContainer = document.getElementById("api-preview-result");
+      var contentDiv = document.getElementById("api-preview-content");
+      var shortcodesContainer = document.getElementById("api-shortcodes-display");
+      var shortcodesList = document.getElementById("api-shortcodes-list");
+
+      if (!endpoint) {
+        alert("Please select an API endpoint first");
+        return;
+      }
+
+      // Show loading state
+      btnText.style.display = "none";
+      btnSpinner.style.display = "inline-block";
+      resultContainer.style.display = "none";
+      shortcodesContainer.style.display = "none";
+
+      // Gather filter parameters
+      var filters = {
+        marketcap_min: document.querySelector("input[name='api_filter_marketcap_min']").value,
+        marketcap_max: document.querySelector("input[name='api_filter_marketcap_max']").value,
+        price_min: document.querySelector("input[name='api_filter_price_min']").value,
+        price_max: document.querySelector("input[name='api_filter_price_max']").value,
+        exchange: document.querySelector("select[name='api_filter_exchange']").value,
+        country: document.querySelector("input[name='api_filter_country']").value
+      };
+
+      // Make AJAX request
+      var xhr = new XMLHttpRequest();
+      var params = "action=test_api_connection&endpoint=" + encodeURIComponent(endpoint) + "&filters=" + encodeURIComponent(JSON.stringify(filters));
+
+      xhr.open("POST", "reportManager", true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          // Hide loading state
+          btnText.style.display = "inline-block";
+          btnSpinner.style.display = "none";
+
+          if (xhr.status === 200) {
+            try {
+              var response = JSON.parse(xhr.responseText);
+
+              if (response.success) {
+                // Display success message
+                contentDiv.innerHTML =
+                  "<div class='alert alert-success mb-2'>" +
+                  "<strong>Success!</strong> Connected to API endpoint: <code>" +
+                  endpoint +
+                  "</code></div>" +
+                  "<p><strong>Sample Data Preview:</strong></p>" +
+                  "<pre class='bg-light p-2'>" +
+                  JSON.stringify(response.preview, null, 2) +
+                  "</pre>";
+
+                resultContainer.style.display = "block";
+
+                // Display available shortcodes
+                if (response.shortcodes && response.shortcodes.length > 0) {
+                  var shortcodesHTML = "";
+                  response.shortcodes.forEach(function (code) {
+                    shortcodesHTML += "<span class='shortcode-copy shortcode-badge badge-light mr-1' " + "data-shortcode='" + code + "'>" + code + "</span>";
+                  });
+                  shortcodesList.innerHTML = shortcodesHTML;
+                  shortcodesContainer.style.display = "block";
+
+                  // Re-initialize shortcode copy for new elements
+                  initShortcodeCopy();
+                }
+              } else {
+                // Display error
+                contentDiv.innerHTML =
+                  "<div class='alert alert-danger'>" + "<strong>Error:</strong> " + (response.error || "Failed to connect to API") + "</div>";
+                resultContainer.style.display = "block";
+              }
+            } catch (e) {
+              console.error("Failed to parse API response:", e);
+              contentDiv.innerHTML = "<div class='alert alert-danger'>" + "<strong>Error:</strong> Invalid response from server</div>";
+              resultContainer.style.display = "block";
+            }
+          } else {
+            contentDiv.innerHTML = "<div class='alert alert-danger'>" + "<strong>Error:</strong> Server returned status " + xhr.status + "</div>";
+            resultContainer.style.display = "block";
+          }
+        }
+      };
+
+      xhr.send(params);
+    }
+  };
+
   // Initialize when DOM is ready
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () {
       initShortcodeCopy();
       initThemeSelector();
       templateFieldManager.init();
+      dataSourceToggle.init();
+      apiPreview.init();
     });
   } else {
     initShortcodeCopy();
     initThemeSelector();
     templateFieldManager.init();
+    dataSourceToggle.init();
+    apiPreview.init();
   }
 })();

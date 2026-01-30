@@ -46,22 +46,6 @@
                         value="<?php echo $editMode ? View::escape($editData["stock_count"]) : "6"; ?>" min="1">
                 </div>
                 <div class="col-md-3 form-group">
-                    <label>Data Source</label>
-                    <select name="api_placeholder" class="form-control" required>
-                        <option value="">-- Select data source --</option>
-                        <?php
-                        $currentDataSource = $editMode && isset($editData["api_placeholder"]) ? $editData["api_placeholder"] : "";
-                        foreach ($availableDataSources as $dataSource):
-                            $selected = $dataSource === $currentDataSource ? "selected" : ""; ?>
-                            <option value="<?php echo View::escape($dataSource); ?>" <?php echo $selected; ?>>
-                                <?php echo View::escape($dataSource); ?>
-                            </option>
-                        <?php
-                        endforeach;
-                        ?>
-                    </select>
-                </div>
-                <div class="col-md-3 form-group">
                     <label>Article Image (180x180)</label>
                     <input type="file" name="article_image" class="form-control-file" accept="image/*">
                     <?php if ($editMode && !empty($editData["article_image"])): ?>
@@ -75,6 +59,45 @@
                         <small class="text-muted">Current: <?php echo basename($editData["pdf_cover_image"]); ?></small>
                     <?php endif; ?>
                 </div>
+            </div>
+
+            <h6 class="section-header mt-4">Data Source Configuration</h6>
+            <div class="form-group">
+                <label><strong>Data Source Type</strong></label>
+                <div class="btn-group btn-group-toggle d-block" data-toggle="buttons">
+                    <?php
+                    $currentSourceType = $editMode && isset($editData['data_source_type']) ? $editData['data_source_type'] : 'csv';
+                    ?>
+                    <label class="btn btn-outline-primary <?php echo $currentSourceType === 'csv' ? 'active' : ''; ?>">
+                        <input type="radio" name="source_type" id="source_type_csv" value="csv" <?php echo $currentSourceType === 'csv' ? 'checked' : ''; ?>> CSV File
+                    </label>
+                    <label class="btn btn-outline-primary <?php echo $currentSourceType === 'api' ? 'active' : ''; ?>">
+                        <input type="radio" name="source_type" id="source_type_api" value="api" <?php echo $currentSourceType === 'api' ? 'checked' : ''; ?>> API Data Source
+                    </label>
+                </div>
+            </div>
+
+            <div id="csv-source-container" style="display: none;">
+                <div class="form-group">
+                    <label>CSV Data Source</label>
+                    <select name="api_placeholder" class="form-control">
+                        <option value="">-- Select CSV source --</option>
+                        <?php
+                        $currentDataSource = $editMode && isset($editData["data_source"]) ? $editData["data_source"] : "";
+                        foreach ($availableDataSources as $dataSource):
+                            $selected = $dataSource === $currentDataSource ? "selected" : ""; ?>
+                            <option value="<?php echo View::escape($dataSource); ?>" <?php echo $selected; ?>>
+                                <?php echo View::escape($dataSource); ?>
+                            </option>
+                        <?php
+                        endforeach;
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div id="api-source-container" style="display: none;">
+                <?php include __DIR__ . '/api-config-fields.php'; ?>
             </div>
 
             <h6 class="section-header mt-4">Report Content (HTML Templates)</h6>
