@@ -272,7 +272,7 @@ pkg install wkhtmltopdf xorg-vfbserver
 
 2. Installed Git
 
-## How to run the app in subdirectory
+## How to run the app in a subdirectory
 
 ### 1. Navigate to the directory where you want to deploy the app
 
@@ -280,15 +280,15 @@ pkg install wkhtmltopdf xorg-vfbserver
 cd ~/tools/testproject/contractord/aistocks
 ```
 
-### 2. Pull the latest update from repository
+### 2. Pull the latest update from the repository
 
 ```bash
 git pull origin main
 ```
 
-### 3. Update base URL in the .htaccess file
+### 3. Update the base URL in the .htaccess file
 
-Edit `aistocks/.htaccess`
+Edit `aistocks/.htaccess`.
 
 Line 27. Change from this
 
@@ -311,12 +311,12 @@ define("BASE_URL", "");
 to this
 
 ```php
-define("BASE_URL", "/tools/testproject/contractord/aistocks");
+define("BASE_URL", "/your/path/to/subdirectory/");
 ```
 
 ### 5. Check the app
 
-Now the app should be available on https://sendy.musthtest.ca/tools/testproject/contractord/aistocks/
+Now the app should be available on http://example.com/your/path/to/subdirectory/
 
 ---
 
